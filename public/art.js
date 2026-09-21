@@ -40,6 +40,15 @@ export function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   return cv;
 }
 export function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
+export const WEAPON_FILES = { pistol:'assets/weapons/pistol.png', smg:'assets/weapons/smg.png', rifle:'assets/weapons/rifle.png', shotgun:'assets/weapons/shotgun.png' };
+// Текстури зброї з itch.io (AystarGames, CC0). У середовищі без DOM (тести) повертає {}.
+export function loadWeaponSprites(){
+  const out={};
+  if(typeof Image==='undefined')return out;
+  for(const [id,src] of Object.entries(WEAPON_FILES)){const img=new Image();img.decoding='async';img.src=src;out[id]=img;}
+  return out;
+}
+export function weaponSpriteReady(img){return !!img&&img.complete&&img.naturalWidth>0;}
 export function textures(map){
   let seed=97;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
   return [null,...[1,2,3].map(type=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');c.fillStyle=type===2?map.accent:map.wall;c.fillRect(0,0,64,64);

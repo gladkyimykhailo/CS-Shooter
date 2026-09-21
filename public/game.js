@@ -1,5 +1,5 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from './core.js';
-import { mapArt, makeOperator, drawOperator, textures, hex, tint } from './art.js';
+import { mapArt, makeOperator, drawOperator, textures, hex, tint, WEAPON_FILES, loadWeaponSprites, weaponSpriteReady } from './art.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
@@ -7,7 +7,7 @@ const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:tru
 try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,2);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
-let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
+let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite,weaponSprites={};
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
@@ -54,6 +54,7 @@ function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Ma
 function start(){
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
   wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
+  weaponSprites=loadWeaponSprites();
   player=actor(...map.blue[0],0,'ТИ');player.isPlayer=true;actors=[player,actor(...map.blue[1],0,'РИСЬ'),actor(...map.blue[2],0,'СОКІЛ'),...map.red.map((p,i)=>actor(...p,1,['КВАРЦ','ТІНЬ','ГРІМ'][i]))];
   $('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;$('#touch-controls').hidden=!touchDevice;resize();nextRound();
 }
@@ -75,7 +76,7 @@ function openShop(){
   if(!inBuyZone())return toast('Повернися до стартової зони');
   reload=0;reloadTotal=0;reloadStage=0;
   const items=Object.entries(WEAPONS).filter(([,w])=>w.price).map(([id,w])=>({id,...w}));items.push({id:'armor',name:'БРОНЕЖИЛЕТ',type:'ЗАХИСТ',price:650,icon:'◇',description:'50 броні · поглинає частину шкоди в корпус'});
-  dialog('shop',`<div class="dialog-header"><span class="eyebrow">СПОРЯДЖЕННЯ / РАУНД ${round}</span><span class="shop-balance">₡ ${player.money.toLocaleString('uk')}</span></div><h2>ПІДГОТУЙСЯ ДО БОЮ</h2><p>Закупівля: <b id="shop-timer">${Math.ceil(clock)}</b> с · Пістолет і патрони видаються безкоштовно.</p><div class="shop-grid">${items.map(w=>{const owned=w.id==='armor'?player.armor>=50:player.primary===w.id,disabled=owned||player.money<w.price;return `<article class="shop-item"><small>${w.type}</small><h3>${w.name}</h3><div class="gun-icon">${w.icon}</div><p>${w.description}</p><button data-buy="${w.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<w.price?'БРАКУЄ КРЕДИТІВ':'КУПИТИ'}</span><span>₡ ${w.price.toLocaleString('uk')}</span></button></article>`;}).join('')}</div><div class="shop-foot"><p>Основна: ${player.primary?WEAPONS[player.primary].name:'немає'} · Броня: ${Math.ceil(player.armor)}<br>Заміна основної зброї — без повернення її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button></div><button id="shop-close" class="text-button">ЗАКРИТИ МАГАЗИН / B</button>`);
+  dialog('shop',`<div class="dialog-header"><span class="eyebrow">СПОРЯДЖЕННЯ / РАУНД ${round}</span><span class="shop-balance">₡ ${player.money.toLocaleString('uk')}</span></div><h2>ПІДГОТУЙСЯ ДО БОЮ</h2><p>Закупівля: <b id="shop-timer">${Math.ceil(clock)}</b> с · Пістолет і патрони видаються безкоштовно.</p><div class="shop-grid">${items.map(w=>{const owned=w.id==='armor'?player.armor>=50:player.primary===w.id,disabled=owned||player.money<w.price;return `<article class="shop-item"><small>${w.type}</small><h3>${w.name}</h3>${WEAPON_FILES[w.id]?`<img class="gun-sprite" src="${WEAPON_FILES[w.id]}" alt="Зброя ${w.name}" draggable="false">`:`<div class="gun-icon">${w.icon}</div>`}<p>${w.description}</p><button data-buy="${w.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<w.price?'БРАКУЄ КРЕДИТІВ':'КУПИТИ'}</span><span>₡ ${w.price.toLocaleString('uk')}</span></button></article>`;}).join('')}</div><div class="shop-foot"><p>Основна: ${player.primary?WEAPONS[player.primary].name:'немає'} · Броня: ${Math.ceil(player.armor)}<br>Заміна основної зброї — без повернення її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button></div><button id="shop-close" class="text-button">ЗАКРИТИ МАГАЗИН / B</button>`);
   $$('[data-buy]').forEach(b=>b.onclick=()=>{
     if(phase!=='buy'||!inBuyZone())return;
     const id=b.dataset.buy;
@@ -199,13 +200,19 @@ function drawGun(w,h){
   // Зсув затвора/затворної рами під час фази досилання (p 0.72–0.92): зброя смикається вгору.
   const slideDy=-cockJerk*16;
   ctx.save();ctx.translate(0,slideDy*.4);
-  if(pistol){poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);poly([[-23,-149],[-20,-198],[12,-218],[61,-170],[53,-105],[17,-94]],'#2c3937');poly([[-20,-198],[-8,-219],[15,-229],[54,-185],[61,-170],[7,-172]],'#6e7a6f');poly([[7,-172],[61,-170],[53,-145],[6,-145]],'#192625');ctx.fillStyle='#bddd75';ctx.fillRect(2,-219,6,5);ctx.fillStyle='#0d1918';ctx.fillRect(7,-227,9,7);}
+  const sprite=weaponSprites[player.weapon],useSprite=weaponSpriteReady(sprite);
+  if(useSprite){
+    const dims={pistol:[16,12,11],smg:[13,11,12],rifle:[18,11,11],shotgun:[18,11,11]};
+    const [sw,sh,k]=dims[player.weapon]||dims.pistol,dw=sw*k,dh=sh*k;
+    ctx.imageSmoothingEnabled=false;ctx.drawImage(sprite,118-dw,-166-dh/2,dw,dh);ctx.imageSmoothingEnabled=true;
+  }
+  else if(pistol){poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);poly([[-23,-149],[-20,-198],[12,-218],[61,-170],[53,-105],[17,-94]],'#2c3937');poly([[-20,-198],[-8,-219],[15,-229],[54,-185],[61,-170],[7,-172]],'#6e7a6f');poly([[7,-172],[61,-170],[53,-145],[6,-145]],'#192625');ctx.fillStyle='#bddd75';ctx.fillRect(2,-219,6,5);ctx.fillStyle='#0d1918';ctx.fillRect(7,-227,9,7);}
   else{poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);poly([[-50,-49],[-44,-159],[-12,-207],[69,-137],[98,-41],[42,0]],'#243432');poly([[-44,-159],[-12,-207],[17,-199],[89,-140],[69,-119]],'#778174');poly([[69,-119],[89,-140],[98,-41],[57,-49]],'#172625');poly([[-30,-171],[-47,-232],[-26,-250],[7,-181]],'#283b39');poly([[-47,-232],[-26,-250],[-20,-240],[-40,-222]],'#859080');ctx.fillStyle='#131f20';ctx.fillRect(-34,-244,7,11);ctx.fillStyle='#d3f088';ctx.fillRect(-34,-235,4,4);poly([[-31,-130],[24,-92],[38,-98],[-14,-140]],shotgun?'#997551':'#495d4b');for(let i=0;i<4;i++){ctx.fillStyle='#152423';ctx.fillRect(-21+i*10,-153+i*7,5,13);}poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);}
   ctx.restore();
   // Магазин, що випадає (фаза 0.08–0.5), та рука з новим магазином (фаза 0.42–0.75).
   if(p>.06&&p<.52){const q=(p-.06)/.46;ctx.save();ctx.globalAlpha=1-q*.9;ctx.translate(pistol?30:-10,-120+q*190);ctx.rotate(.5+q*1.4);ctx.fillStyle='#1d2a28';ctx.fillRect(-9,-26,18,52);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-26,18,5);ctx.restore();}
   if(p>.4&&p<.78){const q=p<.6?(p-.4)/.2:1-(p-.6)/.18;ctx.save();ctx.globalAlpha=.95;ctx.translate(pistol?8:-24,-60+q*46);ctx.rotate(.12);ctx.fillStyle=glove;ctx.fillRect(-16,-18,32,36);ctx.fillStyle='#222f2d';ctx.fillRect(-9,-52,18,40);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-52,18,4);ctx.restore();}
-  if(recoil>.55&&reload<=0){ctx.save();ctx.translate(pistol?5:-33,pistol?-226:-251);poly([[0,-35],[7,-11],[29,-19],[12,1],[24,18],[2,10],[-20,23],[-12,0],[-30,-14],[-6,-10]],'#ffd887');ctx.fillStyle='#fff9df';ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.fill();ctx.restore();}ctx.restore();
+  if(recoil>.55&&reload<=0){ctx.save();ctx.translate(useSprite?122:(pistol?5:-33),useSprite?-166:(pistol?-226:-251));poly([[0,-35],[7,-11],[29,-19],[12,1],[24,18],[2,10],[-20,23],[-12,0],[-30,-14],[-6,-10]],'#ffd887');ctx.fillStyle='#fff9df';ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.fill();ctx.restore();}ctx.restore();
   // Шкала прогресу перезаряджання під прицілом.
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }

@@ -1,5 +1,6 @@
 """Build an offline HTML and an itch.io upload archive. No third-party packages."""
 from pathlib import Path
+import base64
 import re
 import zipfile
 from urllib.parse import quote
@@ -15,6 +16,11 @@ for filename in ("core.js", "art.js", "game.js"):
     source = re.sub(r"^export ", "", source, flags=re.M)
     parts.append(source)
 js = "\n".join(parts)
+# Inline itch.io weapon sprites so the single file works offline.
+for png in sorted((public / "assets" / "weapons").glob("*.png")):
+    uri = "data:image/png;base64," + base64.b64encode(png.read_bytes()).decode()
+    js = js.replace(f"assets/weapons/{png.name}", uri)
+assert "assets/weapons/" not in js, "unresolved weapon sprite reference"
 html = html.replace('<link rel="stylesheet" href="style.css">', f"<style>\n{css}</style>")
 icon = quote((public / 'favicon.svg').read_text(), safe='')
 html = html.replace('<link rel="icon" href="favicon.svg" type="image/svg+xml">', f'<link rel="icon" href="data:image/svg+xml,{icon}" type="image/svg+xml">')

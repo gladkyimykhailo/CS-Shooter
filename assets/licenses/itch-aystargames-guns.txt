@@ -1,0 +1,11 @@
+Набір: Free 16x16 Pixel Art Guns & Weapons Pack
+Автор: AystarGames (https://aystargames.itch.io)
+Сторінка: https://aystargames.itch.io/16x16-micro-pixel-art-gun-pack
+Умови: CC0 (public domain) — зазначено автором на сторінці.
+Завантажено: 21.09.2026. Файл: 16x16_micro_pixel_art_gun_pack.png (108x108, RGBA).
+Використано 4 спрайти (16x16, дуло праворуч, без змін пікселів, лише обрізка полів):
+  pistol.png  <- пістолетний спрайт (P-12)
+  smg.png     <- спрайт ПП з магазином (VIPER)
+  rifle.png   <- спрайт автомата (RANGER)
+  shotgun.png <- спрайт дробовика з цівкою-помпою (HAMMER)
+Без генеративного ШІ (зазначено автором).
