@@ -104,7 +104,8 @@ const WEAPONS = {
   pistol: { name: 'P-12', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
   smg: { name: 'VIPER', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
   rifle: { name: 'RANGER', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2400, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
-  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' }
+  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
+  kalash: { name: 'KALASH', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2500, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' }
 };
 const specs = [
   { id:'depot', name:'ДЕПО', desc:'Сталь, бетон і короткі перестрілки.', tag:'ІНДУСТРІАЛЬНА ЗОНА', label:'БАЛАНС', wall:'#61746c', light:'#bcc1a0', sky:'#769391', floor:'#566257', accent:'#d7a05f', blocks:[[6,3,2,6,1],[12,2,2,4,1],[17,4,4,2,2],[3,11,4,2,2],[9,9,5,2,1],[12,14,2,6,1],[17,10,3,3,2],[4,17,4,3,2],[17,17,2,4,1],[9,5,1,2,3],[8,15,2,1,3]] },
@@ -189,7 +190,7 @@ function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   return cv;
 }
 function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
-const WEAPON_FILES = { pistol:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAATElEQVR4nGNgoCf4f4vhPwwTVIALg5RhGIKugBiMYQBMYmZaGhiTbADMEGIMwOkFYp2OEYjYNBMISMzQJ2gLPoBsAMmakcOALM2UAgB/E7syf4HG/wAAAABJRU5ErkJggg==', smg:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAALCAYAAACksgdhAAAAOUlEQVR4nGNgoAX4f4vhPwzjlUTHIGkMTciSuDCGbYQ0IGukrk3IfKL8hC0ASAo9rDbgA3htIAcAANEVmFAdRs2NAAAAAElFTkSuQmCC', rifle:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAWklEQVR4nGNgGCjw/xbDfxjGK0kMBmnBahhMEobR+bgwhmEwjTPT0sAYmQ3jo4vBxHEahOwidEOJchEIIxuEy3tYwgt7GGELVJwuIBRrWKIZMzxIBXi9QgsAAMjC4eJ5pMAwAAAAAElFTkSuQmCC', shotgun:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAR0lEQVR4nGNgoBX4f4vhP6kYp2aQELEYwyA0CcoNguGZaWkEMU6DiNFMkkG4XIXsdTQaf0yRHEa4kgGyYqKiH5dBRCumJgAAnQn7tQIgoSQAAAAASUVORK5CYII=' };
+const WEAPON_FILES = { pistol:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAATElEQVR4nGNgoCf4f4vhPwwTVIALg5RhGIKugBiMYQBMYmZaGhiTbADMEGIMwOkFYp2OEYjYNBMISMzQJ2gLPoBsAMmakcOALM2UAgB/E7syf4HG/wAAAABJRU5ErkJggg==', smg:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAALCAYAAACksgdhAAAAOUlEQVR4nGNgoAX4f4vhPwzjlUTHIGkMTciSuDCGbYQ0IGukrk3IfKL8hC0ASAo9rDbgA3htIAcAANEVmFAdRs2NAAAAAElFTkSuQmCC', rifle:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAWklEQVR4nGNgGCjw/xbDfxjGK0kMBmnBahhMEobR+bgwhmEwjTPT0sAYmQ3jo4vBxHEahOwidEOJchEIIxuEy3tYwgt7GGELVJwuIBRrWKIZMzxIBXi9QgsAAMjC4eJ5pMAwAAAAAElFTkSuQmCC', shotgun:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAR0lEQVR4nGNgoBX4f4vhP6kYp2aQELEYwyA0CcoNguGZaWkEMU6DiNFMkkG4XIXsdTQaf0yRHEa4kgGyYqKiH5dBRCumJgAAnQn7tQIgoSQAAAAASUVORK5CYII=', kalash:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAY0lEQVR4nGNgGNRAWUP7P6m4qqHkP4ohea6qYEErR1eceFWFG1bDUAzpijKGS/CLCON0AUgOHaMYArINxAfRMD4MK2tpojofGwAZhM5HxyCDiDIMHwC5DhwR1DAMBga3YehiAMi4dBfpjcEDAAAAAElFTkSuQmCC' };
 // Текстури зброї з itch.io (AystarGames, CC0). У середовищі без DOM (тести) повертає {}.
 function loadWeaponSprites(){
   const out={};
@@ -396,7 +397,7 @@ function sound(kind='shot',weapon='pistol'){
   if(kind==='shot'||kind==='step'||kind==='hit'){
     const dur=kind==='shot'?(weapon==='shotgun'?.24:.12):.055,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*dur),audio.sampleRate),d=buffer.getChannelData(0);
     for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
-    const n=audio.createBufferSource();n.buffer=buffer;const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=kind==='step'?400:kind==='hit'?1200:weapon==='shotgun'?1800:2800;n.connect(filter);filter.connect(g);g.gain.value=v*(kind==='shot'?.38:kind==='step'?.1:.12);n.start();
+    const n=audio.createBufferSource();n.buffer=buffer;const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=kind==='step'?400:kind==='hit'?1200:weapon==='shotgun'?1800:weapon==='kalash'?2200:2800;n.connect(filter);filter.connect(g);g.gain.value=v*(kind==='shot'?.38:kind==='step'?.1:.12);n.start();
   }else{const o=audio.createOscillator();o.type=kind==='empty'?'square':'sine';o.frequency.setValueAtTime(kind==='buy'?750:kind==='reload'?230:kind==='win'?660:180,t);o.frequency.exponentialRampToValueAtTime(kind==='buy'?1200:kind==='win'?990:90,t+.12);o.connect(g);g.gain.setValueAtTime(v*.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);o.start();o.stop(t+.2);}
 }
 
@@ -425,7 +426,7 @@ function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕР
 function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: три мапи, командні бої з ботами, магазин і кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
-function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0};}
+function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
 function start(){
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
   wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
@@ -438,7 +439,7 @@ function nextRound(){
   round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;jump=0;jumpVelocity=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
   actors.forEach((a,i)=>{const pos=a.team?map.red[i-3]:map.blue[i];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;
     if(a.hp<=0){a.primary=null;a.armor=0;a.weapon='pistol';a.inventory={pistol:{ammo:12,reserve:36}};}
-    a.hp=100;a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;
+    a.hp=100;a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
     for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
   });
@@ -474,7 +475,7 @@ function endMatch(){
 }
 function logKill(source,target){feed.unshift({source:source.name,target:target.name,t:6});feed=feed.slice(0,4);paintFeed();}
 function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${f.source}</b> &nbsp; ━ &nbsp; <em>${f.target}</em></div>`).join('');}
-function damage(target,n,source,head=false){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId});return;}if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
+function damage(target,n,source,head=false){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId,head});return;}if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
 function currentWeapon(){return WEAPONS[player.weapon];}
 function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
 function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
@@ -487,25 +488,27 @@ function shoot(){
     if(mpReloadT>0)return;
     if(mpMyAmmo()<=0){sound('empty');nextShot=.3;return;}
     nextShot=w.rate;recoil=1;sound('shot',player.weapon);
-    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1);
+    if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
+    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
       const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
-      damage(a,0,player,false);hitTime=.15;sound('hit');break;
+      damage(a,0,player,height>.8);hitTime=.15;sound('hit');break;
     }
     updateHUD();return;
   }
   const inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
   inv.ammo--;nextShot=w.rate;recoil=1;sound('shot',player.weapon);let anyHit=false;
+  if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
-    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1);const angle=player.angle+(Math.random()-.5)*spread;
+    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
       const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
-      const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?2:1),player,head);anyHit=true;break;
+      const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
   }
   if(anyHit){hitTime=.15;sound('hit');}updateHUD();
@@ -534,7 +537,7 @@ function updateBots(dt){
 }
 function update(dt){
   if(state!=='playing'||paused||phase==='finished')return;
-  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
+  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);if(player)player.spray=Math.max(0,(player.spray||0)-dt*1.8);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=5)||round>=12)endMatch();else nextRound();}return;}
   clock-=dt;updatePlayer(dt);
@@ -597,7 +600,7 @@ function render(){
   renderMinimap(view);
 }
 function drawGun(w,h){
-  const pistol=player.weapon==='pistol',shotgun=player.weapon==='shotgun',moving=player.moving&&settings.motion;
+  const pistol=player.weapon==='pistol',shotgun=player.weapon==='shotgun',kalash=player.weapon==='kalash',moving=player.moving&&settings.motion;
   const p=reloadProgress();
   const downHold=p<=0?0:p<.25?p/.25:p<.65?1:1-(p-.65)/.35;
   const dip=p>0?Math.sin(p*Math.PI):0;
@@ -614,12 +617,12 @@ function drawGun(w,h){
   ctx.save();ctx.translate(0,slideDy*.4);
   const sprite=weaponSprites[player.weapon],useSprite=weaponSpriteReady(sprite);
   if(useSprite){
-    const dims={pistol:[16,12,11],smg:[13,11,12],rifle:[18,11,11],shotgun:[18,11,11]};
+    const dims={pistol:[16,12,11],smg:[13,11,12],rifle:[18,11,11],shotgun:[18,11,11],kalash:[18,11,11]};
     const [sw,sh,k]=dims[player.weapon]||dims.pistol,dw=sw*k,dh=sh*k;
     ctx.imageSmoothingEnabled=false;ctx.drawImage(sprite,118-dw,-166-dh/2,dw,dh);ctx.imageSmoothingEnabled=true;
   }
   else if(pistol){poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);poly([[-23,-149],[-20,-198],[12,-218],[61,-170],[53,-105],[17,-94]],'#2c3937');poly([[-20,-198],[-8,-219],[15,-229],[54,-185],[61,-170],[7,-172]],'#6e7a6f');poly([[7,-172],[61,-170],[53,-145],[6,-145]],'#192625');ctx.fillStyle='#bddd75';ctx.fillRect(2,-219,6,5);ctx.fillStyle='#0d1918';ctx.fillRect(7,-227,9,7);}
-  else{poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);poly([[-50,-49],[-44,-159],[-12,-207],[69,-137],[98,-41],[42,0]],'#243432');poly([[-44,-159],[-12,-207],[17,-199],[89,-140],[69,-119]],'#778174');poly([[69,-119],[89,-140],[98,-41],[57,-49]],'#172625');poly([[-30,-171],[-47,-232],[-26,-250],[7,-181]],'#283b39');poly([[-47,-232],[-26,-250],[-20,-240],[-40,-222]],'#859080');ctx.fillStyle='#131f20';ctx.fillRect(-34,-244,7,11);ctx.fillStyle='#d3f088';ctx.fillRect(-34,-235,4,4);poly([[-31,-130],[24,-92],[38,-98],[-14,-140]],shotgun?'#997551':'#495d4b');for(let i=0;i<4;i++){ctx.fillStyle='#152423';ctx.fillRect(-21+i*10,-153+i*7,5,13);}poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);}
+  else{poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);poly([[-50,-49],[-44,-159],[-12,-207],[69,-137],[98,-41],[42,0]],'#243432');poly([[-44,-159],[-12,-207],[17,-199],[89,-140],[69,-119]],'#778174');poly([[69,-119],[89,-140],[98,-41],[57,-49]],'#172625');poly([[-30,-171],[-47,-232],[-26,-250],[7,-181]],'#283b39');poly([[-47,-232],[-26,-250],[-20,-240],[-40,-222]],'#859080');ctx.fillStyle='#131f20';ctx.fillRect(-34,-244,7,11);ctx.fillStyle='#d3f088';ctx.fillRect(-34,-235,4,4);poly([[-31,-130],[24,-92],[38,-98],[-14,-140]],kalash?'#8a5a33':shotgun?'#997551':'#495d4b');if(kalash){poly([[-26,-152],[-12,-154],[-2,-128],[6,-100],[-4,-94],[-14,-120],[-24,-142]],'#232a29');ctx.fillStyle='#8a5a33';ctx.fillRect(-34,-244,7,11);ctx.fillStyle='#23282b';ctx.fillRect(-60,-239,13,5);}else{for(let i=0;i<4;i++){ctx.fillStyle='#152423';ctx.fillRect(-21+i*10,-153+i*7,5,13);}}poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);}
   ctx.restore();
   // Магазин, що випадає (фаза 0.08–0.5), та рука з новим магазином (фаза 0.42–0.75).
   if(p>.06&&p<.52){const q=(p-.06)/.46;ctx.save();ctx.globalAlpha=1-q*.9;ctx.translate(pistol?30:-10,-120+q*190);ctx.rotate(.5+q*1.4);ctx.fillStyle='#1d2a28';ctx.fillRect(-9,-26,18,52);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-26,18,5);ctx.restore();}
@@ -646,8 +649,8 @@ addEventListener('keydown',e=>{
   if(modal||paused)return;keys.add(e.code);
   if(mpMode){
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
-    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');
-    if(e.code==='KeyB')toast('Магазина в мережі немає — усі 4 стволи доступні на 1–4');
+    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');
+    if(e.code==='KeyB')toast('Магазина в мережі немає — усі 5 стволів доступні на 1–5');
     if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
     if(e.code==='Tab'&&mpRoom)toast(`ВАРТА ${mpRoom.score[0]} : ${mpRoom.score[1]} РЕЙД · Фраги: ${kills} · Смерті: ${deaths}`);
     return;
@@ -838,7 +841,7 @@ function mpHandleEvents(events){
   updateHUD();
 }
 function mpUpdate(dt){
-  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);mpReloadT=Math.max(0,mpReloadT-dt);
+  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);mpReloadT=Math.max(0,mpReloadT-dt);player.spray=Math.max(0,(player.spray||0)-dt*1.8);
   feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   updatePlayer(dt);
   const me=mpMe();
