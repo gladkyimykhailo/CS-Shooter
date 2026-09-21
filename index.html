@@ -120,6 +120,55 @@ const MAPS = specs.map(s=>{
 const SKINS = [{name:'Ліс',color:'#657f67'},{name:'Ніч',color:'#546477'},{name:'Пісок',color:'#ab9970'}];
 const GLOVES = [{name:'Графіт',color:'#333b37'},{name:'Олива',color:'#60714b'},{name:'Койот',color:'#93724e'}];
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+// Viewmodel mass, spring response, recoil impulse and barrel reach (map units).
+const WEAPON_PHYSICS = {
+  pistol: { mass:.8, frequency:20, kick:1, reach:.55 },
+  smg: { mass:1.1, frequency:19, kick:.65, reach:.7 },
+  rifle: { mass:1.6, frequency:17, kick:1.1, reach:.95 },
+  shotgun: { mass:2, frequency:15, kick:2.1, reach:1.05 },
+  kalash: { mass:1.8, frequency:16, kick:1.4, reach:1 }
+};
+function createWeaponMotion(){
+  return Object.fromEntries(['x','y','roll','kick','aim','wall'].map(key=>[key,{value:0,velocity:0}]));
+}
+// Exact damped-spring solution for a constant target: stable across frame rates.
+function weaponSpring(axis,target,frequency,dt){
+  const damping=frequency*.72,omega=frequency*Math.sqrt(1-.72**2);
+  const offset=axis.value-target,b=(axis.velocity+damping*offset)/omega;
+  const decay=Math.exp(-damping*dt),cos=Math.cos(omega*dt),sin=Math.sin(omega*dt);
+  axis.value=target+decay*(offset*cos+b*sin);
+  axis.velocity=decay*((-damping*offset+omega*b)*cos+(-damping*b-omega*offset)*sin);
+}
+function kickWeaponMotion(motion,id,aiming=false){
+  const force=WEAPON_PHYSICS[id].kick*(aiming?.6:1);
+  motion.kick.velocity=Math.min(600,motion.kick.velocity+force*220);
+  motion.roll.velocity=Math.max(-3,motion.roll.velocity-force*.85);
+}
+function stepWeaponMotion(motion,id,input,dt){
+  if(!Number.isFinite(dt)||dt<=0)return;
+  const profile=WEAPON_PHYSICS[id],steady=input.aiming?.35:1;
+  const turn=clamp(input.turn||0,-6,6),look=clamp(input.look||0,-3,3);
+  const side=clamp(input.side||0,-1,1),forward=clamp(input.forward||0,-1,1);
+  const bob=input.moving?Math.sin(input.walk||0):0;
+  const targets={
+    x:(-turn*4*profile.mass-side*7+bob*5)*steady,
+    y:(look*13*profile.mass+forward*4+Math.abs(bob)*4-(input.lift||0)*10)*steady,
+    roll:(-turn*.012*profile.mass-side*.035)*steady,
+    kick:0,aim:input.aiming?1:0,wall:clamp(input.wall||0,0,1)
+  };
+  if(input.landing)motion.y.velocity+=Math.min(3,Math.abs(input.landing))*65*profile.mass;
+  for(const key of Object.keys(targets))weaponSpring(motion[key],targets[key],profile.frequency,dt);
+}
+function weaponWallProximity(map,x,y,angle,id){
+  const reach=WEAPON_PHYSICS[id].reach;
+  for(let distance=.1;distance<=reach;distance+=.05){
+    // A narrow barrel volume catches corners as well as walls directly ahead.
+    for(const side of [-.08,0,.08]){
+      if(blocked(map,x+Math.cos(angle)*distance-Math.sin(angle)*side,y+Math.sin(angle)*distance+Math.cos(angle)*side))return 1-distance/reach;
+    }
+  }
+  return 0;
+}
 function blocked(map,x,y){ return (map.grid[Math.floor(y)]?.[Math.floor(x)]??1)!==0; }
 function canStand(map,x,y,r=.21){return !blocked(map,x-r,y-r)&&!blocked(map,x+r,y-r)&&!blocked(map,x-r,y+r)&&!blocked(map,x+r,y+r);}
 function moveActor(map,a,dx,dy){if(canStand(map,a.x+dx,a.y))a.x+=dx;if(canStand(map,a.x,a.y+dy))a.y+=dy;}
@@ -199,6 +248,179 @@ function loadWeaponSprites(){
   return out;
 }
 function weaponSpriteReady(img){return !!img&&img.complete&&img.naturalWidth>0;}
+const WEAPON_MUZZLES={pistol:155,smg:215,rifle:290,shotgun:315,kalash:290};
+// Rear view down the barrel. The front sight's tip is exactly (0, 0),
+// matching the screen-centre ray used for hit detection.
+function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
+  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun';
+  const shape=(points,color)=>{poly(c,points,color);c.strokeStyle='#11191f';c.lineWidth=2;c.lineJoin='round';c.stroke();};
+  const line=(points,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();};
+  const body=pistol?40:id==='smg'?48:shotgun?54:ak?56:60,front=pistol?12:18,kick=flash>0?flash*6:0;
+  // Hands and sleeves stay below the sight picture.
+  shape([[-body,125],[-body-38,175],[-180,500],[-40,500],[6,210]],tint(skin,.8));
+  shape([[body-3,120],[body+43,157],[190,500],[50,500],[-7,210]],skin);
+  shape([[-body-4,101],[-body-27,139],[-body-16,196],[-12,211],[9,165],[-9,125]],glove);
+  shape([[body-8,112],[body+25,143],[body+17,206],[14,223],[-10,171],[10,133]],glove);
+  // Tapered top plane gives a view along the weapon rather than its side.
+  const fore=ak||shotgun?'#995d35':id==='rifle'?'#596451':'#3e4b54';
+  shape([[-front,25],[front,25],[body,187+kick],[-body,187+kick]],fore);
+  shape([[-front,25],[-body,187+kick],[-body,285],[-front-10,72]],'#263039');
+  shape([[front,25],[front+10,72],[body,285],[body,187+kick]],'#1d272f');
+  if(ak||shotgun){
+    for(let i=0;i<6;i++){const y=50+i*13,half=front+(body-front)*(y-25)/162;line([[-half+3,y],[half-3,y]],'#593d2c',3);}
+  }else if(!pistol){
+    for(let i=0;i<8;i++){const y=40+i*11,half=10+i*2;line([[-half,y],[half,y]],'#899396',3);}
+  }
+  shape([[-body+7,116+kick],[body-7,116+kick],[body+12,265],[-body-12,265]],'#47535c');
+  shape([[-body+14,124+kick],[body-14,124+kick],[body-1,244],[-body+1,244]],'#67747b');
+  line([[0,125+kick],[0,243]],'#8a989d');
+  if(pistol){
+    for(let i=0;i<5;i++){const y=161+i*15;line([[-body+10,y],[-body+18,y+8]],'#212d36',3);line([[body-10,y],[body-18,y+8]],'#212d36',3);}
+  }else{
+    shape([[body-1,149],[body+23,155],[body+24,168],[body+2,166]],'#8a989b');
+  }
+  // Rear sight is connected to the receiver and leaves the target visible.
+  shape([[-body+2,13],[-18,0],[-11,0],[-11,28],[11,28],[11,0],[18,0],[body-2,13],[body-2,38],[-body+2,38]],'#202b33');
+  shape([[-body+2,38],[-body+10,38],[-body+6,123],[-body-4,123]],'#303d46');
+  shape([[body-10,38],[body-2,38],[body+4,123],[body-6,123]],'#303d46');
+  line([[-body+2,14],[-19,2],[-12,2]],'#93a0a5',3);
+  line([[12,2],[19,2],[body-2,14]],'#93a0a5',3);
+  if(id==='rifle'||id==='smg'){
+    // Aperture sight: thin ring, never a filled disc over the target.
+    c.strokeStyle='#202b33';c.lineWidth=6;c.beginPath();c.arc(0,0,27,0,Math.PI*2);c.stroke();
+    c.strokeStyle='#8b999b';c.lineWidth=1.5;c.beginPath();c.arc(0,0,30,Math.PI,Math.PI*2);c.stroke();
+  }else{
+    c.fillStyle='#d1ddab';c.fillRect(-25,8,5,4);c.fillRect(20,8,5,4);
+  }
+  // Bright tip at the exact aim point; the post extends down, not over it.
+  shape([[-3,0],[3,0],[5,26],[-5,26]],'#18232b');
+  c.fillStyle='#d4ee9a';c.fillRect(-2,0,4,3);
+  if(flash>.55){
+    // Muzzle gas to either side preserves the centre of the sight picture.
+    for(const side of [-1,1])poly(c,[[side*34,15],[side*62,-8],[side*48,17],[side*76,25],[side*40,29]],'#ffd18a');
+  }
+}
+// Large, continuous silhouettes with visible upper faces and separate grips.
+// Coordinates run from the muzzle on the left to the stock on the right.
+function drawHeldWeapon(c,id,{skin,glove,ads=0,reload=0,flash=0}={}){
+  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun';
+  const metal='#39444c',edge='#82919a',dark='#1b232b',wood='#95572d';
+  const shape=(points,color)=>{
+    poly(c,points,color);c.strokeStyle='#101820';c.lineWidth=2;c.lineJoin='round';c.stroke();
+  };
+  const line=(points,color,width=2)=>{
+    c.strokeStyle=color;c.lineWidth=width;c.beginPath();
+    points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();
+  };
+  const solid=(points,color,depth=9)=>{
+    const top=points.map(([x,y])=>[x-depth*.65,y-depth]);
+    shape(top,tint(color,1.4));
+    for(let i=0;i<points.length;i++){
+      const j=(i+1)%points.length;
+      shape([points[i],points[j],top[j],top[i]],tint(color,points[j][0]>points[i][0]?1.35:.7));
+    }
+    shape(points,color);
+  };
+  const rect=(x,y,w,h,color,depth=7)=>solid([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],color,depth);
+  const hand=(x,y,angle=0)=>{
+    c.save();c.translate(x,y);c.rotate(angle);
+    solid([[-23,-15],[9,-22],[28,-9],[29,32],[12,47],[-19,37]],glove,5);
+    for(let i=0;i<3;i++)line([[-17,1+i*10],[17,5+i*10]],tint(glove,1.55),3);
+    shape([[-20,-13],[-8,-23],[7,-18],[14,9],[1,18],[-11,8]],tint(glove,1.3));
+    c.restore();
+  };
+  const angle=.48+ads*.85;
+  const sleeveEnd=(x,y)=>[x*Math.cos(angle)+y*Math.sin(angle),-x*Math.sin(angle)+y*Math.cos(angle)];
+  c.save();c.translate(0,-120);c.rotate(angle);
+  // Sleeves sit behind the gun, with hands wrapping the grip and fore-end.
+  solid([[55,88],[105,100],sleeveEnd(240,600),sleeveEnd(80,600),[68,157]],skin,10);
+  if(!pistol)solid([[-145,60],[-112,76],[-110,160],sleeveEnd(-300,600),sleeveEnd(-460,600),[-162,113]],tint(skin,.8),8);
+  if(pistol){
+    solid([[10,10],[63,12],[82,109],[31,119],[10,94]],dark,12);
+    rect(25,99,59,13,'#303941');
+    if(reload>.15&&reload<.58){
+      c.save();c.translate(43,105+(reload-.15)*320);c.rotate((reload-.15)*1.4);
+      c.globalAlpha=1-(reload-.15)*1.8;rect(-9,0,25,65,metal,6);c.restore();
+    }
+    for(let i=0;i<6;i++)line([[30+i*3,37+i*10],[58+i*3,34+i*10]],'#525c60',2);
+    // Open trigger guard, with a distinct curved trigger inside.
+    line([[-42,15],[-36,59],[12,63],[28,33]],dark,10);
+    line([[-13,18],[-18,36],[-7,44]],edge,4);
+    solid([[-149,-10],[65,-10],[64,20],[8,31],[-47,25],[-149,15]],'#424c52',11);
+    const slide=flash>.55?13:0;
+    c.save();c.translate(slide,0);
+    solid([[-155,-48],[49,-48],[65,-34],[63,-8],[-155,-8]],metal,13);
+    rect(-85,-45,36,12,'#131d24',2);
+    for(let i=0;i<6;i++)line([[20+i*6,-39],[15+i*6,-14]],edge,2);
+    rect(-143,-61,10,12,dark,3);rect(44,-61,13,12,dark,4);
+    c.restore();
+    hand(57,73,-.18);
+    line([[-145,-43],[-102,-43]],'#b1bec4',2);
+  }else{
+    // Stock and pistol grip: rifle/AK have full stocks; SMG has a folding stock.
+    if(id==='smg'){
+      line([[69,-13],[156,-10],[174,30]],'#7e8a90',10);
+      line([[71,14],[153,16],[174,50]],dark,9);rect(163,17,17,47,dark);
+    }else{
+      solid([[65,-21],[102,-20],[169,1],[180,63],[150,77],[78,25]],ak||shotgun?wood:'#414c46',13);
+      solid([[167,-1],[180,2],[191,66],[177,74]],dark,8);
+      if(ak||shotgun)line([[109,9],[151,23],[164,53]],'#c38a50',3);
+      else line([[108,6],[149,20],[156,46],[129,40]],'#8b988b',3);
+    }
+    solid([[23,18],[66,23],[84,95],[49,112],[22,91]],ak?'#70472e':dark,9);
+    line([[-22,27],[-15,63],[23,68],[40,38]],dark,9);
+    line([[3,27],[-1,43],[9,49]],edge,3);
+    // Magazines remain visibly separate from the firing hand.
+    if(!shotgun){
+      const removed=reload>.15&&reload<.58;
+      c.save();if(removed){c.translate(0,(reload-.15)*310);c.rotate((reload-.15)*.8);c.globalAlpha=1-(reload-.15)*1.8;}
+      if(ak){
+        solid([[-84,22],[-42,26],[-39,65],[-21,106],[7,128],[-18,149],[-53,126],[-72,92]],'#303941',10);
+        for(let i=0;i<3;i++)line([[-72+i*10,39],[-63+i*10,85],[-44+i*10,116],[-18+i*10,135]],'#6a7379',3);
+      }else{
+        const length=id==='smg'?107:82;
+        solid([[-69,20],[-32,24],[-23,length],[-63,length+7]],id==='rifle'?'#626958':dark,9);
+        for(let i=0;i<3;i++)line([[-60+i*10,39],[-55+i*10,length-9]],'#8a9181',2);
+        rect(-63,length-4,43,12,dark,4);
+      }
+      c.restore();
+    }
+    // Long barrel and (for the shotgun) the lower magazine tube.
+    const muzzle=WEAPON_MUZZLES[id];
+    rect(-muzzle,-30,muzzle-137,14,'#46525b',7);
+    rect(-muzzle,-34,23,23,dark,7);
+    line([[-muzzle+6,-31],[-muzzle+6,-16]],'#88969d',2);
+    if(shotgun)rect(-284,-8,177,12,dark,7);
+    if(ak)rect(-245,-48,107,9,dark,5);
+    // Front sight visibly breaks the barrel silhouette.
+    rect(-muzzle+43,-57,9,28,dark,4);
+    line([[-muzzle+39,-54],[-muzzle+49,-64],[-muzzle+58,-54]],edge,4);
+    const fore=ak||shotgun?wood:id==='rifle'?'#4d5e4e':'#353f48';
+    solid([[-203,-34],[-91,-34],[-81,16],[-188,16],[-206,3]],fore,12);
+    for(let i=0;i<(ak?3:7);i++)line([[-187+i*13,-23],[-182+i*13,8]],tint(fore,.52),4);
+    // Receiver, top cover, ejection port, charging handle and fasteners.
+    solid([[-104,-40],[64,-40],[81,-23],[72,22],[-95,22]],metal,14);
+    solid([[-91,-50],[48,-50],[63,-40],[-104,-40]],'#67747b',6);
+    rect(-40,-30,54,18,'#131c22',3);
+    line([[-33,-26],[7,-26]],'#a0a9a9',3);
+    rect(1,-15,29,6,'#839096',4);
+    for(const x of [-82,49]){c.fillStyle='#a4adae';c.beginPath();c.arc(x,7,3,0,Math.PI*2);c.fill();}
+    if(!ak&&!shotgun){
+      for(let i=0;i<12;i++)rect(-91+i*12,-60,7,7,dark,3);
+      // Compact rear sight, with daylight through its centre.
+      line([[24,-53],[24,-79],[51,-79],[51,-53]],dark,8);
+      line([[27,-76],[48,-76]],'#90a2a4',2);
+    }else rect(38,-64,14,12,dark,4);
+    hand(56,82,-.23);
+    hand(-151,35,.1);
+  }
+  if(flash>.55&&reload<=0){
+    c.save();c.translate(-WEAPON_MUZZLES[id]-9,pistol?-27:-24);
+    poly(c,[[-68,0],[-20,-8],[-36,-27],[-9,-15],[6,-29],[7,-7],[24,0],[7,9],[1,27],[-10,13],[-39,28],[-23,9]],'#ffbc51');
+    poly(c,[[-39,0],[-5,-8],[12,0],[-5,8]],'#fff5cb');c.restore();
+  }
+  c.restore();
+}
 function textures(map){
   let seed=97;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
   return [null,...[1,2,3].map(type=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');c.fillStyle=type===2?map.accent:map.wall;c.fillRect(0,0,64,64);
@@ -376,6 +598,7 @@ function snapshotRoom(room) {
 
 
 
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
 const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mpNick:'',mpServer:''};
@@ -388,6 +611,7 @@ let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloa
 let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false,mpSilentClose=false;
 let audio;
+let gunMotion=createWeaponMotion(),gunSample=null;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
 function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
@@ -442,7 +666,7 @@ function nextRound(){
     for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
   });
-  $('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
+  resetGunMotion();$('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
 }
 function beginFight(){closeDialog(false);paused=false;phase='fight';clock=120;keys.clear();shootHeld=false;touchFire=false;$('#game-message').textContent='ТРИМАЙ СЕКТОР';setTimeout(()=>{if(state==='playing'&&phase==='fight'&&player.hp>0)$('#game-message').textContent='';},1800);sound('win');updateHUD();}
 function inBuyZone(){return Math.hypot(player.x-map.blue[0][0],player.y-map.blue[0][1])<4;}
@@ -476,6 +700,32 @@ function logKill(source,target){feed.unshift({source:source.name,target:target.n
 function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${f.source}</b> &nbsp; ━ &nbsp; <em>${f.target}</em></div>`).join('');}
 function damage(target,n,source,head=false){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId,head});return;}if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
 function currentWeapon(){return WEAPONS[player.weapon];}
+function aimProgress(){return player?.hp>0?(settings.motion?clamp(gunMotion.aim.value,0,1):Number(aiming)):0;}
+function viewFov(){return .78-.28*aimProgress();}
+function resetGunMotion(){
+  gunMotion=createWeaponMotion();
+  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon}:null;
+}
+function updateGunMotion(dt){
+  if(!player||player.hp<=0||modal||!settings.motion){resetGunMotion();return;}
+  if(!gunSample)resetGunMotion();
+  const previous=gunSample;
+  if(previous.weapon!==player.weapon){resetGunMotion();gunMotion.y.value=65;}
+  if(dt>0){
+    const dx=(player.x-previous.x)/dt,dy=(player.y-previous.y)/dt;
+    const turn=Math.atan2(Math.sin(player.angle-previous.angle),Math.cos(player.angle-previous.angle))/dt;
+    stepWeaponMotion(gunMotion,player.weapon,{
+      turn,look:(pitch-previous.pitch)/dt,
+      side:(-dx*Math.sin(player.angle)+dy*Math.cos(player.angle))/3.3,
+      forward:(dx*Math.cos(player.angle)+dy*Math.sin(player.angle))/3.3,
+      moving:player.moving,walk,aiming,lift:jumpVelocity,
+      landing:previous.jump>0&&jump===0?previous.velocity:0,
+      wall:weaponWallProximity(map,player.x,player.y,player.angle,player.weapon)
+    },dt);
+  }
+  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon};
+}
+function kickGun(){if(settings.motion)kickWeaponMotion(gunMotion,player.weapon,aiming);}
 function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
 function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
@@ -486,26 +736,26 @@ function shoot(){
   if(mpMode){
     if(mpReloadT>0)return;
     if(mpMyAmmo()<=0){sound('empty');nextShot=.3;return;}
-    nextShot=w.rate;recoil=1;sound('shot',player.weapon);
+    nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);
     if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
       damage(a,0,player,height>.8);hitTime=.15;sound('hit');break;
     }
     updateHUD();return;
   }
   const inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
-  inv.ammo--;nextShot=w.rate;recoil=1;sound('shot',player.weapon);let anyHit=false;
+  inv.ammo--;nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);let anyHit=false;
   if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
       const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
@@ -518,7 +768,8 @@ function updatePlayer(dt){
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
-  moveActor(map,player,dx,dy);player.moving=Math.hypot(dx,dy)>.001;
+  const oldX=player.x,oldY=player.y;
+  moveActor(map,player,dx,dy);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
   if(player.moving){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(jump>0||jumpVelocity>0){jumpVelocity-=dt*4;jump=Math.max(0,jump+jumpVelocity*dt);if(jump===0)jumpVelocity=0;}
@@ -539,7 +790,7 @@ function update(dt){
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);if(player)player.spray=Math.max(0,(player.spray||0)-dt*1.8);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=5)||round>=12)endMatch();else nextRound();}return;}
-  clock-=dt;updatePlayer(dt);
+  clock-=dt;updatePlayer(dt);updateGunMotion(dt);
   if(phase==='buy'){if(clock<=0)beginFight();return;}
   if(reload>0){reload-=dt;const p=reloadProgress();if(reloadStage===0&&p>=.38){reloadStage=1;sound('reload');}else if(reloadStage===1&&p>=.72){reloadStage=2;sound('reload');}if(reload<=0){reload=0;reloadTotal=0;reloadStage=0;const inv=player.inventory[player.weapon],take=Math.min(currentWeapon().size-inv.ammo,inv.reserve);inv.ammo+=take;inv.reserve-=take;sound('reload');updateHUD();}}
   if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
@@ -560,19 +811,19 @@ function updateHUD(){
     $('#map-name').textContent=map.name;
     const blues=mpRoom?mpRoom.players.filter(p=>p.team===0).length:0,reds=mpRoom?mpRoom.players.filter(p=>p.team===1).length:0;
     $('#phase-label').textContent=`${blues} ВАРТА / ${reds} РЕЙД`;
-    $('#buy-tip').hidden=true;$('#crosshair').hidden=!me||!me.alive;
+    $('#buy-tip').hidden=true;$('#crosshair').hidden=!me||!me.alive||aimProgress()>.65;
     $('#crosshair').style.opacity=reloading?'.25':'1';
     $('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);
     return;
   }
-  const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+  const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
 function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);}
 addEventListener('resize',resize);
 function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>a.team===0&&a.hp>0)||player;}
 function render(){
   if(state!=='playing')return;
-  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=aiming&&player.hp>0?.5:.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
@@ -599,7 +850,7 @@ function render(){
   renderMinimap(view);
 }
 function drawGun(w,h){
-  const pistol=player.weapon==='pistol',shotgun=player.weapon==='shotgun',kalash=player.weapon==='kalash',moving=player.moving&&settings.motion;
+  const pistol=player.weapon==='pistol';
   const p=reloadProgress();
   const downHold=p<=0?0:p<.25?p/.25:p<.65?1:1-(p-.65)/.35;
   const dip=p>0?Math.sin(p*Math.PI):0;
@@ -608,79 +859,26 @@ function drawGun(w,h){
   const dropY=downHold*105+dip*18-cockJerk*22;
   const tilt=downHold*.5-cockJerk*.09;
   ctx.save();const scale=Math.min(w/900,h/560);
-  ctx.translate(w*(aiming?.51:.63)+(moving?Math.sin(walk)*7:0)+sway*scale,h+(moving?Math.abs(Math.cos(walk))*5:0)+(settings.motion?recoil*17:0)+dropY*scale);ctx.scale(scale,scale);ctx.rotate(-tilt*.55);
-  const poly=(pts,c)=>{ctx.fillStyle=c;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();};const glove=GLOVES[settings.glove].color,skin=SKINS[settings.skin].color;
-  poly([[-105,0],[-88,-85],[-34,-141],[20,-112],[52,0]],tint(skin,.8));
-  if(!pistol){ctx.save();ctx.translate(38,-28);poly([[-87,-80],[-72,-123],[-20,-155],[19,-118],[-16,-69]],glove);ctx.restore();}
-  // Зсув затвора/затворної рами під час фази досилання (p 0.72–0.92): зброя смикається вгору.
-  const slideDy=-cockJerk*16;
-  ctx.save();ctx.translate(0,slideDy*.4);
-  // Об'ємні грані як у low-poly рендері: світлий верх, темний низ, блік і контур.
-  const box=(x,y,w2,h2,base,top,outline='#0d1514')=>{
-    const g=ctx.createLinearGradient(0,y-h2,0,y);
-    g.addColorStop(0,top);g.addColorStop(.45,base);g.addColorStop(1,tint(base,.5));
-    ctx.fillStyle=g;ctx.fillRect(x,y-h2,w2,h2);
-    ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillRect(x,y-h2,w2,2);
-    ctx.strokeStyle=outline;ctx.lineWidth=2;ctx.strokeRect(x+.5,y-h2+.5,Math.max(1,w2-1),Math.max(1,h2-1));
-  };
-  const rail=(x,top,n)=>{for(let i=0;i<n;i++){ctx.fillStyle='#0d1514';ctx.fillRect(x+i*9,top-5,4,5);}};
-  if(pistol){
-    poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);
-    poly([[-15,-95],[-28,-150],[-6,-192],[24,-182],[30,-112]],'#222b2a');
-    ctx.strokeStyle='#0d1514';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(6,-168);ctx.lineTo(6,-146);ctx.lineTo(32,-146);ctx.stroke();
-    box(0,-192,58,26,'#2c3937','#7d8a7c');
-    box(-10,-192,10,26,'#1a2221','#3d4a48');
-    for(let i=0;i<3;i++){ctx.fillStyle='#0d1514';ctx.fillRect(4+i*6,-190,2,20);}
-    ctx.fillStyle='#0d1514';ctx.fillRect(48,-204,6,12);ctx.fillStyle='#bddd75';ctx.fillRect(49,-204,4,3);
-  }
-  else{
-    poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);
-    if(player.weapon==='smg'){
-      poly([[-72,-138],[-38,-152],[-38,-106],[-72,-96]],'#1c2827');
-      box(-35,-186,72,34,'#243432','#7d8a7c');
-      rail(-30,-220,7);
-      box(37,-180,46,18,'#1c2827','#43514d');
-      ctx.fillStyle='#0d1514';ctx.fillRect(78,-184,5,10);
-      ctx.save();ctx.translate(-8,-152);ctx.rotate(.12);box(-7,0,14,58,'#1f2827','#4b5854');ctx.restore();
-    }else if(player.weapon==='rifle'){
-      poly([[-78,-142],[-42,-154],[-42,-106],[-78,-96]],'#232d2c');
-      ctx.fillStyle='#101817';ctx.fillRect(-78,-142,10,44);
-      box(-42,-192,92,40,'#243432','#7d8a7c');
-      rail(-36,-232,9);
-      box(-28,-172,56,20,'#3a4a3f','#66795c');
-      box(50,-180,56,12,'#1c2827','#43514d');
-      ctx.fillStyle='#0d1514';ctx.fillRect(97,-198,6,18);ctx.fillStyle='#bddd75';ctx.fillRect(98,-198,4,3);
-      ctx.save();ctx.translate(-4,-152);ctx.rotate(.22);box(-8,0,16,52,'#1f2827','#4b5854');ctx.restore();
-      ctx.fillStyle='#0d1514';ctx.beginPath();ctx.arc(-30,-172,3,0,7);ctx.fill();ctx.beginPath();ctx.arc(40,-172,3,0,7);ctx.fill();
-    }else if(player.weapon==='shotgun'){
-      poly([[-80,-140],[-44,-152],[-44,-106],[-80,-94]],'#5a4327');
-      ctx.fillStyle='#101817';ctx.fillRect(-80,-140,10,46);
-      box(-46,-190,78,36,'#2b3231','#6e7a6f');
-      box(32,-182,76,20,'#23282b','#4a5451');
-      ctx.fillStyle='#0d1514';ctx.beginPath();ctx.arc(106,-172,3,0,7);ctx.fill();
-      box(-28,-170,52,26,'#7a5a36','#b08a52');
-      for(let i=0;i<3;i++){ctx.fillStyle='#0d1514';ctx.fillRect(-22+i*15,-168,3,22);}
-    }else{
-      poly([[-80,-140],[-44,-152],[-44,-106],[-80,-94]],'#6e4525');
-      ctx.fillStyle='#101817';ctx.fillRect(-80,-140,10,46);
-      box(-46,-194,88,36,'#2b3231','#6e7a6f');
-      box(-10,-194,52,10,'#1a2221','#3d4a48');
-      box(-36,-174,56,22,'#8a5a33','#c08a4e');
-      ctx.fillStyle='#0d1514';ctx.fillRect(-36,-160,56,3);
-      ctx.save();ctx.translate(-14,-152);ctx.rotate(.3);box(-9,0,18,26,'#232a29','#454f4c');ctx.restore();
-      ctx.save();ctx.translate(-5,-128);ctx.rotate(.52);box(-9,0,18,22,'#232a29','#454f4c');ctx.restore();
-      box(42,-182,58,10,'#23282b','#4a5451');
-      box(94,-185,14,14,'#1a2221','#3d4a48');
-      ctx.fillStyle='#0d1514';ctx.fillRect(86,-198,5,16);
-      box(-52,-196,10,10,'#1a2221','#3d4a48');
-    }
-    poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);
-  }
+  const physical=settings.motion,ads=aimProgress();
+  const wall=physical?clamp(gunMotion.wall.value,0,1):0;
+  const gx=physical?gunMotion.x.value:0,gy=physical?gunMotion.y.value+gunMotion.kick.value:0;
+  const angle=.48+ads*.85,muzzle=WEAPON_MUZZLES[player.weapon];
+  const aimX=w*.5+(muzzle*Math.cos(angle)-24*Math.sin(angle))*scale;
+  const aimY=h*.5+(120+muzzle*Math.sin(angle)+24*Math.cos(angle))*scale;
+  const originX=w*(pistol?.64:.78)*(1-ads)+aimX*ads;
+  const originY=h*(1-ads)+aimY*ads;
+  ctx.translate(originX+(sway+gx-wall*25)*scale,originY+(dropY+gy+wall*90)*scale);
+  ctx.scale(scale*(1-wall*.12),scale*(1-wall*.12));ctx.rotate(-tilt*.55+(physical?gunMotion.roll.value:0)-wall*.28);
+  ctx.globalAlpha=1-ads;
+  drawHeldWeapon(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,ads,reload:p,flash:recoil});
   ctx.restore();
-  // Магазин, що випадає (фаза 0.08–0.5), та рука з новим магазином (фаза 0.42–0.75).
-  if(p>.06&&p<.52){const q=(p-.06)/.46;ctx.save();ctx.globalAlpha=1-q*.9;ctx.translate(pistol?30:-10,-120+q*190);ctx.rotate(.5+q*1.4);ctx.fillStyle='#1d2a28';ctx.fillRect(-9,-26,18,52);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-26,18,5);ctx.restore();}
-  if(p>.4&&p<.78){const q=p<.6?(p-.4)/.2:1-(p-.6)/.18;ctx.save();ctx.globalAlpha=.95;ctx.translate(pistol?8:-24,-60+q*46);ctx.rotate(.12);ctx.fillStyle=glove;ctx.fillRect(-16,-18,32,36);ctx.fillStyle='#222f2d';ctx.fillRect(-9,-52,18,40);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-52,18,4);ctx.restore();}
-  if(recoil>.55&&reload<=0){ctx.save();const fp={pistol:[62,-205],smg:[86,-171],rifle:[109,-174],shotgun:[111,-172],kalash:[111,-177]}[player.weapon]||[60,-210];ctx.translate(fp[0],fp[1]);poly([[0,-35],[7,-11],[29,-19],[12,1],[24,18],[2,10],[-20,23],[-12,0],[-30,-14],[-6,-10]],'#ffd887');ctx.fillStyle='#fff9df';ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.fill();ctx.restore();}ctx.restore();
+  if(ads>0){
+    ctx.save();ctx.globalAlpha=ads;
+    ctx.translate(w*.5+(1-ads)*w*.18,h*.5+(1-ads)*h*.25);
+    ctx.scale(scale,scale);
+    drawWeaponSights(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,flash:recoil});
+    ctx.restore();
+  }
   // Шкала прогресу перезаряджання під прицілом.
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
@@ -712,7 +910,7 @@ addEventListener('keydown',e=>{
   if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
-canvas.addEventListener('mousedown',e=>{if(state!=='playing'||paused||modal)return;initAudio();if(!document.pointerLockElement){dragging=true;lock();}if(e.button===0){shootHeld=true;shoot();}if(e.button===2)aiming=true;});
+canvas.addEventListener('mousedown',e=>{if(state!=='playing'||paused||modal)return;initAudio();if(!document.pointerLockElement){dragging=true;lock();}if(e.button===0){shootHeld=true;shoot();}if(e.button===2&&player.hp>0&&reload<=0&&mpReloadT<=0)aiming=true;});
 addEventListener('mouseup',e=>{dragging=false;if(e.button===0)shootHeld=false;if(e.button===2)aiming=false;});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('mousemove',e=>{if(state!=='playing'||paused||modal||player.hp<=0)return;if(document.pointerLockElement===canvas||dragging){player.angle+=e.movementX*.0026*settings.sensitivity*(aiming?.6:1);pitch=clamp(pitch-e.movementY*.0019*settings.sensitivity,-.45,.45);}});
@@ -848,6 +1046,7 @@ function mpStartMatch(room){
   actors=[player,...mpRemotes.values()];
   state='playing';phase='mp';paused=false;modal='';mpMode=true;
   pitch=0;aiming=false;shootHeld=false;touchFire=false;nextShot=0;reload=0;reloadTotal=0;reloadStage=0;recoil=0;hitTime=0;hurtTime=0;keys.clear();
+  jump=0;jumpVelocity=0;resetGunMotion();
   $('#overlay').hidden=true;$('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;
   $('#touch-controls').hidden=!touchDevice;
   resize();updateHUD();lock();
@@ -861,7 +1060,7 @@ function mpApplySnapshot(snap){
     const wasAlive=player.hp>0;
     player.hp=me.hp;player.armor=me.armor||0;
     if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
-    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;$('#game-message').textContent='';}
+    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;jump=0;jumpVelocity=0;resetGunMotion();$('#game-message').textContent='';}
     if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
   }
   const seen=new Set();
@@ -883,7 +1082,7 @@ function mpHandleEvents(events){
       feed.unshift({source:e.sourceNick,target:e.targetNick,t:6});feed=feed.slice(0,4);paintFeed();sound('hit');
       if(e.source===mpMyId)kills++;if(e.target===mpMyId)deaths++;
     }else if(e.t==='reload'){
-      if(e.id===mpMyId)mpReloadT=(WEAPONS[player.weapon]||WEAPONS.pistol).reload;
+      if(e.id===mpMyId){mpReloadT=(WEAPONS[player.weapon]||WEAPONS.pistol).reload;aiming=false;}
     }else if(e.t==='chat'){
       mpChat.push(e);mpChat=mpChat.slice(-30);mpRenderChat();
     }else if(e.t==='finish'){
@@ -895,7 +1094,7 @@ function mpHandleEvents(events){
 function mpUpdate(dt){
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);mpReloadT=Math.max(0,mpReloadT-dt);player.spray=Math.max(0,(player.spray||0)-dt*1.8);
   feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
-  updatePlayer(dt);
+  updatePlayer(dt);updateGunMotion(dt);
   const me=mpMe();
   if(me&&me.alive&&player.hp>0&&mpClient){
     mpSendTimer-=dt;
@@ -932,7 +1131,7 @@ function mpShowLobby(){
 }
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
 
 // Клієнт мультиплеєра: з'єднання, лобі, кімнати. Без прямого доступу до DOM гри:
 // вся інтеграція — через handlers, які передає game.js.
