@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#101615">
+  <meta name="description" content="СЕКТОР — браузерний шутер. Три мапи, бої з ботами, зброя та свій стиль. Грай одразу.">
+  <title>СЕКТОР / Тактичний шутер</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23c3f66b%22%2F%3E%3Cpath%20d%3D%22M45%2016H24l-9%2016h24l-5%208H17v8h22l10-24H27l3-2h15z%22%20fill%3D%22%23121b17%22%2F%3E%3C%2Fsvg%3E%0A" type="image/svg+xml">
+  <style>
+:root{--bg:#101615;--panel:#19211f;--line:#303b34;--muted:#929e94;--text:#eef1e8;--lime:#c3f66b;--orange:#e49a62;--mono:'Courier New',monospace}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:5px}button{color:inherit;border:0}button:disabled{opacity:.38;cursor:not-allowed}[hidden]{display:none!important}.lobby{max-width:1480px;margin:auto;padding:0 60px;background:radial-gradient(ellipse at 75% 20%,#28332633,transparent 50%)}.header{height:102px;display:flex;align-items:center;border-bottom:1px solid var(--line);gap:64px}.brand{display:flex;align-items:center;gap:13px;color:var(--text);text-decoration:none;font-weight:900;font-size:25px;letter-spacing:3px}.brand-icon{background:var(--lime);color:var(--bg);font-size:29px;font-style:italic;letter-spacing:-5px;width:34px;height:34px;line-height:34px;padding-left:6px;transform:skew(-8deg)}.brand-slash{color:var(--lime)}nav{display:flex;gap:30px;height:100%;align-items:center}.nav{height:100%;background:transparent;color:var(--muted);font-size:11px;letter-spacing:1.6px;position:relative;font-weight:700}.nav.active{color:var(--text)}.nav.active:after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--lime)}.status{margin-left:auto;white-space:nowrap;font:10px var(--mono);color:var(--muted);letter-spacing:1px}.status i,.hero-meta i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--lime);margin-right:7px}.hero{display:grid;grid-template-columns:1fr 1.08fr;min-height:458px;align-items:center;padding:36px 0 28px;gap:28px}.eyebrow{font:10px var(--mono);letter-spacing:1.6px;color:var(--muted);display:flex;align-items:center;gap:12px}.tiny-cross{color:var(--lime);font-size:22px}.version{border:1px solid var(--line);padding:3px 6px;font-size:9px;letter-spacing:0}.hero h1{font-size:clamp(36px,4vw,60px);line-height:1.08;letter-spacing:-2px;font-weight:900;margin:21px 0 20px}.hero h1>span{color:var(--lime)}.hero p{color:#a2aca2;font-size:13px;line-height:1.85;margin:0 0 26px}.primary{background:var(--lime);color:#172115;padding:19px 26px;display:inline-flex;align-items:center;justify-content:space-between;gap:55px;font-weight:800;font-size:12px;letter-spacing:1.2px;transition:background .2s,transform .2s;min-height:52px}.primary:hover{background:#d6ff97;transform:translateY(-2px)}.primary span{font-size:22px;line-height:16px}.hero-meta{display:flex;gap:18px;margin-top:20px;font:9px var(--mono);letter-spacing:.4px;color:var(--muted)}.hero-art{position:relative;height:375px;overflow:hidden;background:#27332e;border:1px solid #39483c;clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px))}.hero-art canvas{width:100%;height:100%;object-fit:cover}.hero-art:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0c171bdd,transparent 45%);pointer-events:none}.art-coordinates{position:absolute;top:20px;left:22px;font:9px/1.7 var(--mono);letter-spacing:1px;color:#d1e2c3;z-index:1}.art-label{position:absolute;left:22px;right:22px;bottom:23px;z-index:1;display:flex;align-items:center;gap:10px;font:9px var(--mono);letter-spacing:1px}.art-label b{margin-left:auto;color:var(--lime)}.pulse-dot{display:inline-block;background:var(--lime);width:6px;height:6px;box-shadow:0 0 12px #b3f568}.art-cross{position:absolute;top:16px;right:22px;font:24px var(--mono);color:var(--lime)}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:24px 0 23px}.section-heading h2{font-size:23px;letter-spacing:-.3px;margin:10px 0 0;font-weight:800;display:flex;gap:13px;align-items:center}.section-heading h2 span{font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:4px 6px}.section-note{font:9px var(--mono);letter-spacing:1px;color:#7e8c80;margin-bottom:5px}.map-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.map-card{padding:0;text-align:left;background:var(--panel);border:1px solid var(--line);position:relative;transition:border-color .2s,transform .2s;overflow:hidden}.map-card:hover{transform:translateY(-3px);border-color:#738763}.map-card.selected{border-color:var(--lime)}.map-image{height:148px;position:relative;overflow:hidden}.map-image canvas{width:100%;height:100%;object-fit:cover;transition:transform .5s}.map-card:hover canvas{transform:scale(1.04)}.map-image:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14201977,transparent 60%)}.map-number{position:absolute;left:14px;top:13px;font:9px var(--mono);z-index:1;background:#15201baa;padding:5px 7px;color:#e0e6d5}.map-check{position:absolute;right:13px;top:13px;border:1px solid #cbd5bc77;width:21px;height:21px;display:grid;place-items:center;font-size:12px;z-index:1}.selected .map-check{background:var(--lime);color:#142016;border-color:var(--lime)}.map-detail{padding:17px 18px}.map-detail h3{margin:0 0 8px;font-size:18px;letter-spacing:.2px}.map-detail p{font-size:11px;color:var(--muted);margin:0 0 15px}.map-tags{border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;font:9px var(--mono);color:#adbaa9;letter-spacing:1px}.map-tags span:last-child{color:var(--lime)}.launch-bar{display:flex;align-items:center;gap:17px;padding:21px 22px;background:#1b241f;border:1px solid var(--line);margin-top:24px}.mode-badge{font-size:27px;color:var(--lime);width:43px;height:43px;border:1px solid #43523b;display:grid;place-items:center}.mode-info{display:flex;flex-direction:column;gap:8px}.mode-info b{font-size:11px;letter-spacing:1px}.mode-info>span{font-size:11px;color:var(--muted)}.difficulty-label{margin-left:auto;display:flex;flex-direction:column;gap:6px;font:8px var(--mono);letter-spacing:1px;color:var(--muted)}select{background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 28px 9px 11px;font-size:12px;border-radius:0}.launch-bar .primary{padding:16px 23px;gap:30px}.bottom-info{display:flex;align-items:center;justify-content:space-between;padding:20px 0 26px;color:var(--muted);font-size:10px}.bottom-info>span{display:flex;align-items:center;gap:10px}kbd{font:9px var(--mono);border:1px solid #53604b;min-width:21px;padding:4px 5px;color:#bec7b6;text-align:center;display:inline-block}.text-button{background:none;color:var(--muted);font:9px var(--mono);letter-spacing:1px;padding:6px 0}.text-button:hover{color:var(--lime)}footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:22px 0 28px;font:9px var(--mono);letter-spacing:1px;color:#778574}.tab:not(#tab-play){min-height:76vh;padding-top:22px}.operator-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:950px;margin:40px auto}.operator-preview{background:radial-gradient(#384735,#18221e);border:1px solid var(--line);position:relative;height:460px;text-align:center}.operator-preview canvas{height:90%;max-width:100%;object-fit:contain}.operator-preview>span{display:block;font:11px var(--mono);color:var(--lime);letter-spacing:2px}.operator-options{padding-top:25px}.operator-options h3{font-size:22px}.operator-options p,.settings-panel p{color:var(--muted);font-size:13px;line-height:1.8}.operator-options label{display:block;font:11px var(--mono);letter-spacing:1px;margin:30px 0 13px}.option-row{display:flex;gap:10px;flex-wrap:wrap}.option{padding:12px 13px;border:1px solid var(--line);background:var(--panel);font-size:11px;display:flex;align-items:center;gap:9px}.option i{width:14px;height:14px;display:block}.option.selected{border-color:var(--lime);color:var(--lime)}.saved-note{color:var(--muted);font-size:11px;margin:24px 0}.settings-panel{max-width:620px;margin:40px auto;background:var(--panel);padding:32px;border:1px solid var(--line)}.settings-panel>label{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:13px;gap:20px}input[type=range]{accent-color:var(--lime);width:180px}input[type=checkbox]{accent-color:var(--lime);width:18px;height:18px}.secondary{background:#273229;border:1px solid #4b5b45;color:var(--text);padding:15px 22px;font-size:11px;letter-spacing:1px}.secondary:hover{background:#3a4933}.overlay{position:fixed;inset:0;z-index:30;background:#07110bd9;backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:center;padding:25px;overflow:auto}.dialog{background:#18221d;border:1px solid #4d6043;width:min(820px,100%);padding:32px;box-shadow:0 25px 100px #0007;max-height:94dvh;overflow:auto}.dialog h2{font-size:28px;margin:12px 0 16px;letter-spacing:-.5px}.dialog p{font-size:13px;line-height:1.8;color:#acbaa4}.dialog-header{display:flex;justify-content:space-between;align-items:center}.dialog-close{background:transparent;font-size:26px;color:#c3ccb9;padding:0 5px}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.control-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.control-list div{display:flex;align-items:center;gap:15px;font-size:12px;color:#b7c4af}.credits-list{line-height:2;font-size:12px;color:var(--muted);padding-left:20px}.credits-list a{color:var(--lime)}.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.shop-item{border:1px solid #3a4c37;background:#202d23;padding:17px}.shop-item h3{font-size:16px;margin:8px 0}.shop-item .gun-icon{font-size:30px;color:#a8b59a;letter-spacing:-4px;line-height:25px;font-family:var(--mono)}.shop-item p{font-size:11px;margin:10px 0}.shop-item button{width:100%;padding:11px;background:var(--lime);color:#172115;font-weight:bold;font-size:11px;display:flex;justify-content:space-between}.shop-item small{color:var(--muted);font:9px var(--mono)}.shop-balance{font:18px var(--mono);color:var(--lime)}.shop-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}.shop-foot p{font-size:10px}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--lime);color:#12200e;padding:14px 23px;font-size:12px;font-weight:bold;z-index:50;max-width:90vw;text-align:center}#game{position:fixed;inset:0;width:100%;height:100%;object-fit:fill;background:#162321;image-rendering:auto}#hud{position:fixed;inset:0;pointer-events:none;z-index:10;font-family:var(--mono);user-select:none}.hud-top{display:flex;justify-content:space-between;align-items:flex-start;padding:25px 30px}.hud-map{display:flex;flex-direction:column;gap:7px;font-size:13px;letter-spacing:2px;text-shadow:0 1px 6px #000}.hud-map small{font-size:9px;color:#bdd096}.score{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:22px;background:#101c18cf;border:1px solid #899d6655;padding:10px 24px}.score>b{font-size:32px;color:var(--lime)}.score>b:last-child{color:var(--orange)}.score>div{display:flex;flex-direction:column;align-items:center;gap:4px}.score small{font-size:8px;letter-spacing:1px;color:#a5b696}.score strong{font-size:21px;font-weight:400}.hud-button{background:#13221dd9;border:1px solid #6d805755;font-size:16px;width:38px;height:36px;pointer-events:auto}#minimap{position:absolute;top:89px;left:28px;width:140px;height:140px;background:#091612cf;border:1px solid #788d4f66}.kill-feed{position:absolute;top:93px;right:30px;text-align:right;font:10px/1.8 var(--mono)}.kill-feed>div{background:#172219c9;margin-bottom:4px;padding:5px 10px}.kill-feed b{color:var(--lime)}.kill-feed em{color:var(--orange);font-style:normal}#crosshair{position:absolute;top:50%;left:50%;width:4px;height:4px;background:#e6ffbf;box-shadow:0 0 2px #000;transform:translate(-50%,-50%)}#crosshair i{position:absolute;background:#e6ffbf;box-shadow:0 0 2px #000}#crosshair i:nth-child(1){width:2px;height:7px;left:1px;top:-11px}#crosshair i:nth-child(2){width:2px;height:7px;left:1px;top:8px}#crosshair i:nth-child(3){width:7px;height:2px;left:-11px;top:1px}#crosshair i:nth-child(4){width:7px;height:2px;left:8px;top:1px}#hit-marker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:38px;color:#fff;opacity:0}#hurt{position:absolute;inset:0;box-shadow:inset 0 0 130px 45px #db5428;opacity:0;pointer-events:none}.game-message{position:absolute;left:50%;top:29%;transform:translateX(-50%);text-align:center;font:700 20px Arial,sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #000;white-space:nowrap}.buy-tip{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:11px;letter-spacing:1px;padding:10px 14px;background:#142418e8;color:var(--lime);white-space:nowrap}.buy-tip span{color:#bcc6ab;font-size:9px}.hud-bottom{position:absolute;bottom:25px;left:30px;right:30px;display:flex;align-items:flex-end;justify-content:space-between;filter:drop-shadow(0 2px 4px #000)}.vitals{display:flex;align-items:center;gap:15px}.health-icon{color:var(--lime);font-size:33px}.vitals>strong{font-size:38px;font-weight:400}.vitals>div{border-left:1px solid #9aa47b88;margin-left:4px;padding-left:16px;display:flex;flex-direction:column;gap:4px}.vitals small{font-size:8px;color:#b8c39e}.vitals b{font-size:19px;font-weight:400}.weapon-info{text-align:right}.weapon-info>small{font-size:10px;letter-spacing:2px}.weapon-info>div{margin:5px 0}.weapon-info strong{font-size:40px;font-weight:400}.weapon-info span{font-size:17px;color:#c4cfb7;margin-left:8px}.weapon-info> b{color:var(--lime);font-size:14px;font-weight:400}.hud-help{font-size:8px;color:#c0caaf;display:flex;align-items:center;gap:8px;padding-bottom:4px}.result-score{display:flex;gap:25px;align-items:center;justify-content:center;font:60px var(--mono);margin:28px 0}.result-score span:first-child{color:var(--lime)}.result-score span:last-child{color:var(--orange)}.result-stats{display:flex;justify-content:center;gap:35px;color:var(--muted);font:11px var(--mono)}#touch-controls{pointer-events:none}#joystick{position:absolute;bottom:140px;left:30px;width:100px;height:100px;border:2px solid #dcf4a455;border-radius:50%;pointer-events:auto;touch-action:none;background:#09161033}#joystick span{position:absolute;left:27px;top:27px;width:42px;height:42px;border-radius:50%;background:#d2ee9c66}#touch-fire,#touch-reload,#touch-shop{position:absolute;right:35px;bottom:143px;background:#bcdf7644;border:2px solid #e5ffc077;border-radius:50%;width:70px;height:70px;pointer-events:auto;touch-action:none;font-size:29px}#touch-reload{right:120px;bottom:135px;width:47px;height:47px;font-size:18px}#touch-shop{right:35px;bottom:226px;width:43px;height:43px;font-size:16px}@media(min-width:1600px){.lobby{padding:0 75px}.hero{min-height:505px}.hero-art{height:410px}.map-image{height:175px}}@media(max-width:1000px){.lobby{padding:0 28px}.header{gap:35px}.status{font-size:8px}.hero{gap:15px}.hero h1{font-size:40px}.hero-art{height:345px}.hero-meta{font-size:8px;gap:10px}.mode-info>span{font-size:9px}.launch-bar{gap:12px}.launch-bar .primary{gap:15px;padding:16px}.hud-help{display:none}}@media(max-width:720px){.lobby{padding:0 18px}.header{height:76px;gap:20px;flex-wrap:wrap}.brand{font-size:19px;gap:9px}.brand-icon{width:29px;height:29px;font-size:25px;line-height:29px}.status{display:none}nav{margin-left:auto;gap:15px}.nav{font-size:8px;letter-spacing:.5px}.hero{grid-template-columns:1fr;padding:26px 0 12px;gap:24px}.hero h1{font-size:45px}.hero-copy{padding-top:5px}.hero-art{height:240px;grid-row:2}.hero p{font-size:12px}.hero-meta{font-size:8px}.section-heading{margin-top:29px}.section-heading h2{font-size:20px}.section-note{display:none}.map-cards{gap:10px;grid-template-columns:1fr}.map-card{display:grid;grid-template-columns:40% 1fr}.map-image{height:100%}.map-detail{padding:15px}.map-detail h3{font-size:16px}.map-detail p{font-size:10px;margin-bottom:12px}.map-tags{font-size:8px}.launch-bar{flex-wrap:wrap;padding:16px}.mode-info{flex:1}.difficulty-label{margin-left:0;flex:1}.launch-bar .primary{flex:1;margin-top:8px;gap:20px}.mode-badge{width:38px}.bottom-info{font-size:8px}.bottom-info>span{gap:5px}.bottom-info kbd{font-size:7px}footer{font-size:8px}footer>span:nth-child(2){display:none}.operator-layout{grid-template-columns:1fr;gap:15px;margin:25px auto}.operator-preview{height:340px}.operator-options{padding:0 0 30px}.settings-panel{padding:22px;margin:24px auto}.settings-panel label{font-size:11px}.settings-panel input[type=range]{width:120px}.dialog{padding:22px}.dialog h2{font-size:24px}.control-list{grid-template-columns:1fr}.hud-top{padding:15px}.score{gap:14px;padding:8px 15px}.score>b{font-size:23px}.score strong{font-size:17px}.hud-map{font-size:10px;max-width:80px}.hud-map small{font-size:8px}#minimap{width:100px;height:100px;left:15px;top:70px}.hud-bottom{left:17px;right:17px;bottom:19px}.vitals{gap:8px}.vitals>strong{font-size:30px}.vitals>div{padding-left:9px}.weapon-info strong{font-size:32px}.buy-tip{font-size:9px;bottom:98px}.buy-tip span{display:none}.game-message{font-size:14px;top:33%}.kill-feed{right:15px;top:75px;font-size:8px;max-width:55%}.shop-grid{gap:9px}.shop-item{padding:12px}.shop-item h3{font-size:14px}.shop-foot{flex-wrap:wrap}.shop-foot .primary{width:100%}.overlay{padding:14px}.hud-help{display:none}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+  <canvas id="game" aria-label="Ігровий світ" hidden></canvas>
+  <div id="lobby" class="lobby">
+    <header class="header">
+      <a class="brand" href="./" aria-label="Сектор — головна"><span class="brand-icon">S</span> СЕКТОР<span class="brand-slash">/</span></a>
+      <nav aria-label="Головне меню"><button class="nav active" data-tab="play">ГРАТИ</button><button class="nav" data-tab="operator">ОПЕРАТОР</button><button class="nav" data-tab="settings">НАЛАШТУВАННЯ</button></nav>
+      <span class="status"><i></i> ЛОКАЛЬНИЙ РЕЖИМ</span>
+    </header>
+    <main>
+      <section id="tab-play" class="tab">
+        <div class="hero">
+          <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ТАКТИЧНИЙ ШУТЕР У БРАУЗЕРІ <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Короткі бої, влучні постріли та жодних завантажень.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація індустріальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ТРЕНУВАЛЬНА ОПЕРАЦІЯ <b>01—03</b></div><div class="art-cross">+</div></div>
+        </div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ЗОНА ОПЕРАЦІЇ<span>03</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div id="map-cards" class="map-cards"></div>
+        <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
+        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> Магазин</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
+      </section>
+      <section id="tab-operator" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ТВІЙ ПОЗИВНИЙ — ВАРТА</span><h2>ОПЕРАТОР</h2></div></div><div class="operator-layout"><div class="operator-preview"><canvas id="operator-canvas" width="480" height="520"></canvas><span>ВАРТА / ШТУРМОВИК</span></div><div class="operator-options"><h3>ЗБЕРИ СВІЙ ОБРАЗ</h3><p>Вигляд змінює стиль. Характеристики залишаються однаковими.</p><label>ФОРМА</label><div id="skin-options" class="option-row"></div><label>РУКАВИЧКИ</label><div id="glove-options" class="option-row"></div><div class="saved-note">✓ Вибір зберігається автоматично</div><button class="primary" data-go-play>ОБРАТИ МАПУ <span>→</span></button></div></div></section>
+      <section id="tab-settings" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ПІД СЕБЕ</span><h2>НАЛАШТУВАННЯ</h2></div></div><div class="settings-panel"><label>Чутливість миші <input id="sensitivity" type="range" min="0.3" max="2.5" step="0.1" value="1"></label><label>Гучність ефектів <input id="volume" type="range" min="0" max="1" step="0.05" value="0.5"></label><label>Якість зображення<select id="quality"><option value="low">Продуктивність</option><option value="high">Висока</option></select></label><label>Рух зброї та віддача камери<input id="motion" type="checkbox" checked></label><p>Налаштування зберігаються на цьому пристрої. Для керування мишею натисни на ігровий екран. Esc звільняє курсор і ставить гру на паузу.</p><button id="credits-open" class="secondary">АВТОРИ ТА РЕСУРСИ ↗</button></div></section>
+    </main>
+    <footer><span>СЕКТОР © 2026</span><span>НЕВЕЛИКА ГРА. ВЕЛИКИЙ СЕКТОР.</span><button id="footer-credits" class="text-button">ПРО ГРУ ↗</button></footer>
+  </div>
+  <div id="hud" hidden>
+    <div class="hud-top"><div class="hud-map"><span id="map-name">ДЕПО</span><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
+    <canvas id="minimap" width="160" height="160" aria-label="Мінімапа"></canvas>
+    <div id="kill-feed" class="kill-feed"></div>
+    <div id="crosshair"><i></i><i></i><i></i><i></i></div><div id="hit-marker">×</div><div id="hurt"></div>
+    <div id="game-message" class="game-message"></div>
+    <div id="buy-tip" class="buy-tip"><kbd>B</kbd> МАГАЗИН <span>· ПІДГОТОВКА ДО БОЮ</span></div>
+    <div class="hud-bottom"><div class="vitals"><span class="health-icon">+</span><strong id="health">100</strong><div><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+  </div>
+  <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script>
+(() => {
+const WEAPONS = {
+  pistol: { name: 'P-12', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
+  smg: { name: 'VIPER', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
+  rifle: { name: 'RANGER', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2400, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
+  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' }
+};
+const specs = [
+  { id:'depot', name:'ДЕПО', desc:'Сталь, бетон і короткі перестрілки.', tag:'ІНДУСТРІАЛЬНА ЗОНА', label:'БАЛАНС', wall:'#61746c', light:'#bcc1a0', sky:'#769391', floor:'#566257', accent:'#d7a05f', blocks:[[6,3,2,6,1],[12,2,2,4,1],[17,4,4,2,2],[3,11,4,2,2],[9,9,5,2,1],[12,14,2,6,1],[17,10,3,3,2],[4,17,4,3,2],[17,17,2,4,1],[9,5,1,2,3],[8,15,2,1,3]] },
+  { id:'port', name:'ПОРТ', desc:'Контейнери. Довгі лінії. Жодних гарантій.', tag:'ВАНТАЖНИЙ ТЕРМІНАЛ', label:'ДИСТАНЦІЯ', wall:'#5e777c', light:'#c0cebc', sky:'#859fa6', floor:'#555d5b', accent:'#c98650', blocks:[[5,3,2,7,2],[10,3,2,5,1],[16,2,2,6,2],[3,13,5,2,1],[10,11,6,2,2],[18,11,3,2,1],[4,18,5,2,2],[12,16,2,5,1],[18,16,2,4,2],[8,6,1,2,3]] },
+  { id:'city', name:'СТАРЕ МІСТО', desc:'Тихі двори. Небезпечні повороти.', tag:'МІСЬКИЙ КВАРТАЛ', label:'МАНЕВРИ', wall:'#aa9b7c', light:'#dbd0ab', sky:'#b5ab93', floor:'#7b7764', accent:'#608580', blocks:[[5,2,3,6,1],[11,2,3,5,1],[18,3,3,5,1],[2,11,5,3,1],[10,10,3,3,2],[16,10,5,3,1],[5,17,3,4,1],[11,16,3,6,1],[18,17,2,3,3],[8,9,1,1,3]] }
+];
+const MAPS = specs.map(s=>{
+  const grid = Array.from({length:24},(_,y)=>Array.from({length:24},(_,x)=>x===0||y===0||x===23||y===23?1:0));
+  for(const [x,y,w,h,t] of s.blocks) for(let j=y;j<y+h;j++) for(let i=x;i<x+w;i++) grid[j][i]=t;
+  return {...s,grid,blue:[[2.5,3.5],[3.5,2.5],[3.5,4.5]],red:[[21.5,20.5],[20.5,21.5],[20.5,19.5]]};
+});
+const SKINS = [{name:'Ліс',color:'#657f67'},{name:'Ніч',color:'#546477'},{name:'Пісок',color:'#ab9970'}];
+const GLOVES = [{name:'Графіт',color:'#333b37'},{name:'Олива',color:'#60714b'},{name:'Койот',color:'#93724e'}];
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+function blocked(map,x,y){ return (map.grid[Math.floor(y)]?.[Math.floor(x)]??1)!==0; }
+function canStand(map,x,y,r=.21){return !blocked(map,x-r,y-r)&&!blocked(map,x+r,y-r)&&!blocked(map,x-r,y+r)&&!blocked(map,x+r,y+r);}
+function moveActor(map,a,dx,dy){if(canStand(map,a.x+dx,a.y))a.x+=dx;if(canStand(map,a.x,a.y+dy))a.y+=dy;}
+function lineOfSight(map,x,y,tx,ty){const d=Math.hypot(tx-x,ty-y);for(let s=.08;s<d;s+=.08)if(blocked(map,x+(tx-x)*s/d,y+(ty-y)*s/d))return false;return true;}
+function findPath(map,sx,sy,tx,ty){
+  sx=Math.floor(sx);sy=Math.floor(sy);tx=Math.floor(tx);ty=Math.floor(ty);
+  if(blocked(map,tx,ty))return [];
+  const queue=[[sx,sy]], prev=new Map([[`${sx},${sy}`,null]]);
+  for(let i=0;i<queue.length;i++){
+    const [x,y]=queue[i];if(x===tx&&y===ty){const path=[];let key=`${x},${y}`;while(prev.get(key)!==null){const [px,py]=key.split(',').map(Number);path.unshift({x:px+.5,y:py+.5});key=prev.get(key);}return path;}
+    for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const nx=x+dx,ny=y+dy,k=`${nx},${ny}`;if(!prev.has(k)&&!blocked(map,nx+.5,ny+.5)){prev.set(k,`${x},${y}`);queue.push([nx,ny]);}}
+  }return [];
+}
+function applyDamage(actor,damage,head=false){const absorbed=head?0:Math.min(actor.armor,damage*.5);actor.armor-=absorbed;actor.hp=Math.max(0,actor.hp-damage+absorbed);return actor.hp;}
+function purchase(player,id){
+  if(id==='armor'){if(player.armor>=50)return {ok:false,message:'Броня вже повна'};if(player.money<650)return {ok:false,message:'Недостатньо кредитів'};player.money-=650;player.armor=50;return {ok:true};}
+  const w=WEAPONS[id];if(!w||!w.price)return {ok:false,message:'Недоступна зброя'};
+  if(player.primary===id)return {ok:false,message:'Уже в спорядженні'};
+  if(player.money<w.price)return {ok:false,message:'Недостатньо кредитів'};
+  player.money-=w.price;player.primary=id;player.weapon=id;player.inventory[id]={ammo:w.size,reserve:w.size*3};return {ok:true};
+}
+function roundWinner(actors,timedOut=false){
+  const blue=actors.filter(a=>a.team===0&&a.hp>0),red=actors.filter(a=>a.team===1&&a.hp>0);
+  if(!blue.length&&!red.length)return -1;if(!blue.length)return 1;if(!red.length)return 0;
+  if(!timedOut)return null;if(blue.length!==red.length)return blue.length>red.length?0:1;
+  const diff=blue.reduce((s,a)=>s+a.hp,0)-red.reduce((s,a)=>s+a.hp,0);return diff===0?-1:diff>0?0:1;
+}
+
+
+function hex(s){return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];}
+function tint(s,k){return `rgb(${hex(s).map(v=>Math.min(255,Math.max(0,Math.round(v*k)))).join(',')})`;}
+function poly(c,points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
+function mapArt(canvas,map,hero=false){
+  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+  c.clearRect(0,0,w,h);const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,tint(map.sky,.65));sky.addColorStop(1,'#142723');c.fillStyle=sky;c.fillRect(0,0,w,h);
+  c.fillStyle='#e5edb31a';c.beginPath();c.arc(w*.77,h*.2,h*.18,0,7);c.fill();
+  const scale=hero?w/35:w/31,ox=w*.53,oy=-h*.32;
+  const project=(x,y,z=0)=>[ox+(x-y)*scale,oy+(x+y)*scale*.49-z*scale];
+  poly(c,[project(-5,-5),project(32,-5),project(32,32),project(-5,32)],tint(map.floor,.77));
+  c.strokeStyle='#ced3a612';c.lineWidth=1;for(let i=0;i<30;i++){c.beginPath();c.moveTo(...project(i,0));c.lineTo(...project(i,30));c.stroke();c.beginPath();c.moveTo(...project(0,i));c.lineTo(...project(30,i));c.stroke();}
+  for(const x of [9,15]){poly(c,[project(x,0),project(x+.13,0),project(x+.13,26),project(x,26)],'#d5ce9580');}
+  const box=(x,y,bw,bh,z,color)=>{
+    poly(c,[project(x+bw,y),project(x+bw+z*.9,y+.4),project(x+bw+z*.9,y+bh+z*.5),project(x,y+bh)],'#0a171b55');
+    poly(c,[project(x,y,z),project(x+bw,y,z),project(x+bw,y+bh,z),project(x,y+bh,z)],tint(color,1.3));
+    poly(c,[project(x,y+bh,z),project(x+bw,y+bh,z),project(x+bw,y+bh),project(x,y+bh)],tint(color,.83));
+    poly(c,[project(x+bw,y,z),project(x+bw,y+bh,z),project(x+bw,y+bh),project(x+bw,y)],tint(color,.56));
+    c.strokeStyle='#111c2355';c.lineWidth=1;for(let k=.35;k<bw;k+=.55){c.beginPath();c.moveTo(...project(x+k,y+bh,z-.08));c.lineTo(...project(x+k,y+bh,.05));c.stroke();}
+    if(bw>1.5){poly(c,[project(x+.22,y+bh+.01,z*.68),project(x+Math.min(bw-.2,1.1),y+bh+.01,z*.68),project(x+Math.min(bw-.2,1.1),y+bh+.01,z*.32),project(x+.22,y+bh+.01,z*.32)],'#182829');}
+  };
+  const blocks=map.blocks.map(b=>[...b]);blocks.push([1,1,1,21,1],[1,1,21,1,1]);blocks.sort((a,b)=>a[0]+a[1]-b[0]-b[1]);
+  for(const [x,y,bw,bh,t]of blocks)box(x,y,bw,bh,t===3?.8:t===2?1.7:map.id==='city'?3.9:3,t===2?map.accent:map.wall);
+  for(const [x,y]of [[8,12],[15,15],[18,8],[3,9]])box(x,y,.8,.8,.7,map.accent);
+  if(hero){const [x,y]=project(14,18);c.fillStyle='#07120f66';c.beginPath();c.ellipse(x,y,12,5,0,0,7);c.fill();const sprite=makeOperator('#5b7367','#cede9e');c.drawImage(sprite,x-17,y-61,34,64);}
+  const fade=c.createLinearGradient(0,h*.2,0,h);fade.addColorStop(0,'#0c211400');fade.addColorStop(1,'#071c2266');c.fillStyle=fade;c.fillRect(0,0,w,h);
+  c.strokeStyle='#dfebc817';for(let i=0;i<h;i+=4){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}
+}
+function makeOperator(color,accent='#dbaa69',glove='#333b37'){
+  const cv=document.createElement('canvas');cv.width=128;cv.height=256;const c=cv.getContext('2d');
+  const r=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
+  poly(c,[[38,150],[62,148],[62,217],[54,237],[34,235]],tint(color,.77));poly(c,[[66,150],[88,150],[95,235],[75,237],[67,209]],tint(color,.9));
+  r(34,188,26,16,tint(color,.52));r(72,188,24,16,tint(color,.55));r(29,231,30,16,'#1e2829');r(74,231,29,16,'#1e2829');r(32,245,29,5,'#0f1619');r(73,245,34,5,'#0f1619');
+  poly(c,[[33,64],[89,64],[98,91],[88,160],[38,160],[28,89]],color);poly(c,[[31,66],[18,78],[11,121],[24,137],[35,105]],tint(color,.9));poly(c,[[87,68],[104,76],[117,116],[102,137],[89,103]],tint(color,1.05));
+  r(39,70,49,76,tint(color,.55));r(44,76,38,8,tint(color,1.15));r(43,99,17,23,tint(color,.85));r(64,99,18,23,tint(color,.8));r(40,134,48,8,'#263531');r(35,149,57,9,'#25342e');
+  r(19,82,9,9,accent);r(97,82,8,9,accent);r(48,86,22,3,accent);r(53,53,22,15,'#655e4e');
+  poly(c,[[44,16],[82,16],[93,32],[90,54],[77,66],[49,60],[38,41]],tint(color,.65));poly(c,[[44,12],[82,12],[93,28],[91,36],[36,36],[36,27]],tint(color,1.2));r(39,32,51,11,'#1b2a2a');r(44,35,39,3,accent);r(49,48,30,13,'#283330');r(55,51,18,3,'#536259');
+  poly(c,[[15,116],[23,107],[60,112],[59,129],[23,136]],tint(color,.8));poly(c,[[107,111],[117,120],[91,141],[69,131],[74,117]],tint(color,.75));r(50,112,17,17,glove);r(71,116,16,17,glove);
+  r(49,101,56,12,'#212b2c');r(68,90,31,12,'#36443f');r(94,104,32,6,'#192528');r(70,112,11,20,'#172323');r(59,105,4,4,accent);r(48,102,13,7,'#4f5b51');
+  return cv;
+}
+function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
+function textures(map){
+  let seed=97;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  return [null,...[1,2,3].map(type=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');c.fillStyle=type===2?map.accent:map.wall;c.fillRect(0,0,64,64);
+    for(let i=0;i<2800;i++){c.fillStyle=rand()>.5?'#ffffff0b':'#00000010';c.fillRect(rand()*64,rand()*64,1+rand()*3,1+rand()*2);}
+    if(type===1){c.fillStyle='#15221f55';for(let y=0;y<64;y+=16)c.fillRect(0,y,64,1);for(let y=0;y<64;y+=16)for(let x=(y%32?16:0);x<64;x+=32)c.fillRect(x,y,1,16);c.fillStyle='#e2dfb522';c.fillRect(0,1,64,1);}
+    if(type===2){for(let x=0;x<64;x+=8){c.fillStyle='#121c2244';c.fillRect(x,0,2,64);c.fillStyle='#fff1c522';c.fillRect(x+2,0,1,64);}c.fillStyle='#22302c';c.fillRect(0,4,64,3);c.fillRect(0,58,64,3);c.fillStyle='#e2d8b3';c.fillRect(22,19,21,12);c.fillStyle='#544e38';c.font='bold 8px monospace';c.fillText('07',26,28);}
+    if(type===3){c.fillStyle='#202d2bbb';c.fillRect(0,0,64,5);c.fillRect(0,59,64,5);c.fillRect(0,0,5,64);c.fillRect(59,0,5,64);c.strokeStyle='#2a342b';c.lineWidth=6;c.beginPath();c.moveTo(5,5);c.lineTo(59,59);c.moveTo(59,5);c.lineTo(5,59);c.stroke();}
+    return cv;})];
+}
+
+
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
+const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0};
+try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
+settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,2);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
+const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
+let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
+let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
+let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
+let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
+let audio;
+const touchDevice=matchMedia('(pointer: coarse)').matches;
+function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
+function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
+function sound(kind='shot',weapon='pistol'){
+  if(!audio||settings.volume===0)return;
+  const t=audio.currentTime,g=audio.createGain();g.connect(audio.destination);const v=settings.volume;
+  if(kind==='shot'||kind==='step'||kind==='hit'){
+    const dur=kind==='shot'?(weapon==='shotgun'?.24:.12):.055,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*dur),audio.sampleRate),d=buffer.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+    const n=audio.createBufferSource();n.buffer=buffer;const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=kind==='step'?400:kind==='hit'?1200:weapon==='shotgun'?1800:2800;n.connect(filter);filter.connect(g);g.gain.value=v*(kind==='shot'?.38:kind==='step'?.1:.12);n.start();
+  }else{const o=audio.createOscillator();o.type=kind==='empty'?'square':'sine';o.frequency.setValueAtTime(kind==='buy'?750:kind==='reload'?230:kind==='win'?660:180,t);o.frequency.exponentialRampToValueAtTime(kind==='buy'?1200:kind==='win'?990:90,t+.12);o.connect(g);g.gain.setValueAtTime(v*.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);o.start();o.stop(t+.2);}
+}
+
+function renderCards(){
+  $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">0${i+1} / SECTOR</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>${m.tag}</span><span>${m.label} ↗</span></div></div></button>`).join('');
+  $$('.map-card').forEach((card,i)=>{mapArt(card.querySelector('canvas'),MAPS[i]);card.onclick=()=>{settings.map=i;map=MAPS[i];save();renderCards();mapArt($('#hero-canvas'),map,true);};});
+}
+function renderOperator(){
+  $('#skin-options').innerHTML=SKINS.map((s,i)=>`<button class="option ${settings.skin===i?'selected':''}" data-skin="${i}"><i style="background:${s.color}"></i>${s.name}</button>`).join('');
+  $('#glove-options').innerHTML=GLOVES.map((s,i)=>`<button class="option ${settings.glove===i?'selected':''}" data-glove="${i}"><i style="background:${s.color}"></i>${s.name}</button>`).join('');
+  $$('[data-skin]').forEach(b=>b.onclick=()=>{settings.skin=Number(b.dataset.skin);save();renderOperator();});
+  $$('[data-glove]').forEach(b=>b.onclick=()=>{settings.glove=Number(b.dataset.glove);save();renderOperator();});
+  drawOperator($('#operator-canvas'),settings.skin,settings.glove);
+}
+function tab(name){$$('.tab').forEach(e=>e.hidden=e.id!==`tab-${name}`);$$('.nav').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='operator')renderOperator();}
+$$('.nav').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('[data-go-play]').forEach(b=>b.onclick=()=>tab('play'));
+for(const key of ['sensitivity','volume','quality','motion','difficulty']){const e=$(`#${key}`);if(e.type==='checkbox')e.checked=settings[key];else e.value=settings[key];e.addEventListener('input',()=>{settings[key]=e.type==='checkbox'?e.checked:e.type==='range'?Number(e.value):e.value;save();if(key==='quality')resize();});}
+renderCards();renderOperator();mapArt($('#hero-canvas'),map,true);
+
+function release(){shootHeld=false;touchFire=false;keys.clear();stick={x:0,y:0};if(document.pointerLockElement===canvas)document.exitPointerLock();}
+function lock(){if(touchDevice)return;try{const p=canvas.requestPointerLock?.();p?.catch(()=>toast('Натисни на ігровий екран. Також можна оглядатися, затиснувши мишу.'));}catch{toast('Для огляду затисни мишу на ігровому екрані.');}}
+function dialog(type,html){modal=type;$('#dialog').innerHTML=html;$('#overlay').hidden=false;release();$('#dialog').querySelector('button')?.focus();}
+function closeDialog(resume=true){$('#overlay').hidden=true;modal='';if(resume&&state==='playing'){paused=false;lock();}}
+function header(label,title){return `<div class="dialog-header"><span class="eyebrow">${label}</span><button class="dialog-close" aria-label="Закрити">×</button></div><h2>${title}</h2>`;}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Магазин під час підготовки'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: три мапи, командні бої з ботами, магазин і кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+$('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
+
+function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0};}
+function start(){
+  initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
+  wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
+  player=actor(...map.blue[0],0,'ТИ');player.isPlayer=true;actors=[player,actor(...map.blue[1],0,'РИСЬ'),actor(...map.blue[2],0,'СОКІЛ'),...map.red.map((p,i)=>actor(...p,1,['КВАРЦ','ТІНЬ','ГРІМ'][i]))];
+  $('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;$('#touch-controls').hidden=!touchDevice;resize();nextRound();
+}
+$('#start').onclick=start;$('#quick-play').onclick=start;
+function nextRound(){
+  round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;jump=0;jumpVelocity=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
+  actors.forEach((a,i)=>{const pos=a.team?map.red[i-3]:map.blue[i];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;
+    if(a.hp<=0){a.primary=null;a.armor=0;a.weapon='pistol';a.inventory={pistol:{ammo:12,reserve:36}};}
+    a.hp=100;a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;
+    for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
+    if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
+  });
+  $('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
+}
+function beginFight(){closeDialog(false);paused=false;phase='fight';clock=120;keys.clear();shootHeld=false;touchFire=false;$('#game-message').textContent='ТРИМАЙ СЕКТОР';setTimeout(()=>{if(state==='playing'&&phase==='fight'&&player.hp>0)$('#game-message').textContent='';},1800);sound('win');updateHUD();}
+function inBuyZone(){return Math.hypot(player.x-map.blue[0][0],player.y-map.blue[0][1])<4;}
+function openShop(){
+  if(state!=='playing'||phase!=='buy'||player.hp<=0)return toast('Магазин доступний під час підготовки до раунду');
+  if(!inBuyZone())return toast('Повернися до стартової зони');
+  reload=0;reloadTotal=0;reloadStage=0;
+  const items=Object.entries(WEAPONS).filter(([,w])=>w.price).map(([id,w])=>({id,...w}));items.push({id:'armor',name:'БРОНЕЖИЛЕТ',type:'ЗАХИСТ',price:650,icon:'◇',description:'50 броні · поглинає частину шкоди в корпус'});
+  dialog('shop',`<div class="dialog-header"><span class="eyebrow">СПОРЯДЖЕННЯ / РАУНД ${round}</span><span class="shop-balance">₡ ${player.money.toLocaleString('uk')}</span></div><h2>ПІДГОТУЙСЯ ДО БОЮ</h2><p>Закупівля: <b id="shop-timer">${Math.ceil(clock)}</b> с · Пістолет і патрони видаються безкоштовно.</p><div class="shop-grid">${items.map(w=>{const owned=w.id==='armor'?player.armor>=50:player.primary===w.id,disabled=owned||player.money<w.price;return `<article class="shop-item"><small>${w.type}</small><h3>${w.name}</h3><div class="gun-icon">${w.icon}</div><p>${w.description}</p><button data-buy="${w.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<w.price?'БРАКУЄ КРЕДИТІВ':'КУПИТИ'}</span><span>₡ ${w.price.toLocaleString('uk')}</span></button></article>`;}).join('')}</div><div class="shop-foot"><p>Основна: ${player.primary?WEAPONS[player.primary].name:'немає'} · Броня: ${Math.ceil(player.armor)}<br>Заміна основної зброї — без повернення її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button></div><button id="shop-close" class="text-button">ЗАКРИТИ МАГАЗИН / B</button>`);
+  $$('[data-buy]').forEach(b=>b.onclick=()=>{
+    if(phase!=='buy'||!inBuyZone())return;
+    const id=b.dataset.buy;
+    if(id!=='armor'&&player.primary&&player.primary!==id){const oldName=WEAPONS[player.primary].name;b.innerHTML=`ЗАМІНИТИ ${oldName}? НАТИСНИ ЩЕ РАЗ`;if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';return;}}
+    const result=purchase(player,id);if(result.ok){sound('buy');openShop();updateHUD();}else toast(result.message);
+  });
+  $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();
+}
+function pause(){if(state!=='playing'||phase==='finished')return;paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
+$('#pause-button').onclick=pause;
+function leave(){state='lobby';paused=false;closeDialog(false);release();canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;tab('play');}
+function endRound(winner){
+  phase='intermission';intermission=3.5;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;aiming=false;
+  if(winner>=0)score[winner]++;
+  actors.forEach(a=>a.money=Math.min(10000,a.money+(a.team===winner?1500:1000)));
+  $('#game-message').textContent=winner===0?'РАУНД ЗА ВАРТОЮ':winner===1?'РАУНД ЗА РЕЙДОМ':'НІЧИЯ';sound(winner===0?'win':'empty');updateHUD();
+}
+function endMatch(){
+  phase='finished';const won=score[0]>score[1];dialog('result',`<span class="eyebrow">ОПЕРАЦІЮ ЗАВЕРШЕНО / ${map.name}</span><h2>${score[0]===score[1]?'НІЧИЯ':won?'СЕКТОР ПІД КОНТРОЛЕМ':'СЕКТОР ВТРАЧЕНО'}</h2><div class="result-score"><span>${score[0]}</span><small>:</small><span>${score[1]}</span></div><div class="result-stats"><span>${kills} УСУНЕНЬ</span><span>${deaths} СМЕРТЕЙ</span><span>${round} РАУНДІВ</span></div><div class="dialog-actions"><button id="again" class="primary">ЩЕ ОДИН МАТЧ <span>↗</span></button><button id="menu" class="secondary">ОБРАТИ ІНШУ МАПУ</button></div>`);$('#again').onclick=start;$('#menu').onclick=leave;
+}
+function logKill(source,target){feed.unshift({source:source.name,target:target.name,t:6});feed=feed.slice(0,4);paintFeed();}
+function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${f.source}</b> &nbsp; ━ &nbsp; <em>${f.target}</em></div>`).join('');}
+function damage(target,n,source,head=false){if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
+function currentWeapon(){return WEAPONS[player.weapon];}
+function switchWeapon(id){if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
+function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
+function reloadWeapon(){if(state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
+function shoot(){
+  if(state!=='playing'||phase!=='fight'||paused||modal||player.hp<=0||reload>0||nextShot>0)return;
+  const w=currentWeapon(),inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
+  inv.ammo--;nextShot=w.rate;recoil=1;sound('shot',player.weapon);let anyHit=false;
+  for(let pellet=0;pellet<w.pellets;pellet++){
+    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1);const angle=player.angle+(Math.random()-.5)*spread;
+    const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
+    for(const {a,d,da} of candidates){
+      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
+      const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?2:1),player,head);anyHit=true;break;
+    }
+  }
+  if(anyHit){hitTime=.15;sound('hit');}updateHUD();
+}
+
+function updatePlayer(dt){
+  player.moving=false;if(player.hp<=0||modal)return;
+  const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
+  const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
+  const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
+  moveActor(map,player,dx,dy);player.moving=Math.hypot(dx,dy)>.001;
+  if(player.moving){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
+  if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
+  if(jump>0||jumpVelocity>0){jumpVelocity-=dt*4;jump=Math.max(0,jump+jumpVelocity*dt);if(jump===0)jumpVelocity=0;}
+}
+function updateBots(dt){
+  const level=settings.difficulty==='easy'?.55:settings.difficulty==='hard'?1.35:1;
+  for(const a of actors){if(a.isPlayer||a.hp<=0)continue;a.flash=Math.max(0,a.flash-dt);a.cooldown-=dt;a.pathTimer-=dt;
+    const enemies=actors.filter(e=>e.team!==a.team&&e.hp>0).sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));if(!enemies.length)continue;
+    const visible=enemies.find(e=>Math.hypot(e.x-a.x,e.y-a.y)<15&&lineOfSight(map,a.x,a.y,e.x,e.y));const target=visible||enemies[0];const distance=Math.hypot(target.x-a.x,target.y-a.y);a.moving=false;
+    if(visible){a.angle=Math.atan2(target.y-a.y,target.x-a.x);a.seen+=dt;const skill=a.team===0?.85:level;
+      if(a.cooldown<=0&&a.seen>.45){a.cooldown=(.58+Math.random()*.65)/skill;a.flash=.09;a.shots++;const chance=clamp(.85-distance*.04,.15,.75)*skill;if(Math.random()<chance)damage(target,WEAPONS[a.weapon].damage*.65,a);if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}}
+    }else a.seen=0;
+    if(!visible||distance>7){if(a.pathTimer<=0){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;}if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);if(d<.12)a.path.shift();else{const s=Math.min(d,dt*(a.team===0?1.5:1.35));moveActor(map,a,dx/d*s,dy/d*s);a.moving=true;if(!visible)a.angle=Math.atan2(dy,dx);}}}
+  }
+}
+function update(dt){
+  if(state!=='playing'||paused||phase==='finished')return;
+  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
+  if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=5)||round>=12)endMatch();else nextRound();}return;}
+  clock-=dt;updatePlayer(dt);
+  if(phase==='buy'){if(clock<=0)beginFight();return;}
+  if(reload>0){reload-=dt;const p=reloadProgress();if(reloadStage===0&&p>=.38){reloadStage=1;sound('reload');}else if(reloadStage===1&&p>=.72){reloadStage=2;sound('reload');}if(reload<=0){reload=0;reloadTotal=0;reloadStage=0;const inv=player.inventory[player.weapon],take=Math.min(currentWeapon().size-inv.ammo,inv.reserve);inv.ammo+=take;inv.reserve-=take;sound('reload');updateHUD();}}
+  if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
+  updateBots(dt);const winner=roundWinner(actors,clock<=0);if(winner!==null)endRound(winner);
+}
+function updateHUD(){if(!player)return;const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+
+function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);}
+addEventListener('resize',resize);
+function viewActor(){return player.hp>0?player:actors.find(a=>a.team===0&&a.hp>0)||player;}
+function render(){
+  if(state!=='playing')return;
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=aiming&&player.hp>0?.5:.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
+  ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
+  ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
+  const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
+  // Perspective floor grid: samples world coordinates in each screen row.
+  const horizonY=Math.max(0,Math.floor(horizon+1));ctx.globalAlpha=.18;const floorStep=settings.quality==='low'?5:4;
+  for(let sy=horizonY;sy<h;sy+=floorStep){const dist=projection*.5/(sy-horizon);if(dist>25)continue;const leftX=view.x+dist*(ca+sa*fov),leftY=view.y+dist*(sa-ca*fov),dx=-2*sa*fov*dist/w,dy=2*ca*fov*dist/w;
+    for(let sx=0;sx<w;sx+=floorStep){const fx=leftX+dx*sx,fy=leftY+dy*sx;if(fx-Math.floor(fx)<.035||fy-Math.floor(fy)<.035){ctx.fillStyle='#cbd0aa';ctx.fillRect(sx,sy,floorStep,floorStep);}else if((Math.floor(fx)+Math.floor(fy))%2===0){ctx.fillStyle='#17271f';ctx.fillRect(sx,sy,floorStep,floorStep);}}
+  }ctx.globalAlpha=1;
+  const colStep=settings.quality==='low'?2:1;
+  for(let x=0;x<w;x+=colStep){const camera=2*x/w-1,rx=ca-sa*fov*camera,ry=sa+ca*fov*camera;let mx=Math.floor(view.x),my=Math.floor(view.y);const ddx=Math.abs(1/rx),ddy=Math.abs(1/ry),sx=rx<0?-1:1,sy=ry<0?-1:1;let sideX=(rx<0?view.x-mx:mx+1-view.x)*ddx,sideY=(ry<0?view.y-my:my+1-view.y)*ddy,side=0,type=1;
+    for(let k=0;k<80;k++){if(sideX<sideY){sideX+=ddx;mx+=sx;side=0;}else{sideY+=ddy;my+=sy;side=1;}type=map.grid[my]?.[mx]??1;if(type)break;}
+    const dist=Math.max(.05,side?sideY-ddy:sideX-ddx),height=projection/dist,top=horizon-height*.5;let hit=side?view.x+dist*rx:view.y+dist*ry;hit-=Math.floor(hit);const tx=Math.floor(hit*64);
+    ctx.drawImage(wallTextures[type]||wallTextures[1],tx,0,1,64,x,top,colStep,height);
+    ctx.fillStyle=`rgba(8,22,22,${Math.min(.82,dist/30+(side?.19:0))})`;ctx.fillRect(x,top,colStep,height);
+    zbuffer[x]=dist;if(colStep===2)zbuffer[x+1]=dist;
+  }
+  const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
+  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*.5-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
+    for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){if(depth>=zbuffer[sx])continue;const tx=clamp(Math.floor((sx-x)/sw*128),0,127);ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);}
+    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]){if(a.team===0){ctx.fillStyle='#c3f66b';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
+  }
+  const vignette=ctx.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.5,w*.75);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04100b99');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
+  if(player.hp>0)drawGun(w,h);
+  renderMinimap(view);
+}
+function drawGun(w,h){
+  const pistol=player.weapon==='pistol',shotgun=player.weapon==='shotgun',moving=player.moving&&settings.motion;
+  const p=reloadProgress();
+  const downHold=p<=0?0:p<.25?p/.25:p<.65?1:1-(p-.65)/.35;
+  const dip=p>0?Math.sin(p*Math.PI):0;
+  const sway=p>0?Math.sin(p*Math.PI*2)*22*downHold:0;
+  const cockJerk=p>.72&&p<.92?Math.sin((p-.72)/.2*Math.PI):0;
+  const dropY=downHold*105+dip*18-cockJerk*22;
+  const tilt=downHold*.5-cockJerk*.09;
+  ctx.save();const scale=Math.min(w/900,h/560);
+  ctx.translate(w*(aiming?.51:.63)+(moving?Math.sin(walk)*7:0)+sway*scale,h+(moving?Math.abs(Math.cos(walk))*5:0)+(settings.motion?recoil*17:0)+dropY*scale);ctx.scale(scale,scale);ctx.rotate(-tilt*.55);
+  const poly=(pts,c)=>{ctx.fillStyle=c;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();};const glove=GLOVES[settings.glove].color,skin=SKINS[settings.skin].color;
+  poly([[-105,0],[-88,-85],[-34,-141],[20,-112],[52,0]],tint(skin,.8));poly([[-87,-80],[-72,-123],[-20,-155],[19,-118],[-16,-69]],glove);
+  // Зсув затвора/затворної рами під час фази досилання (p 0.72–0.92): зброя смикається вгору.
+  const slideDy=-cockJerk*16;
+  ctx.save();ctx.translate(0,slideDy*.4);
+  if(pistol){poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);poly([[-23,-149],[-20,-198],[12,-218],[61,-170],[53,-105],[17,-94]],'#2c3937');poly([[-20,-198],[-8,-219],[15,-229],[54,-185],[61,-170],[7,-172]],'#6e7a6f');poly([[7,-172],[61,-170],[53,-145],[6,-145]],'#192625');ctx.fillStyle='#bddd75';ctx.fillRect(2,-219,6,5);ctx.fillStyle='#0d1918';ctx.fillRect(7,-227,9,7);}
+  else{poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);poly([[-50,-49],[-44,-159],[-12,-207],[69,-137],[98,-41],[42,0]],'#243432');poly([[-44,-159],[-12,-207],[17,-199],[89,-140],[69,-119]],'#778174');poly([[69,-119],[89,-140],[98,-41],[57,-49]],'#172625');poly([[-30,-171],[-47,-232],[-26,-250],[7,-181]],'#283b39');poly([[-47,-232],[-26,-250],[-20,-240],[-40,-222]],'#859080');ctx.fillStyle='#131f20';ctx.fillRect(-34,-244,7,11);ctx.fillStyle='#d3f088';ctx.fillRect(-34,-235,4,4);poly([[-31,-130],[24,-92],[38,-98],[-14,-140]],shotgun?'#997551':'#495d4b');for(let i=0;i<4;i++){ctx.fillStyle='#152423';ctx.fillRect(-21+i*10,-153+i*7,5,13);}poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);}
+  ctx.restore();
+  // Магазин, що випадає (фаза 0.08–0.5), та рука з новим магазином (фаза 0.42–0.75).
+  if(p>.06&&p<.52){const q=(p-.06)/.46;ctx.save();ctx.globalAlpha=1-q*.9;ctx.translate(pistol?30:-10,-120+q*190);ctx.rotate(.5+q*1.4);ctx.fillStyle='#1d2a28';ctx.fillRect(-9,-26,18,52);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-26,18,5);ctx.restore();}
+  if(p>.4&&p<.78){const q=p<.6?(p-.4)/.2:1-(p-.6)/.18;ctx.save();ctx.globalAlpha=.95;ctx.translate(pistol?8:-24,-60+q*46);ctx.rotate(.12);ctx.fillStyle=glove;ctx.fillRect(-16,-18,32,36);ctx.fillStyle='#222f2d';ctx.fillRect(-9,-52,18,40);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-52,18,4);ctx.restore();}
+  if(recoil>.55&&reload<=0){ctx.save();ctx.translate(pistol?5:-33,pistol?-226:-251);poly([[0,-35],[7,-11],[29,-19],[12,1],[24,18],[2,10],[-20,23],[-12,0],[-30,-14],[-6,-10]],'#ffd887');ctx.fillStyle='#fff9df';ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.fill();ctx.restore();}ctx.restore();
+  // Шкала прогресу перезаряджання під прицілом.
+  if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
+}
+function renderMinimap(view){
+  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/24;
+  for(let y=0;y<24;y++)for(let x=0;x<24;x++)if(map.grid[y][x]){mc.fillStyle=map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s-.6,s-.6);}
+  for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
+  mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
+}
+function frame(now){const dt=Math.min(.045,(now-lastTime)/1000);lastTime=now;update(dt);render();hudTimer-=dt;if(hudTimer<=0){hudTimer=.08;if(state==='playing')updateHUD();}requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+
+addEventListener('keydown',e=>{
+  if(state!=='playing'){if(e.code==='Escape'&&modal)closeDialog(false);return;}
+  if(['Space','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
+  if(e.repeat)return;
+  if(e.code==='Escape'){if(modal==='shop')closeDialog();else if(modal==='pause')closeDialog();else if(!modal)pause();return;}
+  if(e.code==='KeyB'){if(modal==='shop')closeDialog();else if(!modal)openShop();return;}
+  if(modal||paused)return;keys.add(e.code);
+  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+  if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
+});
+addEventListener('keyup',e=>keys.delete(e.code));
+canvas.addEventListener('mousedown',e=>{if(state!=='playing'||paused||modal)return;initAudio();if(!document.pointerLockElement){dragging=true;lock();}if(e.button===0){shootHeld=true;shoot();}if(e.button===2)aiming=true;});
+addEventListener('mouseup',e=>{dragging=false;if(e.button===0)shootHeld=false;if(e.button===2)aiming=false;});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+addEventListener('mousemove',e=>{if(state!=='playing'||paused||modal||player.hp<=0)return;if(document.pointerLockElement===canvas||dragging){player.angle+=e.movementX*.0026*settings.sensitivity*(aiming?.6:1);pitch=clamp(pitch-e.movementY*.0019*settings.sensitivity,-.45,.45);}});
+document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&state==='playing'&&!modal&&phase!=='finished')pause();});
+addEventListener('blur',()=>{keys.clear();shootHeld=false;touchFire=false;aiming=false;if(state==='playing'&&!modal)pause();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing'&&phase!=='finished'&&modal!=='pause')pause();});
+$('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focusables=[...$('#dialog').querySelectorAll('button:not(:disabled),a[href],input,select')];if(!focusables.length)return;const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
+const joy=$('#joystick');let joyId;
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect();stick.x=clamp((e.clientX-r.left-50)/40,-1,1);stick.y=clamp((e.clientY-r.top-50)/40,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*25}px,${stick.y*25}px)`;});
+function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
+$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
+canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
+
+// Explicitly enabled only by the local browser verification harness.
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,map:map.id}),endRound,endMatch,leave,openShop};
+
+})();
+</script>
+</body>
+</html>
