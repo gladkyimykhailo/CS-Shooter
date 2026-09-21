@@ -2,7 +2,8 @@ export const WEAPONS = {
   pistol: { name: 'P-12', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
   smg: { name: 'VIPER', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
   rifle: { name: 'RANGER', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2400, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
-  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' }
+  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
+  kalash: { name: 'KALASH', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2500, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' }
 };
 const specs = [
   { id:'depot', name:'ДЕПО', desc:'Сталь, бетон і короткі перестрілки.', tag:'ІНДУСТРІАЛЬНА ЗОНА', label:'БАЛАНС', wall:'#61746c', light:'#bcc1a0', sky:'#769391', floor:'#566257', accent:'#d7a05f', blocks:[[6,3,2,6,1],[12,2,2,4,1],[17,4,4,2,2],[3,11,4,2,2],[9,9,5,2,1],[12,14,2,6,1],[17,10,3,3,2],[4,17,4,3,2],[17,17,2,4,1],[9,5,1,2,3],[8,15,2,1,3]] },

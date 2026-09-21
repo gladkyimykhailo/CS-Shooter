@@ -30,3 +30,10 @@ test('раунд завершується за усуненням, часом, �
   assert.equal(roundWinner([{team:0,hp:1},{team:0,hp:1},{team:1,hp:100}],true),0);
 });
 test('зброя має скінченні параметри й осмислений запас патронів',()=>{for(const w of Object.values(WEAPONS)){assert.ok(w.damage>0&&w.size>0&&w.reload>0&&w.rate>0);assert.ok(w.pellets>=1);}});
+test('калаш: ціна як у CS, ваншот у голову без броні',()=>{
+  const k=WEAPONS.kalash;
+  assert.equal(k.price,2500);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);
+  assert.ok(k.damage*(k.headMult||2)>=100,'34 × 3 = 102: ваншот у голову');
+  const p=buyer();assert.equal(purchase(p,'kalash').ok,true);assert.equal(p.money,0);assert.equal(p.weapon,'kalash');
+  assert.deepEqual(p.inventory.kalash,{ammo:30,reserve:90});
+});

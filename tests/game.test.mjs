@@ -47,6 +47,18 @@ test('рух, постріли, стіни та перезаряджання п�
   f.game.reload();f.game.step(1.5);assert.equal(p.inventory.pistol.ammo,12);assert.equal(p.inventory.pistol.reserve,34);f.key('Escape');assert.equal(f.game.get().paused,true);const y=p.y;f.key('KeyW');f.game.step(.2);assert.equal(p.y,y);f.document.querySelector('#resume').onclick();assert.equal(f.game.get().paused,false);
 });
 
+test('калаш: покупка, стрільба зі спреєм і довге перезаряджання',()=>{
+  const f=fixture();f.game.start();f.game.purchase('kalash');f.game.beginFight();
+  const p=f.game.get().player;
+  assert.equal(p.weapon,'kalash');assert.equal(p.money,0);
+  f.game.shoot();assert.equal(p.inventory.kalash.ammo,29);
+  assert.ok(p.spray>0,'черга розкидає спрей');
+  const s1=p.spray;f.game.step(.5);assert.ok(p.spray<s1,'спрей гасне без стрільби');
+  f.game.setPlayer({inventory:{kalash:{ammo:5,reserve:90}}});
+  f.game.reload();f.game.step(2.3);
+  assert.equal(p.inventory.kalash.ammo,30);assert.equal(p.inventory.kalash.reserve,65);
+});
+
 test('перемога дає нагороду, наступний раунд зберігає зброю, завершення матчу має повтор',()=>{
   const f=fixture();f.game.start();f.game.purchase('smg');f.game.beginFight();const p=f.game.get().player;
   f.game.get().actors.filter(a=>a.team===1).forEach(a=>a.hp=0);f.game.step(.01);assert.equal(f.game.get().score[0],1);assert.equal(p.money,2800);assert.equal(f.game.get().phase,'intermission');f.game.step(3.6);assert.equal(f.game.get().round,2);assert.equal(p.primary,'smg');assert.equal(p.inventory.smg.ammo,30);

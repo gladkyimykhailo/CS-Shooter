@@ -40,7 +40,7 @@ export function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   return cv;
 }
 export function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
-export const WEAPON_FILES = { pistol:'assets/weapons/pistol.png', smg:'assets/weapons/smg.png', rifle:'assets/weapons/rifle.png', shotgun:'assets/weapons/shotgun.png' };
+export const WEAPON_FILES = { pistol:'assets/weapons/pistol.png', smg:'assets/weapons/smg.png', rifle:'assets/weapons/rifle.png', shotgun:'assets/weapons/shotgun.png', kalash:'assets/weapons/kalash.png' };
 // Текстури зброї з itch.io (AystarGames, CC0). У середовищі без DOM (тести) повертає {}.
 export function loadWeaponSprites(){
   const out={};

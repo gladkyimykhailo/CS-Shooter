@@ -260,8 +260,8 @@ export function startServer(port) {
           shooter.lastShotAt = now;
           shooter.flashAt = now;
           shooter.ammo--;
-          let dmg = w.damage;
-          if (weaponId === 'shotgun') dmg = w.damage * w.pellets * clamp(1 - dist / 14, 0.15, 1);
+          let dmg = w.damage * (msg.head ? (w.headMult || 2) : 1);
+          if (weaponId === 'shotgun') dmg *= w.pellets * clamp(1 - dist / 14, 0.15, 1);
           applyDamage(target, dmg, false);
           const events = [];
           if (shooter.ammo <= 0) {
