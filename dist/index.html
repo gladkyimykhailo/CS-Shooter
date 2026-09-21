@@ -611,7 +611,8 @@ function drawGun(w,h){
   ctx.save();const scale=Math.min(w/900,h/560);
   ctx.translate(w*(aiming?.51:.63)+(moving?Math.sin(walk)*7:0)+sway*scale,h+(moving?Math.abs(Math.cos(walk))*5:0)+(settings.motion?recoil*17:0)+dropY*scale);ctx.scale(scale,scale);ctx.rotate(-tilt*.55);
   const poly=(pts,c)=>{ctx.fillStyle=c;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();};const glove=GLOVES[settings.glove].color,skin=SKINS[settings.skin].color;
-  poly([[-105,0],[-88,-85],[-34,-141],[20,-112],[52,0]],tint(skin,.8));poly([[-87,-80],[-72,-123],[-20,-155],[19,-118],[-16,-69]],glove);
+  poly([[-105,0],[-88,-85],[-34,-141],[20,-112],[52,0]],tint(skin,.8));
+  if(!pistol){ctx.save();ctx.translate(38,-28);poly([[-87,-80],[-72,-123],[-20,-155],[19,-118],[-16,-69]],glove);ctx.restore();}
   // Зсув затвора/затворної рами під час фази досилання (p 0.72–0.92): зброя смикається вгору.
   const slideDy=-cockJerk*16;
   ctx.save();ctx.translate(0,slideDy*.4);
