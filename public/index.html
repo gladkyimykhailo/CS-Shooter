@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#101615">
+  <meta name="description" content="СЕКТОР — браузерний шутер. Три мапи, бої з ботами, зброя та свій стиль. Грай одразу.">
+  <title>СЕКТОР / Тактичний шутер</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Ігровий світ" hidden></canvas>
+  <div id="lobby" class="lobby">
+    <header class="header">
+      <a class="brand" href="./" aria-label="Сектор — головна"><span class="brand-icon">S</span> СЕКТОР<span class="brand-slash">/</span></a>
+      <nav aria-label="Головне меню"><button class="nav active" data-tab="play">ГРАТИ</button><button class="nav" data-tab="operator">ОПЕРАТОР</button><button class="nav" data-tab="settings">НАЛАШТУВАННЯ</button></nav>
+      <span class="status"><i></i> ЛОКАЛЬНИЙ РЕЖИМ</span>
+    </header>
+    <main>
+      <section id="tab-play" class="tab">
+        <div class="hero">
+          <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ТАКТИЧНИЙ ШУТЕР У БРАУЗЕРІ <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Короткі бої, влучні постріли та жодних завантажень.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація індустріальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ТРЕНУВАЛЬНА ОПЕРАЦІЯ <b>01—03</b></div><div class="art-cross">+</div></div>
+        </div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ЗОНА ОПЕРАЦІЇ<span>03</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div id="map-cards" class="map-cards"></div>
+        <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
+        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> Магазин</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
+      </section>
+      <section id="tab-operator" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ТВІЙ ПОЗИВНИЙ — ВАРТА</span><h2>ОПЕРАТОР</h2></div></div><div class="operator-layout"><div class="operator-preview"><canvas id="operator-canvas" width="480" height="520"></canvas><span>ВАРТА / ШТУРМОВИК</span></div><div class="operator-options"><h3>ЗБЕРИ СВІЙ ОБРАЗ</h3><p>Вигляд змінює стиль. Характеристики залишаються однаковими.</p><label>ФОРМА</label><div id="skin-options" class="option-row"></div><label>РУКАВИЧКИ</label><div id="glove-options" class="option-row"></div><div class="saved-note">✓ Вибір зберігається автоматично</div><button class="primary" data-go-play>ОБРАТИ МАПУ <span>→</span></button></div></div></section>
+      <section id="tab-settings" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ПІД СЕБЕ</span><h2>НАЛАШТУВАННЯ</h2></div></div><div class="settings-panel"><label>Чутливість миші <input id="sensitivity" type="range" min="0.3" max="2.5" step="0.1" value="1"></label><label>Гучність ефектів <input id="volume" type="range" min="0" max="1" step="0.05" value="0.5"></label><label>Якість зображення<select id="quality"><option value="low">Продуктивність</option><option value="high">Висока</option></select></label><label>Рух зброї та віддача камери<input id="motion" type="checkbox" checked></label><p>Налаштування зберігаються на цьому пристрої. Для керування мишею натисни на ігровий екран. Esc звільняє курсор і ставить гру на паузу.</p><button id="credits-open" class="secondary">АВТОРИ ТА РЕСУРСИ ↗</button></div></section>
+    </main>
+    <footer><span>СЕКТОР © 2026</span><span>НЕВЕЛИКА ГРА. ВЕЛИКИЙ СЕКТОР.</span><button id="footer-credits" class="text-button">ПРО ГРУ ↗</button></footer>
+  </div>
+  <div id="hud" hidden>
+    <div class="hud-top"><div class="hud-map"><span id="map-name">ДЕПО</span><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
+    <canvas id="minimap" width="160" height="160" aria-label="Мінімапа"></canvas>
+    <div id="kill-feed" class="kill-feed"></div>
+    <div id="crosshair"><i></i><i></i><i></i><i></i></div><div id="hit-marker">×</div><div id="hurt"></div>
+    <div id="game-message" class="game-message"></div>
+    <div id="buy-tip" class="buy-tip"><kbd>B</kbd> МАГАЗИН <span>· ПІДГОТОВКА ДО БОЮ</span></div>
+    <div class="hud-bottom"><div class="vitals"><span class="health-icon">+</span><strong id="health">100</strong><div><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+  </div>
+  <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

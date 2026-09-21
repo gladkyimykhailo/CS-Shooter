@@ -1,0 +1,12 @@
+{
+  "name": "sector-shooter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "СЕКТОР — автономний браузерний шутер",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "package": "python3 scripts/package.py"
+  }
+}
