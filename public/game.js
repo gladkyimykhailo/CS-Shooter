@@ -1,9 +1,11 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from './core.js';
 import { mapArt, makeOperator, drawOperator, textures, hex, tint, WEAPON_FILES, loadWeaponSprites, weaponSpriteReady } from './art.js';
+import { MP, C2S, canStart } from './net.js';
+import { defaultMpUrl, createMpClient } from './mp.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
-const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0};
+const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mpNick:'',mpServer:''};
 try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,2);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
@@ -11,6 +13,7 @@ let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite,weaponSprites={}
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
+let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false,mpSilentClose=false;
 let audio;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
@@ -36,7 +39,7 @@ function renderOperator(){
   $$('[data-glove]').forEach(b=>b.onclick=()=>{settings.glove=Number(b.dataset.glove);save();renderOperator();});
   drawOperator($('#operator-canvas'),settings.skin,settings.glove);
 }
-function tab(name){$$('.tab').forEach(e=>e.hidden=e.id!==`tab-${name}`);$$('.nav').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='operator')renderOperator();}
+function tab(name){$$('.tab').forEach(e=>e.hidden=e.id!==`tab-${name}`);$$('.nav').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='operator')renderOperator();if(name==='mp')mpTabOpened();}
 $$('.nav').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('[data-go-play]').forEach(b=>b.onclick=()=>tab('play'));
 for(const key of ['sensitivity','volume','quality','motion','difficulty']){const e=$(`#${key}`);if(e.type==='checkbox')e.checked=settings[key];else e.value=settings[key];e.addEventListener('input',()=>{settings[key]=e.type==='checkbox'?e.checked:e.type==='range'?Number(e.value):e.value;save();if(key==='quality')resize();});}
 renderCards();renderOperator();mapArt($('#hero-canvas'),map,true);
@@ -85,9 +88,9 @@ function openShop(){
   });
   $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();
 }
-function pause(){if(state!=='playing'||phase==='finished')return;paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
+function pause(){if(state!=='playing'||phase==='finished')return;if(mpMode)return mpPause();paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
 $('#pause-button').onclick=pause;
-function leave(){state='lobby';paused=false;closeDialog(false);release();canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;tab('play');}
+function leave(){if(mpClient||mpMode){mpDisconnect();return;}state='lobby';paused=false;closeDialog(false);release();canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;tab('play');}
 function endRound(winner){
   phase='intermission';intermission=3.5;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;aiming=false;
   if(winner>=0)score[winner]++;
@@ -99,14 +102,30 @@ function endMatch(){
 }
 function logKill(source,target){feed.unshift({source:source.name,target:target.name,t:6});feed=feed.slice(0,4);paintFeed();}
 function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${f.source}</b> &nbsp; ━ &nbsp; <em>${f.target}</em></div>`).join('');}
-function damage(target,n,source,head=false){if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
+function damage(target,n,source,head=false){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId});return;}if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
 function currentWeapon(){return WEAPONS[player.weapon];}
-function switchWeapon(id){if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
+function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
+function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
-function reloadWeapon(){if(state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
+function reloadWeapon(){if(mpMode||state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
 function shoot(){
-  if(state!=='playing'||phase!=='fight'||paused||modal||player.hp<=0||reload>0||nextShot>0)return;
-  const w=currentWeapon(),inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
+  if(state!=='playing'||(phase!=='fight'&&!mpMode)||paused||modal||player.hp<=0||reload>0||nextShot>0)return;
+  const w=currentWeapon();
+  if(mpMode){
+    if(mpReloadT>0)return;
+    if(mpMyAmmo()<=0){sound('empty');nextShot=.3;return;}
+    nextShot=w.rate;recoil=1;sound('shot',player.weapon);
+    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1);
+    const mAngle=player.angle+(Math.random()-.5)*spread;
+    const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
+    for(const {a,d,da} of candidates){
+      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
+      damage(a,0,player,false);hitTime=.15;sound('hit');break;
+    }
+    updateHUD();return;
+  }
+  const inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
   inv.ammo--;nextShot=w.rate;recoil=1;sound('shot',player.weapon);let anyHit=false;
   for(let pellet=0;pellet<w.pellets;pellet++){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1);const angle=player.angle+(Math.random()-.5)*spread;
@@ -144,6 +163,7 @@ function updateBots(dt){
 function update(dt){
   if(state!=='playing'||paused||phase==='finished')return;
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
+  if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=5)||round>=12)endMatch();else nextRound();}return;}
   clock-=dt;updatePlayer(dt);
   if(phase==='buy'){if(clock<=0)beginFight();return;}
@@ -151,11 +171,31 @@ function update(dt){
   if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
   updateBots(dt);const winner=roundWinner(actors,clock<=0);if(winner!==null)endRound(winner);
 }
-function updateHUD(){if(!player)return;const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+function updateHUD(){
+  if(!player)return;
+  if(mpMode){
+    const me=mpMe(),reloading=!me||me.ammo<=0;
+    $('#health').textContent=Math.max(0,Math.ceil(player.hp));$('#armor').textContent=Math.ceil(player.armor||0);
+    $('#ammo').textContent=reloading?'··':me.ammo;$('#reserve').textContent='∞';
+    $('#weapon-name').textContent=reloading?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;
+    $('#money').textContent='МЕРЕЖА';
+    $('#blue-score').textContent=mpRoom?mpRoom.score[0]:0;$('#red-score').textContent=mpRoom?mpRoom.score[1]:0;
+    const t=Math.max(0,mpRoom?mpRoom.timeLeft:0);
+    $('#timer').textContent=`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+    $('#round-label').textContent=mpRoom?`ДО ${mpRoom.killTarget} ФРАГІВ`:'МЕРЕЖА';
+    $('#map-name').textContent=map.name;
+    const blues=mpRoom?mpRoom.players.filter(p=>p.team===0).length:0,reds=mpRoom?mpRoom.players.filter(p=>p.team===1).length:0;
+    $('#phase-label').textContent=`${blues} ВАРТА / ${reds} РЕЙД`;
+    $('#buy-tip').hidden=true;$('#crosshair').hidden=!me||!me.alive;
+    $('#crosshair').style.opacity=reloading?'.25':'1';
+    $('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);
+    return;
+  }
+  const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
 function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);}
 addEventListener('resize',resize);
-function viewActor(){return player.hp>0?player:actors.find(a=>a.team===0&&a.hp>0)||player;}
+function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>a.team===0&&a.hp>0)||player;}
 function render(){
   if(state!=='playing')return;
   const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=aiming&&player.hp>0?.5:.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
@@ -178,7 +218,7 @@ function render(){
   const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
   for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*.5-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
     for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){if(depth>=zbuffer[sx])continue;const tx=clamp(Math.floor((sx-x)/sw*128),0,127);ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);}
-    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]){if(a.team===0){ctx.fillStyle='#c3f66b';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
+    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]){if(a.team===0||mpMode){ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
   }
   const vignette=ctx.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.5,w*.75);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04100b99');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
   if(player.hp>0)drawGun(w,h);
@@ -232,6 +272,14 @@ addEventListener('keydown',e=>{
   if(e.code==='Escape'){if(modal==='shop')closeDialog();else if(modal==='pause')closeDialog();else if(!modal)pause();return;}
   if(e.code==='KeyB'){if(modal==='shop')closeDialog();else if(!modal)openShop();return;}
   if(modal||paused)return;keys.add(e.code);
+  if(mpMode){
+    if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
+    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');
+    if(e.code==='KeyB')toast('Магазина в мережі немає — усі 4 стволи доступні на 1–4');
+    if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+    if(e.code==='Tab'&&mpRoom)toast(`ВАРТА ${mpRoom.score[0]} : ${mpRoom.score[1]} РЕЙД · Фраги: ${kills} · Смерті: ${deaths}`);
+    return;
+  }
   if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
   if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
@@ -249,6 +297,212 @@ joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e
 function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
 $('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
 canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
+
+// ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
+function mpMe(){return mpRoom&&mpMyId?mpRoom.players.find(p=>p.id===mpMyId):null;}
+function mpMyAmmo(){const me=mpMe();return me?me.ammo:0;}
+function mpSetStatus(t){const e=$('#mp-status');if(e)e.textContent=t;}
+function mpTabOpened(){
+  if(!mpWired){
+    mpWired=true;
+    $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
+    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=settings.mpServer||'';
+    $('#mp-connect').onclick=mpConnect;$('#mp-disconnect').onclick=()=>mpDisconnect();
+    $('#mp-refresh').onclick=()=>{if(mpClient&&mpClient.connected)mpClient.send({t:C2S.LIST});else toast('Спочатку підключися до сервера');};
+    $('#mp-create').onclick=()=>{
+      if(!mpClient||!mpClient.connected)return toast('Спочатку підключися до сервера');
+      settings.mpNick=$('#mp-nick').value;save();
+      mpClient.send({t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)});
+    };
+    $('#mp-join-btn').onclick=()=>{
+      if(!mpClient||!mpClient.connected)return toast('Спочатку підключися до сервера');
+      const code=$('#mp-join-code').value.trim().toUpperCase();
+      if(code.length!==6)return toast('Код має 6 символів');
+      mpClient.send({t:C2S.JOIN_CODE,code});
+    };
+    $('#mp-ready').onclick=()=>{if(mpClient&&mpRoom){const me=mpMe();mpClient.send({t:C2S.READY,ready:!(me&&me.ready)});}};
+    $('#mp-start').onclick=()=>{if(mpClient&&mpRoom)mpClient.send({t:C2S.START});};
+    $('#mp-leave').onclick=()=>{if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
+    const sendChat=()=>{const inp=$('#mp-chat-input'),text=inp.value.trim();if(text&&mpClient&&mpRoom){mpClient.send({t:C2S.CHAT,text});inp.value='';}};
+    $('#mp-chat-send').onclick=sendChat;
+    $('#mp-chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();e.stopPropagation();});
+  }
+  mpShowHome();
+  if(mpClient&&mpClient.connected&&!mpRoom)mpClient.send({t:C2S.LIST});
+}
+function mpConnect(){
+  if(mpClient)mpDisconnect(true);
+  settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  const url=defaultMpUrl(settings.mpServer);
+  mpSetStatus('ПІДКЛЮЧЕННЯ…');
+  mpSilentClose=false;
+  mpClient=createMpClient(url,{
+    onOpen(){mpClient.send({t:C2S.HELLO,nick:settings.mpNick});},
+    onWelcome(msg){mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${mpRooms.length} КІМНАТ`);$('#mp-disconnect').hidden=false;mpListTimer=setInterval(()=>{if(mpClient&&mpClient.connected&&!mpRoom&&!mpMode&&!$('#tab-mp').hidden)mpClient.send({t:C2S.LIST});},3000);},
+    onRooms(rooms){mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}},
+    onJoined(room){mpRoom=room;mpChat=[];mpShowRoom();},
+    onRoom(room){if(mpMode)return;mpRoom=room;mpShowRoom();},
+    onMatchStart(room){mpStartMatch(room);},
+    onSnapshot(snap){if(mpMode)mpApplySnapshot(snap);},
+    onEvents(events){if(mpRoom||mpMode)mpHandleEvents(events);},
+    onMatchEnd(room){mpRoom=room;mpShowResult({winner:room.winner,score:room.score});},
+    onError(message){toast(message);},
+    onClose(){if(!mpSilentClose)toast('Зʼєднання з сервером втрачено');mpDisconnect(true);},
+  });
+  if(!mpClient){mpSetStatus('НЕ ПІДКЛЮЧЕНО');toast('Не вдалося створити зʼєднання');}
+}
+function mpDisconnect(silent=false){
+  mpSilentClose=!!silent;
+  clearInterval(mpListTimer);mpListTimer=0;
+  if(mpClient){try{mpClient.close();}catch{}mpClient=null;}
+  mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;
+  if(!silent){
+    state='lobby';paused=false;modal='';release();
+    $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
+    tab('mp');
+  }else{
+    $('#mp-disconnect').hidden=true;mpSetStatus(silent&&mpRoom?'НЕ ПІДКЛЮЧЕНО':($('#mp-status')?$('#mp-status').textContent:''));
+    if(state==='lobby'){mpShowHome();tab('mp');}
+  }
+}
+function mpShowHome(){
+  $('#mp-home').hidden=false;$('#mp-room').hidden=true;
+  mpRenderRooms();
+}
+function mpRenderRooms(){
+  const box=$('#mp-rooms');if(!box)return;
+  if(!mpClient||!mpClient.connected){box.innerHTML='<p style="color:var(--muted)">Підключися до сервера, щоб побачити публічні кімнати.</p>';return;}
+  if(!mpRooms.length){box.innerHTML='<p style="color:var(--muted)">Публічних кімнат немає — створи свою або ввійди за кодом.</p>';return;}
+  box.innerHTML=mpRooms.map(r=>{
+    const m=MAPS[clamp(r.mapId,0,MAPS.length-1)];
+    const phase=r.phase==='playing'?'БІЙ ТРИВАЄ':r.phase==='finished'?'МАТЧ ЗАВЕРШЕНО':'ЛОБІ · МОЖНА ЗАЙТИ';
+    return `<div class="map-card"><div class="map-detail"><h3>${r.name}</h3><p>${m.name} · ${r.players}/${r.maxPlayers} · ${phase}</p><div class="map-tags"><span>${r.isPublic?'ПУБЛІЧНА':'ПРИВАТНА'}</span><button class="text-button" data-join="${r.id}" ${r.phase!=='lobby'||r.players>=r.maxPlayers?'disabled':''}>УВІЙТИ ↗</button></div></div></div>`;
+  }).join('');
+  box.querySelectorAll('[data-join]').forEach(b=>b.onclick=()=>mpClient.send({t:C2S.JOIN,id:b.dataset.join}));
+}
+function mpShowRoom(){
+  $('#mp-home').hidden=true;$('#mp-room').hidden=false;
+  mpRenderRoom();
+}
+function mpRenderRoom(){
+  const room=mpRoom;if(!room)return;
+  const m=MAPS[clamp(room.mapId,0,MAPS.length-1)];
+  const me=room.players.find(p=>p.id===mpMyId);
+  $('#mp-room-title').textContent=`КІМНАТА · ${room.name}`;
+  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі стволи доступні`;
+  $('#mp-room-code').textContent=room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${p.nick}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
+  $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
+  const startBtn=$('#mp-start');
+  startBtn.hidden=room.hostId!==mpMyId;
+  startBtn.disabled=!canStart(room,mpMyId);
+  startBtn.innerHTML=room.phase==='finished'?'РЕВАНШ <span>→</span>':'РОЗПОЧАТИ <span>→</span>';
+  mpRenderChat();
+}
+function mpRenderChat(){
+  const box=$('#mp-chat');if(!box)return;
+  box.innerHTML=mpChat.map(c=>`<div><b>${c.nick}</b> &nbsp; ━ &nbsp; <em>${c.text}</em></div>`).join('');
+}
+function mpStartMatch(room){
+  initAudio();
+  mpRoom=room;mpResultShown=false;kills=0;deaths=0;feed=[];mpChat=[];
+  map=MAPS[clamp(room.mapId,0,MAPS.length-1)];
+  wallTextures=textures(map);
+  blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);
+  redSprite=makeOperator('#aa7853','#ffbd73');
+  weaponSprites=loadWeaponSprites();
+  const me=room.players.find(p=>p.id===mpMyId);
+  player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;
+  mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
+  for(const p of room.players){
+    if(p.id===mpMyId)continue;
+    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
+  }
+  actors=[player,...mpRemotes.values()];
+  state='playing';phase='mp';paused=false;modal='';mpMode=true;
+  pitch=0;aiming=false;shootHeld=false;touchFire=false;nextShot=0;reload=0;reloadTotal=0;reloadStage=0;recoil=0;hitTime=0;hurtTime=0;keys.clear();
+  $('#overlay').hidden=true;$('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;
+  $('#touch-controls').hidden=!touchDevice;
+  resize();updateHUD();lock();
+  $('#game-message').textContent='МЕРЕЖЕВИЙ БІЙ · ТРИМАЙ СЕКТОР';
+  setTimeout(()=>{if(mpMode&&player.hp>0)$('#game-message').textContent='';},2500);
+}
+function mpApplySnapshot(snap){
+  mpRoom=snap;
+  const me=snap.players.find(p=>p.id===mpMyId);
+  if(me){
+    const wasAlive=player.hp>0;
+    player.hp=me.hp;player.armor=me.armor||0;
+    if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
+    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;$('#game-message').textContent='';}
+    if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
+  }
+  const seen=new Set();
+  for(const p of snap.players){
+    if(p.id===mpMyId)continue;
+    seen.add(p.id);
+    let a=mpRemotes.get(p.id);
+    if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
+    a.tx=p.x;a.ty=p.y;a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
+    if((p.flashAt||0)>a.lastFlash){a.lastFlash=p.flashAt;a.pendingFlash=true;}
+  }
+  for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
+  actors=[player,...mpRemotes.values()];
+  updateHUD();
+}
+function mpHandleEvents(events){
+  for(const e of events){
+    if(e.t==='kill'){
+      feed.unshift({source:e.sourceNick,target:e.targetNick,t:6});feed=feed.slice(0,4);paintFeed();sound('hit');
+      if(e.source===mpMyId)kills++;if(e.target===mpMyId)deaths++;
+    }else if(e.t==='reload'){
+      if(e.id===mpMyId)mpReloadT=(WEAPONS[player.weapon]||WEAPONS.pistol).reload;
+    }else if(e.t==='chat'){
+      mpChat.push(e);mpChat=mpChat.slice(-30);mpRenderChat();
+    }else if(e.t==='finish'){
+      mpShowResult({winner:e.winner,score:e.score||[0,0]});
+    }
+  }
+  updateHUD();
+}
+function mpUpdate(dt){
+  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);mpReloadT=Math.max(0,mpReloadT-dt);
+  feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
+  updatePlayer(dt);
+  const me=mpMe();
+  if(me&&me.alive&&player.hp>0&&mpClient){
+    mpSendTimer-=dt;
+    if(mpSendTimer<=0){mpSendTimer=1/MP.TICK_HZ;mpClient.send({t:C2S.STATE,x:+player.x.toFixed(2),y:+player.y.toFixed(2),angle:+player.angle.toFixed(3),moving:player.moving,weapon:player.weapon});}
+  }
+  if(shootHeld||touchFire){if((WEAPONS[player.weapon]||{}).automatic)shoot();}
+  for(const a of mpRemotes.values()){
+    a.x+=(a.tx-a.x)*Math.min(1,dt*12);a.y+=(a.ty-a.y)*Math.min(1,dt*12);a.angle=a.tAngle;
+    if(a.pendingFlash){a.pendingFlash=false;a.flash=.09;if(Math.hypot(a.x-player.x,a.y-player.y)<25)sound('shot',a.weapon);}
+  }
+}
+function mpPause(){
+  paused=true;aiming=false;
+  dialog('mpPause',header('МЕРЕЖЕВИЙ БІЙ','ПАУЗА')+`<p>${map.name} · Рахунок ${mpRoom?mpRoom.score[0]:0} : ${mpRoom?mpRoom.score[1]:0}</p><div class="dialog-actions"><button id="mp-resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="mp-quit" class="secondary">ВИЙТИ З МАТЧУ</button></div>`);
+  $('#mp-resume').onclick=()=>closeDialog();
+  $('.dialog-close').onclick=()=>closeDialog();
+  $('#mp-quit').onclick=()=>mpDisconnect();
+}
+function mpShowResult(res){
+  if(mpResultShown||!mpMode)return;mpResultShown=true;
+  mpMode=false;shootHeld=false;touchFire=false;aiming=false;
+  const me=mpMe(),myTeam=me?me.team:0;
+  const title=res.winner<0?'НІЧИЯ':res.winner===myTeam?'ПЕРЕМОГА КОМАНДИ':'ПОРАЗКА';
+  dialog('mpResult',`<span class="eyebrow">МЕРЕЖЕВИЙ БІЙ ЗАВЕРШЕНО / ${map.name}</span><h2>${title}</h2><div class="result-score"><span>${res.score[0]}</span><small>:</small><span>${res.score[1]}</span></div><div class="result-stats"><span>${kills} ФРАГІВ</span><span>${deaths} СМЕРТЕЙ</span></div><div class="dialog-actions"><button id="mp-back" class="primary">ДО КІМНАТИ <span>→</span></button><button id="mp-out" class="secondary">ВИЙТИ</button></div>`);
+  sound(res.winner===myTeam?'win':'empty');
+  $('#mp-back').onclick=()=>{mpShowLobby();};
+  $('#mp-out').onclick=()=>mpDisconnect();
+}
+function mpShowLobby(){
+  state='lobby';paused=false;modal='';release();
+  $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
+  tab('mp');
+  if(mpRoom)mpShowRoom();else mpShowHome();
+}
 
 // Explicitly enabled only by the local browser verification harness.
 if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,map:map.id}),endRound,endMatch,leave,openShop};

@@ -8,5 +8,8 @@
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs",
     "package": "python3 scripts/package.py"
+  },
+  "dependencies": {
+    "ws": "^8.21.3"
   }
 }

@@ -27,7 +27,7 @@ function fixture(saved={}){
   const document=new Element('document');document.innerHTML=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');document.createElement=tag=>new Element(tag);document.exitPointerLock=()=>document.pointerLockElement=null;document.hidden=false;
   const sandbox={document,console,URLSearchParams,location:{search:'?test=1'},innerWidth:320,innerHeight:200,performance:{now:()=>0},matchMedia:()=>({matches:false}),localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},requestAnimationFrame(fn){sandbox.frame=fn;},addEventListener(name,fn){(listeners[name]??=[]).push(fn);}};
   sandbox.window=sandbox;const context=vm.createContext(sandbox);
-  const source=['core.js','art.js','game.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n');
+  const source=['core.js','art.js','net.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n');
   vm.runInContext(source,context,{timeout:10000});
   const key=(code,type='keydown')=>{for(const fn of listeners[type]||[])fn({code,repeat:false,preventDefault(){}});};
   return {game:sandbox.__sector,document,key,storage,drawCalls:()=>drawCalls,frame:sandbox.frame,tick:dt=>vm.runInContext(`update(${Number(dt)})`,context)};
@@ -60,6 +60,16 @@ test('смерть прибирає основну зброю у наступн�
 test('обрана мапа та вигляд зберігаються; усі мапи запускають і відмальовують бій',()=>{
   for(let i=0;i<3;i++){const f=fixture({map:i,skin:2,glove:1});f.game.start();f.game.beginFight();f.game.step(.016);assert.equal(f.game.get().map,['depot','port','city'][i]);assert.ok(f.drawCalls()>1000);}
   const f=fixture();f.document.querySelectorAll('[data-skin]')[1].onclick();const stored=JSON.parse(f.storage.get('sector-settings'));assert.equal(stored.skin,1);
+});
+
+test('вкладка мультиплеєра відкривається без сервера і показує підказку',()=>{
+  const f=fixture();
+  f.document.querySelectorAll('.nav').find(b=>b.dataset.tab==='mp').onclick();
+  assert.equal(f.document.querySelector('#tab-mp').hidden,false);
+  assert.match(f.document.querySelector('#mp-rooms').innerHTML,/Підключися/);
+  assert.equal(f.document.querySelector('#mp-room-map').children.length,3);
+  f.document.querySelector('#mp-refresh').onclick();
+  assert.match(f.document.querySelector('#toast').textContent,/підключися/i);
 });
 
 test('автономний HTML не потребує жодних зовнішніх файлів чи завантажень',()=>{

@@ -14,7 +14,7 @@
   <div id="lobby" class="lobby">
     <header class="header">
       <a class="brand" href="./" aria-label="Сектор — головна"><span class="brand-icon">S</span> СЕКТОР<span class="brand-slash">/</span></a>
-      <nav aria-label="Головне меню"><button class="nav active" data-tab="play">ГРАТИ</button><button class="nav" data-tab="operator">ОПЕРАТОР</button><button class="nav" data-tab="settings">НАЛАШТУВАННЯ</button></nav>
+      <nav aria-label="Головне меню"><button class="nav active" data-tab="play">ГРАТИ</button><button class="nav" data-tab="mp">МУЛЬТИПЛЕЄР</button><button class="nav" data-tab="operator">ОПЕРАТОР</button><button class="nav" data-tab="settings">НАЛАШТУВАННЯ</button></nav>
       <span class="status"><i></i> ЛОКАЛЬНИЙ РЕЖИМ</span>
     </header>
     <main>
@@ -27,6 +27,57 @@
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
         <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> Магазин</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
+      </section>
+      <section id="tab-mp" class="tab" hidden>
+        <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">НЕ ПІДКЛЮЧЕНО</span></div>
+        <div id="mp-home">
+          <div class="settings-panel" style="margin:0 0 18px;max-width:none">
+            <label>Позивний <input id="mp-nick" type="text" maxlength="16" placeholder="БОЄЦЬ" style="width:180px"></label>
+            <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
+            <p>Порожня адреса = той самий сервер, що віддав сторінку. Приватні кімнати видно лише за кодом.</p>
+            <div class="dialog-actions" style="margin-top:0">
+              <button id="mp-connect" class="primary">ПІДКЛЮЧИТИСЯ <span>→</span></button>
+              <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
+              <button id="mp-refresh" class="secondary">ОНОВИТИ СПИСОК</button>
+            </div>
+          </div>
+          <div class="launch-bar" style="flex-wrap:wrap">
+            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b>
+              <span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                <input id="mp-room-name" type="text" maxlength="24" placeholder="Назва кімнати" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
+                <select id="mp-room-map" title="Мапа"></select>
+                <select id="mp-room-max" title="Гравців"><option value="2">2 гравці</option><option value="4">4 гравці</option><option value="6" selected>6 гравців</option></select>
+                <select id="mp-room-visibility" title="Доступ"><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
+              </span>
+            </div>
+            <button id="mp-create" class="primary">СТВОРИТИ <span>+</span></button>
+          </div>
+          <div class="launch-bar" style="flex-wrap:wrap">
+            <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
+            <input id="mp-join-code" type="text" maxlength="6" placeholder="КОД" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
+            <button id="mp-join-btn" class="secondary">УВІЙТИ ЗА КОДОМ</button>
+          </div>
+          <div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
+          <div id="mp-rooms" class="map-cards"></div>
+        </div>
+        <div id="mp-room" hidden>
+          <div class="settings-panel" style="max-width:none">
+            <h3 id="mp-room-title" style="margin-top:0">КІМНАТА</h3>
+            <p id="mp-room-info"></p>
+            <div id="mp-room-code" class="shop-balance" style="margin-bottom:12px"></div>
+            <div id="mp-players" class="control-list"></div>
+            <div class="dialog-actions">
+              <button id="mp-ready" class="secondary">ГОТОВИЙ ✓</button>
+              <button id="mp-start" class="primary">РОЗПОЧАТИ <span>→</span></button>
+              <button id="mp-leave" class="secondary">ВИЙТИ</button>
+            </div>
+            <div id="mp-chat" class="kill-feed" style="position:static;text-align:left;margin-top:16px;max-height:150px;overflow:auto"></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="mp-chat-input" type="text" maxlength="120" placeholder="Повідомлення…" style="flex:1;background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
+              <button id="mp-chat-send" class="secondary">НАДІСЛАТИ</button>
+            </div>
+          </div>
+        </div>
       </section>
       <section id="tab-operator" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ТВІЙ ПОЗИВНИЙ — ВАРТА</span><h2>ОПЕРАТОР</h2></div></div><div class="operator-layout"><div class="operator-preview"><canvas id="operator-canvas" width="480" height="520"></canvas><span>ВАРТА / ШТУРМОВИК</span></div><div class="operator-options"><h3>ЗБЕРИ СВІЙ ОБРАЗ</h3><p>Вигляд змінює стиль. Характеристики залишаються однаковими.</p><label>ФОРМА</label><div id="skin-options" class="option-row"></div><label>РУКАВИЧКИ</label><div id="glove-options" class="option-row"></div><div class="saved-note">✓ Вибір зберігається автоматично</div><button class="primary" data-go-play>ОБРАТИ МАПУ <span>→</span></button></div></div></section>
       <section id="tab-settings" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ПІД СЕБЕ</span><h2>НАЛАШТУВАННЯ</h2></div></div><div class="settings-panel"><label>Чутливість миші <input id="sensitivity" type="range" min="0.3" max="2.5" step="0.1" value="1"></label><label>Гучність ефектів <input id="volume" type="range" min="0" max="1" step="0.05" value="0.5"></label><label>Якість зображення<select id="quality"><option value="low">Продуктивність</option><option value="high">Висока</option></select></label><label>Рух зброї та віддача камери<input id="motion" type="checkbox" checked></label><p>Налаштування зберігаються на цьому пристрої. Для керування мишею натисни на ігровий екран. Esc звільняє курсор і ставить гру на паузу.</p><button id="credits-open" class="secondary">АВТОРИ ТА РЕСУРСИ ↗</button></div></section>
