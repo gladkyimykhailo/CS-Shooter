@@ -102,18 +102,19 @@ test('публічна кімната: створення, джойн, гото�
     const idA = startA.room.players.find(p => p.team === 0).id;
     const idB = startA.room.players.find(p => p.team === 1).id;
 
-    // Стаємо поруч на відкритій лінії y=1.5 (без стін) і стріляємо.
+    // Відкрита лінія в палаці Mirage; координати >24 також перевіряють
+    // відсутність старого обмеження розміру мапи на сервері.
     const wsA = startA.room.players.find(p => p.id === idA).id === welcomeA.id ? a : b;
     const wsB = wsA === a ? b : a;
     const lA = wsA === a ? la : lb;
-    send(wsA, { t: C2S.STATE, x: 2.5, y: 1.5, angle: 0, moving: false });
-    send(wsB, { t: C2S.STATE, x: 6.5, y: 1.5, angle: Math.PI, moving: false });
+    send(wsA, { t: C2S.STATE, x: 31.5, y: 32.5, angle: 0, moving: false });
+    send(wsB, { t: C2S.STATE, x: 35.5, y: 32.5, angle: Math.PI, moving: false });
     // Чекаємо, поки сервер застосує позиції обох гравців.
     await waitFor(() => {
       const r = roomOf();
       const ps = r ? Object.values(r.players) : [];
       const pa = ps.find(p => p.id === idA), pb = ps.find(p => p.id === idB);
-      return pa && pb && Math.abs(pa.x - 2.5) < 0.01 && Math.abs(pb.x - 6.5) < 0.01 ? true : null;
+      return pa && pb && Math.abs(pa.x - 31.5) < 0.01 && Math.abs(pb.x - 35.5) < 0.01 && pa.y === 32.5 && pb.y === 32.5 ? true : null;
     });
     for (let i = 0; i < 4; i++) {
       send(wsA, { t: C2S.SHOOT, weapon: 'rifle', target: idB });

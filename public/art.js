@@ -1,14 +1,37 @@
-import { SKINS, GLOVES } from './core.js';
+import { SKINS, GLOVES, floorHeight } from './core.js';
 export function hex(s){return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];}
 export function tint(s,k){return `rgb(${hex(s).map(v=>Math.min(255,Math.max(0,Math.round(v*k)))).join(',')})`;}
 function poly(c,points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
+// Render the playable grid itself as a sandstone model, like the reference photo.
+function architecturalMapArt(canvas,map,hero){
+  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height,n=map.size;
+  const u=Math.min((w-40)/(n*2),(h-50)/(n+4)),ox=w/2,oy=(h-28-n*u)/2+u;
+  const p=(x,y,z=0)=>[ox+(x-y)*u,oy+(x+y)*u*.5-z*u];
+  c.imageSmoothingEnabled=false;c.clearRect(0,0,w,h);c.fillStyle='#202725';c.fillRect(0,0,w,h);
+  const scale=map.heightScale,step=1/scale;
+  for(let d=0;d<n*scale*2;d++)for(let iy=0;iy<n*scale;iy++){
+    const ix=d-iy;if(ix<0||ix>=n*scale)continue;
+    const x=ix/scale,y=iy/scale,gx=Math.floor(x),gy=Math.floor(y),solid=map.grid[gy][gx];
+    if(solid&&![[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>map.grid[gy+dy]?.[gx+dx]===0))continue;
+    const z=solid?2.7:floorHeight(map,x+step*.5,y+step*.5);
+    const east=solid?0:floorHeight(map,x+step*1.5,y+step*.5),south=solid?0:floorHeight(map,x+step*.5,y+step*1.5);
+    if(z>east)poly(c,[p(x+step,y,east),p(x+step,y+step,east),p(x+step,y+step,z),p(x+step,y,z)],'#92764e');
+    if(z>south)poly(c,[p(x,y+step,south),p(x+step,y+step,south),p(x+step,y+step,z),p(x,y+step,z)],'#b39161');
+    poly(c,[p(x,y,z),p(x+step,y,z),p(x+step,y+step,z),p(x,y+step,z)],solid?'#eed8b0':(gx+gy)%3===0?'#bda57e':'#cbb48f');
+  }
+  const labels=[{name:'A',point:map.sites.a.point},{name:'B',point:map.sites.b.point},{name:'MID',point:map.mid.point}];
+  if(hero)labels.push(...map.callouts.filter(a=>['ПАЛАЦ','АПАРТАМЕНТИ','РИНОК','LONG A','SHORT A','ВЕРХНІ ТУНЕЛІ','CT','T'].includes(a.name)));
+  c.textAlign='center';c.textBaseline='middle';c.font=`bold ${hero?11:10}px monospace`;
+  for(const label of labels){const [x,y]=p(...label.point,floorHeight(map,...label.point)),width=label.name.length*(hero?7:6)+10;c.fillStyle='#172623e8';c.fillRect(x-width/2,y-8,width,16);c.fillStyle='#f3dfb3';c.fillText(label.name,x,y);}
+  c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle='#f3dfb3';c.font='bold 12px monospace';c.fillText(map.name.replace(' · ',' / '),16,h-13);
+  c.textAlign='right';c.fillStyle='#a5b8b0';c.font='10px monospace';c.fillText('A · MID · B',w-16,h-13);c.textAlign='left';
+}
 function drawMapLandmark(c,map,ox,oy,pw,ph,tw,th){
   const u=Math.max(3,Math.floor(Math.min(tw,th)*.45)),cx=Math.round(ox+pw*.5),cy=Math.round(oy+ph*.47),light=tint(map.light,.88),shadow=tint(map.wall,.48),accent=tint(map.accent,1.18);
   const r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
   const stairs=(x,y,steps,dir=1)=>{for(let i=0;i<steps;i++){const width=(i+1)*u*2,left=dir>0?x:x-width;r(left,y+i*u,width,Math.max(2,u*.78),i%2?light:shadow);r(left,y+i*u,width,1,accent);}};
   const terrace=(x,y,w,h)=>{r(x,y,w,h,shadow);r(x,y,w,Math.max(2,u*.5),light);r(x+u,y+u,w-u*2,Math.max(2,h-u*1.5),accent);};
   switch(map.id){
-    case 'dunes': stairs(cx-5*u,cy-5*u,5,1);terrace(cx+2*u,cy,u*4,u*2);break;
     case 'terraces': stairs(cx-6*u,cy-5*u,6,1);stairs(cx+6*u,cy-5*u,6,-1);terrace(cx-3*u,cy+u,u*6,u*2);break;
     case 'furnace': r(cx-5*u,cy-3*u,3*u,6*u,shadow);r(cx+2*u,cy-4*u,3*u,7*u,shadow);stairs(cx-4*u,cy-2*u,4,1);r(cx-4*u,cy-2*u,8*u,u,accent);break;
     case 'canal': r(cx-6*u,cy-u,12*u,2*u,accent);stairs(cx-6*u,cy-4*u,3,1);stairs(cx+6*u,cy-4*u,3,-1);terrace(cx-3*u,cy-u*.35,u*6,u*.7);break;
@@ -24,7 +47,16 @@ function paintMapTexture(c,map,type){
   const light=tint(map.light,.62),shadow=tint(map.wall,.42),accent=tint(map.accent,1.12),r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
   const stairs=(x,y,steps,dir=1)=>{for(let i=0;i<steps;i++){const width=(i+1)*7,left=dir>0?x:x-width;r(left,y+i*7,width,5,i%2?light:shadow);r(left,y+i*7,width,1,accent);}};
   switch(map.id){
-    case 'dunes': for(let y=10;y<64;y+=14)r(0,y,64,2,light);stairs(8,18,5,1);break;
+    case 'dust2':
+      r(0,0,64,40,tint(map.wall,1.06));r(0,4,64,4,light);r(0,38,64,4,light);
+      for(let y=12;y<64;y+=13){r(0,y,64,1,shadow);for(let x=y%2?10:0;x<64;x+=21)r(x,y,1,13,shadow);}
+      r(22,18,20,15,shadow);r(24,20,16,11,tint(map.accent,.65));r(19,33,26,3,light);break;
+    case 'mirage':
+      r(0,0,64,40,tint(map.wall,1.08));r(0,40,64,3,light);
+      for(let y=45;y<64;y+=9){r(0,y,64,1,shadow);for(let x=y%2?12:0;x<64;x+=24)r(x,y,1,9,shadow);}
+      r(19,10,26,24,light);r(22,12,20,19,shadow);r(23,13,18,17,map.accent);
+      for(let y=15;y<30;y+=4)r(24,y,16,1,shadow);
+      r(17,33,30,3,light);break;
     case 'terraces': stairs(4,7,6,1);stairs(60,7,6,-1);break;
     case 'furnace': r(7,8,9,48,shadow);r(10,6,3,52,accent);r(38,0,8,64,shadow);stairs(20,19,4,1);break;
     case 'canal': for(let y=11;y<60;y+=14){r(0,y,64,2,accent);r(8,y+3,20,2,light);}stairs(6,18,4,1);break;
@@ -36,6 +68,7 @@ function paintMapTexture(c,map,type){
   }
 }
 export function mapArt(canvas,map,hero=false){
+  if(map.heights){architecturalMapArt(canvas,map,hero);return;}
   const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
   c.imageSmoothingEnabled=false;c.clearRect(0,0,w,h);
   c.fillStyle='#081312';c.fillRect(0,0,w,h);

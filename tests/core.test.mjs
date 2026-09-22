@@ -23,8 +23,47 @@ test('тераси мають власну схему з нижніми й ве�
   assert.equal(terraces.sites.a.name,'НИЖНІ СХОДИ');assert.equal(terraces.mid.name,'ВЕРХНІ СХОДИ');assert.equal(terraces.sites.b.name,'БАЛКОН');
   assert.equal(MAPS.some(map=>map.id==='arcade'),false);
 });
+test('Mirage: усі кімнати, сходові проходи й зони з’єднані, зовнішні стіни закриті',()=>{
+  const map=MAPS.find(m=>m.id==='mirage');assert.ok(map);
+  assert.equal(map.grid.length,40);
+  for(const row of map.grid){assert.equal(row.length,map.size);assert.ok(row[0]&&row.at(-1));}
+  assert.ok(map.grid[0].every(Boolean)&&map.grid.at(-1).every(Boolean));
+  const seen=new Set(),queue=[map.blue[0].map(Math.floor)];
+  for(let i=0;i<queue.length;i++){
+    const [x,y]=queue[i],key=`${x},${y}`;if(seen.has(key))continue;seen.add(key);
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(map.grid[y+dy]?.[x+dx]===0&&!seen.has(`${x+dx},${y+dy}`))queue.push([x+dx,y+dy]);
+  }
+  assert.equal(seen.size,map.grid.flat().filter(t=>t===0).length,'no disconnected rooms');
+  for(const area of map.callouts){assert.ok(canStand(map,...area.point),area.name);assert.ok(seen.has(area.point.map(Math.floor).join(',')),area.name);}
+  for(const stair of map.stairs)for(let y=stair.y;y<stair.y+stair.h;y++)for(let x=stair.x;x<stair.x+stair.w;x++)assert.ok(canStand(map,x+.5,y+.5),'stair route is walkable');
+});
+test('Mirage: рампа й палац дають незалежні маршрути T до A без MID',()=>{
+  const map=MAPS.find(m=>m.id==='mirage');
+  const close=(grid,x,y,w,h)=>{for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)grid[j][i]=1;};
+  for(const blockedRoute of ['ramp','palace']){
+    const grid=map.grid.map(row=>[...row]);
+    close(grid,18,12,5,14);close(grid,12,3,20,4);
+    if(blockedRoute==='ramp')close(grid,25,28,3,5);else close(grid,30,28,6,8);
+    assert.ok(findPath({...map,grid},...map.red[0],...map.sites.a.point).length,`alternate route with ${blockedRoute} blocked`);
+  }
+  assert.equal(lineOfSight(map,...map.sites.a.point,...map.sites.b.point),false);
+});
 test('колізії не дозволяють пройти зовнішню стіну та дозволяють рух уздовж неї',()=>{
-  const a={x:1.3,y:1.5};moveActor(MAPS[0],a,-.4,.4);assert.equal(a.x,1.3);assert.equal(a.y,1.9);assert.equal(canStand(MAPS[0],-1,2),false);
+  const map=MAPS.find(m=>m.id==='furnace'),a={x:1.3,y:1.5};moveActor(map,a,-.4,.4);assert.equal(a.x,1.3);assert.equal(a.y,1.9);assert.equal(canStand(map,-1,2),false);
+});
+test('Dust II: Long і Short дають окремі підходи до A, тунелі ведуть до B без MID',()=>{
+  const map=MAPS.find(m=>m.id==='dust2');assert.ok(map);
+  const close=(grid,x,y,w,h)=>{for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)grid[j][i]=1;};
+  for(const route of ['long','short']){
+    const grid=map.grid.map(row=>[...row]);close(grid,23,8,5,3);
+    if(route==='long')close(grid,25,18,4,3);else close(grid,34,14,4,3);
+    const path=findPath({...map,grid},...map.red[0],...map.sites.a.point);
+    assert.ok(path.length,route);
+    assert.ok(path.some(p=>route==='long'?p.x>=34&&p.y>=15&&p.y<18:p.x>=25&&p.x<29&&p.y>=18&&p.y<21),route);
+  }
+  const grid=map.grid.map(row=>[...row]);close(grid,18,12,5,17);
+  assert.ok(findPath({...map,grid},...map.red[0],...map.sites.b.point).length,'tunnels bypass MID');
+  for(const area of map.callouts)assert.ok(canStand(map,...area.point),area.name);
 });
 test('броня поглинає шкоду, вичерпується, голова не захищена',()=>{
   const a={hp:100,armor:10};applyDamage(a,30);assert.equal(a.armor,0);assert.equal(a.hp,80);applyDamage(a,30);assert.equal(a.hp,50);

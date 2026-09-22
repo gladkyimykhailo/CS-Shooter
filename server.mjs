@@ -228,7 +228,7 @@ export function startServer(port) {
           const map = MAPS[validMapId(room.mapId)];
           const x = Number(msg.x), y = Number(msg.y), angle = Number(msg.angle);
           if ([x, y, angle].every(Number.isFinite)) {
-            p.x = clamp(x, 0.3, 23.7); p.y = clamp(y, 0.3, 23.7);
+            p.x = clamp(x, 0.3, map.size - 0.3); p.y = clamp(y, 0.3, map.size - 0.3);
             p.angle = angle;
             p.moving = !!msg.moving;
           }

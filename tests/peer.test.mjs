@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import { createPeerHost, createPeerClient, encodePeerSignal, decodePeerSignal } from '../public/peer.js';
 import { C2S, S2C, MP } from '../public/net.js';
 import { defaultMpUrl } from '../public/mp.js';
+import { MAPS } from '../public/core.js';
 
+const TEST_MAP_ID=MAPS.findIndex(map=>map.id==='furnace');
 function hostFixture(options={}){
   let time=100;const messages=[];
-  const host=createPeerHost({maxPlayers:6,...options},'Власник',(id,msg)=>messages.push({id,...structuredClone(msg)}),()=>time);
+  const host=createPeerHost({maxPlayers:6,mapId:TEST_MAP_ID,...options},'Власник',(id,msg)=>messages.push({id,...structuredClone(msg)}),()=>time);
   return {host,messages,advance:dt=>{time+=dt;host.tick(dt);}};
 }
 function startDuel(f){
@@ -14,6 +16,16 @@ function startDuel(f){
   f.host.receive('host',{t:C2S.READY,ready:true});f.host.receive('p123456',{t:C2S.READY,ready:true});
   f.host.receive('host',{t:C2S.START});assert.equal(f.host.room.phase,'playing');
 }
+
+test('Mirage accepts movement in palace and respawns inside the larger map',()=>{
+  const mapId=MAPS.findIndex(m=>m.id==='mirage'),map=MAPS[mapId],f=hostFixture({mapId});startDuel(f);
+  const p=f.host.room.players.host;
+  assert.deepEqual([p.x,p.y],map.blue[0]);
+  f.host.receive('host',{t:C2S.STATE,x:32.5,y:32.5,angle:0});
+  assert.deepEqual([p.x,p.y],[32.5,32.5]);
+  f.host.receive('host',{t:C2S.STATE,x:map.size+1,y:32.5,angle:0});
+  assert.deepEqual([p.x,p.y],[32.5,32.5]);
+});
 
 test('browser room: host-only start, balanced teams, ready states, capacity and rematch',()=>{
   const f=hostFixture({maxPlayers:2,matchTime:60});

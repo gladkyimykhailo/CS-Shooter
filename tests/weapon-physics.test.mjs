@@ -35,7 +35,8 @@ test('weapon weight, aimed recoil, turn inertia and landing affect the spring',(
 });
 
 test('long barrels retract earlier; empty space and walls behind do not retract',()=>{
-  const map=MAPS[0];
+  const map=MAPS.find(candidate=>candidate.id==='furnace');
+  assert.ok(map);
   assert.equal(weaponWallProximity(map,2.5,3.5,0,'rifle'),0);
   assert.equal(weaponWallProximity(map,5.3,4.5,0,'pistol'),0);
   assert.ok(weaponWallProximity(map,5.3,4.5,0,'rifle')>0);

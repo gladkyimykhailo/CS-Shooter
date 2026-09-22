@@ -21,12 +21,12 @@
       <section id="tab-play" class="tab">
         <div class="hero">
           <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ПІКСЕЛЬНИЙ ТАКТИЧНИЙ ШУТЕР <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Піксельні мапи, снайперська оптика й короткі бої.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
-          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—09</b></div><div class="art-cross">+</div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—10</b></div><div class="art-cross">+</div></div>
         </div>
-        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">10</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
-        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
+        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="map-plan-open" class="text-button">СХЕМА МАПИ · M ↗</button><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
       </section>
       <section id="tab-mp" class="tab" hidden>
         <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ</span></div>
@@ -113,7 +113,7 @@
     <footer><span>СЕКТОР © 2026</span><span>НЕВЕЛИКА ГРА. ВЕЛИКИЙ СЕКТОР.</span><button id="footer-credits" class="text-button">ПРО ГРУ ↗</button></footer>
   </div>
   <div id="hud" hidden>
-    <div class="hud-top"><div class="hud-map"><span id="map-name">ДЮНИ</span><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
+    <div class="hud-top"><div class="hud-map"><span id="map-name">MIRAGE · PIXEL</span><small id="map-location"></small><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
     <canvas id="minimap" width="160" height="160" aria-label="Мінімапа"></canvas>
     <div id="kill-feed" class="kill-feed"></div>
     <div id="crosshair"><i></i><i></i><i></i><i></i></div><div id="hit-marker">×</div><div id="hurt"></div>

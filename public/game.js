@@ -1,5 +1,7 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from './core.js';
 import { createWeaponMotion, kickWeaponMotion, stepWeaponMotion, weaponWallProximity } from './core.js';
+import { floorHeight } from './core.js';
+import { drawTerrain } from './terrain.js';
 import { mapArt, makeOperator, drawOperator, textures, hex, tint, WEAPON_FILES, drawHeldWeapon, drawWeaponSights, drawScopeOverlay, WEAPON_MUZZLES } from './art.js';
 import { MP, C2S, canStart } from './net.js';
 import { defaultMpUrl, createMpClient } from './mp.js';
@@ -16,7 +18,7 @@ const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settin
 let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
-let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
+let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
 let mpEpoch=0,mpPeerBusy=false;
 let audio;
@@ -57,8 +59,15 @@ function lock(){if(touchDevice)return;try{const p=canvas.requestPointerLock?.();
 function dialog(type,html){modal=type;const panel=$('#dialog');panel.className=`dialog dialog-${type}`;panel.innerHTML=html;$('#overlay').hidden=false;release();panel.querySelector('button')?.focus();}
 function closeDialog(resume=true){$('#overlay').hidden=true;modal='';if(resume&&state==='playing'){paused=false;lock();}}
 function header(label,title){return `<div class="dialog-header"><span class="eyebrow">${label}</span><button class="dialog-close" aria-label="Закрити">×</button></div><h2>${title}</h2>`;}
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
-function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: вісім оригінальних піксельних мап, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function showMapPlan(){
+  if(state==='playing'&&!mpMode)paused=true;
+  aiming=false;
+  dialog('map',header('СХЕМА МАПИ',map.name)+`<canvas id="map-plan" width="900" height="660" style="width:100%;height:auto" aria-label="Планування ${map.name}"></canvas><p>A — ${map.sites.a.name} · MID — ${map.mid.name} · B — ${map.sites.b.name}</p><p>${(map.callouts||[]).map(a=>a.name).join(' · ')}</p>`);
+  mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
+}
+$('#map-plan-open').onclick=showMapPlan;
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: десять піксельних мап, зокрема адаптації Mirage і Dust II за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
@@ -183,7 +192,8 @@ function shoot(){
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
       const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
+      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       if(a.team===player.team)break;
       shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
     }
@@ -199,7 +209,8 @@ function shoot(){
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
       const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
+      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
   }
@@ -246,6 +257,10 @@ function updateVitals(){
 }
 function updateHUD(){
   if(!player)return;
+  const areas=[map.sites.a,map.sites.b,map.mid,...(map.callouts||[])];
+  let area=null,distance=Infinity;
+  for(const candidate of areas){const d=Math.hypot(player.x-candidate.point[0],player.y-candidate.point[1]);if(d<distance){distance=d;area=candidate;}}
+  $('#map-location').textContent=distance<5?area.name:'';
   if(mpMode){
     const me=mpMe(),reloading=!me||me.ammo<=0;
     updateVitals();
@@ -266,7 +281,7 @@ function updateHUD(){
   }
   const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
-function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);}
+function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);terrainDepth=new Float32Array(canvas.width*canvas.height);}
 addEventListener('resize',resize);
 function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>a.team===0&&a.hp>0)||player;}
 function render(){
@@ -276,10 +291,22 @@ function render(){
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
+  const eye=floorHeight(map,view.x,view.y)+.5;
+  if(map.heights){
+    drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep:settings.quality==='low'?2:1,depths:terrainDepth,zbuffer,wallTextures});
+  }else{
   // Perspective floor grid: samples world coordinates in each screen row.
   const horizonY=Math.max(0,Math.floor(horizon+1));ctx.globalAlpha=.18;const floorStep=settings.quality==='low'?5:4;
   for(let sy=horizonY;sy<h;sy+=floorStep){const dist=projection*.5/(sy-horizon);if(dist>25)continue;const leftX=view.x+dist*(ca+sa*fov),leftY=view.y+dist*(sa-ca*fov),dx=-2*sa*fov*dist/w,dy=2*ca*fov*dist/w;
-    for(let sx=0;sx<w;sx+=floorStep){const fx=leftX+dx*sx,fy=leftY+dy*sx;if(fx-Math.floor(fx)<.035||fy-Math.floor(fy)<.035){ctx.fillStyle='#cbd0aa';ctx.fillRect(sx,sy,floorStep,floorStep);}else if((Math.floor(fx)+Math.floor(fy))%2===0){ctx.fillStyle='#17271f';ctx.fillRect(sx,sy,floorStep,floorStep);}}
+    for(let sx=0;sx<w;sx+=floorStep){
+      const fx=leftX+dx*sx,fy=leftY+dy*sx,gx=Math.floor(fx),gy=Math.floor(fy),ground=map.ground[gy]?.[gx]||0;
+      if(ground){
+        ctx.globalAlpha=.65;
+        if(ground<=2)ctx.fillStyle=ground===1?'#c18746':'#689b96';
+        else{const tread=(ground===3?fx:fy)*3%1;ctx.fillStyle=tread<.17?'#716047':tread<.3?'#ead6ad':'#b69b73';}
+        ctx.fillRect(sx,sy,floorStep,floorStep);ctx.globalAlpha=.18;
+      }else if(fx-gx<.035||fy-gy<.035){ctx.fillStyle='#cbd0aa';ctx.fillRect(sx,sy,floorStep,floorStep);}else if((gx+gy)%2===0){ctx.fillStyle='#17271f';ctx.fillRect(sx,sy,floorStep,floorStep);}
+    }
   }ctx.globalAlpha=1;
   const colStep=settings.quality==='low'?2:1;
   for(let x=0;x<w;x+=colStep){const camera=2*x/w-1,rx=ca-sa*fov*camera,ry=sa+ca*fov*camera;let mx=Math.floor(view.x),my=Math.floor(view.y);const ddx=Math.abs(1/rx),ddy=Math.abs(1/ry),sx=rx<0?-1:1,sy=ry<0?-1:1;let sideX=(rx<0?view.x-mx:mx+1-view.x)*ddx,sideY=(ry<0?view.y-my:my+1-view.y)*ddy,side=0,type=1;
@@ -289,10 +316,21 @@ function render(){
     ctx.fillStyle=`rgba(8,22,22,${Math.min(.82,dist/30+(side?.19:0))})`;ctx.fillRect(x,top,colStep,height);
     zbuffer[x]=dist;if(colStep===2)zbuffer[x+1]=dist;
   }
+  }
   const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
-  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*.5-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
-    for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){if(depth>=zbuffer[sx])continue;const tx=clamp(Math.floor((sx-x)/sw*128),0,127);ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);}
-    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]){if(a.team===0||mpMode){ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
+  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-floorHeight(map,a.x,a.y))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
+    for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){
+      const tx=clamp(Math.floor((sx-x)/sw*128),0,127);
+      if(!map.heights){if(depth<zbuffer[sx])ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);continue;}
+      // Clip each vertical sprite run against the physical steps and platforms.
+      const end=Math.min(h,Math.ceil(y+sh));let run=-1;
+      for(let sy=Math.max(0,Math.ceil(y));sy<=end;sy++){
+        const visible=sy<end&&depth<Math.min(terrainDepth[sy*w+sx],terrainDepth[sy*w+Math.min(w-1,sx+1)]);
+        if(visible&&run<0)run=sy;
+        if(!visible&&run>=0){ctx.drawImage(sprite,tx,(run-y)/sh*256,1,(sy-run)/sh*256,sx,run,2,sy-run);run=-1;}
+      }
+    }
+    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]&&(!map.heights||depth<terrainDepth[Math.floor(clamp(y+sh*.4,0,h-1))*w+center])){if(a.team===0||mpMode){ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
   }
   const vignette=ctx.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.5,w*.75);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04100b99');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
   if(player.hp>0)drawGun(w,h);
@@ -333,8 +371,10 @@ function drawGun(w,h){
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
-  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/24;
-  for(let y=0;y<24;y++)for(let x=0;x<24;x++)if(map.grid[y][x]){mc.fillStyle=map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s-.6,s-.6);}
+  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/map.size;
+  for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
+    if(map.grid[y][x]){mc.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s,s);}
+  }
   const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
   tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
   for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
@@ -347,7 +387,8 @@ addEventListener('keydown',e=>{
   if(state!=='playing'){if(e.code==='Escape'&&modal)closeDialog(false);return;}
   if(['Space','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
   if(e.repeat)return;
-  if(e.code==='Escape'){if(modal==='shop')closeDialog();else if(modal==='pause')closeDialog();else if(!modal)pause();return;}
+  if(e.code==='Escape'){if(modal==='shop'||modal==='pause'||modal==='map')closeDialog();else if(!modal)pause();return;}
+  if(e.code==='KeyM'){if(modal==='map')closeDialog();else if(!modal&&!paused)showMapPlan();return;}
   if(e.code==='KeyB'){if(modal==='shop')closeDialog();else if(!modal)openShop();return;}
   if(modal||paused)return;keys.add(e.code);
   if(mpMode){
@@ -677,4 +718,4 @@ function mpShowLobby(){
 mpAutoConnect();
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
