@@ -4,11 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta name="theme-color" content="#101615">
-  <meta name="description" content="СЕКТОР — браузерний шутер. Три мапи, бої з ботами, зброя та свій стиль. Грай одразу.">
-  <title>СЕКТОР / Тактичний шутер</title>
+  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Вісім оригінальних мап, снайперські гвинтівки та тактична закупівля.">
+  <title>СЕКТОР / Піксельний тактичний шутер</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23c3f66b%22%2F%3E%3Cpath%20d%3D%22M45%2016H24l-9%2016h24l-5%208H17v8h22l10-24H27l3-2h15z%22%20fill%3D%22%23121b17%22%2F%3E%3C%2Fsvg%3E%0A" type="image/svg+xml">
   <style>
 :root{--bg:#101615;--panel:#19211f;--line:#303b34;--muted:#929e94;--text:#eef1e8;--lime:#c3f66b;--orange:#e49a62;--mono:'Courier New',monospace}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:5px}button{color:inherit;border:0}button:disabled{opacity:.38;cursor:not-allowed}[hidden]{display:none!important}.lobby{max-width:1480px;margin:auto;padding:0 60px;background:radial-gradient(ellipse at 75% 20%,#28332633,transparent 50%)}.header{height:102px;display:flex;align-items:center;border-bottom:1px solid var(--line);gap:64px}.brand{display:flex;align-items:center;gap:13px;color:var(--text);text-decoration:none;font-weight:900;font-size:25px;letter-spacing:3px}.brand-icon{background:var(--lime);color:var(--bg);font-size:29px;font-style:italic;letter-spacing:-5px;width:34px;height:34px;line-height:34px;padding-left:6px;transform:skew(-8deg)}.brand-slash{color:var(--lime)}nav{display:flex;gap:30px;height:100%;align-items:center}.nav{height:100%;background:transparent;color:var(--muted);font-size:11px;letter-spacing:1.6px;position:relative;font-weight:700}.nav.active{color:var(--text)}.nav.active:after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--lime)}.status{margin-left:auto;white-space:nowrap;font:10px var(--mono);color:var(--muted);letter-spacing:1px}.status i,.hero-meta i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--lime);margin-right:7px}.hero{display:grid;grid-template-columns:1fr 1.08fr;min-height:458px;align-items:center;padding:36px 0 28px;gap:28px}.eyebrow{font:10px var(--mono);letter-spacing:1.6px;color:var(--muted);display:flex;align-items:center;gap:12px}.tiny-cross{color:var(--lime);font-size:22px}.version{border:1px solid var(--line);padding:3px 6px;font-size:9px;letter-spacing:0}.hero h1{font-size:clamp(36px,4vw,60px);line-height:1.08;letter-spacing:-2px;font-weight:900;margin:21px 0 20px}.hero h1>span{color:var(--lime)}.hero p{color:#a2aca2;font-size:13px;line-height:1.85;margin:0 0 26px}.primary{background:var(--lime);color:#172115;padding:19px 26px;display:inline-flex;align-items:center;justify-content:space-between;gap:55px;font-weight:800;font-size:12px;letter-spacing:1.2px;transition:background .2s,transform .2s;min-height:52px}.primary:hover{background:#d6ff97;transform:translateY(-2px)}.primary span{font-size:22px;line-height:16px}.hero-meta{display:flex;gap:18px;margin-top:20px;font:9px var(--mono);letter-spacing:.4px;color:var(--muted)}.hero-art{position:relative;height:375px;overflow:hidden;background:#27332e;border:1px solid #39483c;clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px))}.hero-art canvas{width:100%;height:100%;object-fit:cover}.hero-art:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0c171bdd,transparent 45%);pointer-events:none}.art-coordinates{position:absolute;top:20px;left:22px;font:9px/1.7 var(--mono);letter-spacing:1px;color:#d1e2c3;z-index:1}.art-label{position:absolute;left:22px;right:22px;bottom:23px;z-index:1;display:flex;align-items:center;gap:10px;font:9px var(--mono);letter-spacing:1px}.art-label b{margin-left:auto;color:var(--lime)}.pulse-dot{display:inline-block;background:var(--lime);width:6px;height:6px;box-shadow:0 0 12px #b3f568}.art-cross{position:absolute;top:16px;right:22px;font:24px var(--mono);color:var(--lime)}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:24px 0 23px}.section-heading h2{font-size:23px;letter-spacing:-.3px;margin:10px 0 0;font-weight:800;display:flex;gap:13px;align-items:center}.section-heading h2 span{font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:4px 6px}.section-note{font:9px var(--mono);letter-spacing:1px;color:#7e8c80;margin-bottom:5px}.map-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.map-card{padding:0;text-align:left;background:var(--panel);border:1px solid var(--line);position:relative;transition:border-color .2s,transform .2s;overflow:hidden}.map-card:hover{transform:translateY(-3px);border-color:#738763}.map-card.selected{border-color:var(--lime)}.map-image{height:148px;position:relative;overflow:hidden}.map-image canvas{width:100%;height:100%;object-fit:cover;transition:transform .5s}.map-card:hover canvas{transform:scale(1.04)}.map-image:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14201977,transparent 60%)}.map-number{position:absolute;left:14px;top:13px;font:9px var(--mono);z-index:1;background:#15201baa;padding:5px 7px;color:#e0e6d5}.map-check{position:absolute;right:13px;top:13px;border:1px solid #cbd5bc77;width:21px;height:21px;display:grid;place-items:center;font-size:12px;z-index:1}.selected .map-check{background:var(--lime);color:#142016;border-color:var(--lime)}.map-detail{padding:17px 18px}.map-detail h3{margin:0 0 8px;font-size:18px;letter-spacing:.2px}.map-detail p{font-size:11px;color:var(--muted);margin:0 0 15px}.map-tags{border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;font:9px var(--mono);color:#adbaa9;letter-spacing:1px}.map-tags span:last-child{color:var(--lime)}.launch-bar{display:flex;align-items:center;gap:17px;padding:21px 22px;background:#1b241f;border:1px solid var(--line);margin-top:24px}.mode-badge{font-size:27px;color:var(--lime);width:43px;height:43px;border:1px solid #43523b;display:grid;place-items:center}.mode-info{display:flex;flex-direction:column;gap:8px}.mode-info b{font-size:11px;letter-spacing:1px}.mode-info>span{font-size:11px;color:var(--muted)}.difficulty-label{margin-left:auto;display:flex;flex-direction:column;gap:6px;font:8px var(--mono);letter-spacing:1px;color:var(--muted)}select{background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 28px 9px 11px;font-size:12px;border-radius:0}.launch-bar .primary{padding:16px 23px;gap:30px}.bottom-info{display:flex;align-items:center;justify-content:space-between;padding:20px 0 26px;color:var(--muted);font-size:10px}.bottom-info>span{display:flex;align-items:center;gap:10px}kbd{font:9px var(--mono);border:1px solid #53604b;min-width:21px;padding:4px 5px;color:#bec7b6;text-align:center;display:inline-block}.text-button{background:none;color:var(--muted);font:9px var(--mono);letter-spacing:1px;padding:6px 0}.text-button:hover{color:var(--lime)}footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:22px 0 28px;font:9px var(--mono);letter-spacing:1px;color:#778574}.tab:not(#tab-play){min-height:76vh;padding-top:22px}.operator-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:950px;margin:40px auto}.operator-preview{background:radial-gradient(#384735,#18221e);border:1px solid var(--line);position:relative;height:460px;text-align:center}.operator-preview canvas{height:90%;max-width:100%;object-fit:contain}.operator-preview>span{display:block;font:11px var(--mono);color:var(--lime);letter-spacing:2px}.operator-options{padding-top:25px}.operator-options h3{font-size:22px}.operator-options p,.settings-panel p{color:var(--muted);font-size:13px;line-height:1.8}.operator-options label{display:block;font:11px var(--mono);letter-spacing:1px;margin:30px 0 13px}.option-row{display:flex;gap:10px;flex-wrap:wrap}.option{padding:12px 13px;border:1px solid var(--line);background:var(--panel);font-size:11px;display:flex;align-items:center;gap:9px}.option i{width:14px;height:14px;display:block}.option.selected{border-color:var(--lime);color:var(--lime)}.saved-note{color:var(--muted);font-size:11px;margin:24px 0}.settings-panel{max-width:620px;margin:40px auto;background:var(--panel);padding:32px;border:1px solid var(--line)}.settings-panel>label{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:13px;gap:20px}input[type=range]{accent-color:var(--lime);width:180px}input[type=checkbox]{accent-color:var(--lime);width:18px;height:18px}.secondary{background:#273229;border:1px solid #4b5b45;color:var(--text);padding:15px 22px;font-size:11px;letter-spacing:1px}.secondary:hover{background:#3a4933}.overlay{position:fixed;inset:0;z-index:30;background:#07110bd9;backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:center;padding:25px;overflow:auto}.dialog{background:#18221d;border:1px solid #4d6043;width:min(820px,100%);padding:32px;box-shadow:0 25px 100px #0007;max-height:94dvh;overflow:auto}.dialog h2{font-size:28px;margin:12px 0 16px;letter-spacing:-.5px}.dialog p{font-size:13px;line-height:1.8;color:#acbaa4}.dialog-header{display:flex;justify-content:space-between;align-items:center}.dialog-close{background:transparent;font-size:26px;color:#c3ccb9;padding:0 5px}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.control-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.control-list div{display:flex;align-items:center;gap:15px;font-size:12px;color:#b7c4af}.credits-list{line-height:2;font-size:12px;color:var(--muted);padding-left:20px}.credits-list a{color:var(--lime)}.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.shop-item{border:1px solid #3a4c37;background:#202d23;padding:17px}.shop-item h3{font-size:16px;margin:8px 0}.shop-item .gun-icon{font-size:30px;color:#a8b59a;letter-spacing:-4px;line-height:25px;font-family:var(--mono)}.shop-item p{font-size:11px;margin:10px 0}.shop-item button{width:100%;padding:11px;background:var(--lime);color:#172115;font-weight:bold;font-size:11px;display:flex;justify-content:space-between}.shop-item small{color:var(--muted);font:9px var(--mono)}.shop-balance{font:18px var(--mono);color:var(--lime)}.shop-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}.shop-foot p{font-size:10px}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--lime);color:#12200e;padding:14px 23px;font-size:12px;font-weight:bold;z-index:50;max-width:90vw;text-align:center}#game{position:fixed;inset:0;width:100%;height:100%;object-fit:fill;background:#162321;image-rendering:auto}#hud{position:fixed;inset:0;pointer-events:none;z-index:10;font-family:var(--mono);user-select:none}.hud-top{display:flex;justify-content:space-between;align-items:flex-start;padding:25px 30px}.hud-map{display:flex;flex-direction:column;gap:7px;font-size:13px;letter-spacing:2px;text-shadow:0 1px 6px #000}.hud-map small{font-size:9px;color:#bdd096}.score{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:22px;background:#101c18cf;border:1px solid #899d6655;padding:10px 24px}.score>b{font-size:32px;color:var(--lime)}.score>b:last-child{color:var(--orange)}.score>div{display:flex;flex-direction:column;align-items:center;gap:4px}.score small{font-size:8px;letter-spacing:1px;color:#a5b696}.score strong{font-size:21px;font-weight:400}.hud-button{background:#13221dd9;border:1px solid #6d805755;font-size:16px;width:38px;height:36px;pointer-events:auto}#minimap{position:absolute;top:89px;left:28px;width:140px;height:140px;background:#091612cf;border:1px solid #788d4f66}.kill-feed{position:absolute;top:93px;right:30px;text-align:right;font:10px/1.8 var(--mono)}.kill-feed>div{background:#172219c9;margin-bottom:4px;padding:5px 10px}.kill-feed b{color:var(--lime)}.kill-feed em{color:var(--orange);font-style:normal}#crosshair{position:absolute;top:50%;left:50%;width:4px;height:4px;background:#e6ffbf;box-shadow:0 0 2px #000;transform:translate(-50%,-50%)}#crosshair i{position:absolute;background:#e6ffbf;box-shadow:0 0 2px #000}#crosshair i:nth-child(1){width:2px;height:7px;left:1px;top:-11px}#crosshair i:nth-child(2){width:2px;height:7px;left:1px;top:8px}#crosshair i:nth-child(3){width:7px;height:2px;left:-11px;top:1px}#crosshair i:nth-child(4){width:7px;height:2px;left:8px;top:1px}#hit-marker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:38px;color:#fff;opacity:0}#hurt{position:absolute;inset:0;box-shadow:inset 0 0 130px 45px #db5428;opacity:0;pointer-events:none}.game-message{position:absolute;left:50%;top:29%;transform:translateX(-50%);text-align:center;font:700 20px Arial,sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #000;white-space:nowrap}.buy-tip{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:11px;letter-spacing:1px;padding:10px 14px;background:#142418e8;color:var(--lime);white-space:nowrap}.buy-tip span{color:#bcc6ab;font-size:9px}.hud-bottom{position:absolute;bottom:25px;left:30px;right:30px;display:flex;align-items:flex-end;justify-content:space-between;filter:drop-shadow(0 2px 4px #000)}.vitals{display:flex;align-items:center;gap:15px}.health-icon{color:var(--lime);font-size:33px}.vitals>strong{font-size:38px;font-weight:400}.vitals>div{border-left:1px solid #9aa47b88;margin-left:4px;padding-left:16px;display:flex;flex-direction:column;gap:4px}.vitals small{font-size:8px;color:#b8c39e}.vitals b{font-size:19px;font-weight:400}.weapon-info{text-align:right}.weapon-info>small{font-size:10px;letter-spacing:2px}.weapon-info>div{margin:5px 0}.weapon-info strong{font-size:40px;font-weight:400}.weapon-info span{font-size:17px;color:#c4cfb7;margin-left:8px}.weapon-info> b{color:var(--lime);font-size:14px;font-weight:400}.hud-help{font-size:8px;color:#c0caaf;display:flex;align-items:center;gap:8px;padding-bottom:4px}.result-score{display:flex;gap:25px;align-items:center;justify-content:center;font:60px var(--mono);margin:28px 0}.result-score span:first-child{color:var(--lime)}.result-score span:last-child{color:var(--orange)}.result-stats{display:flex;justify-content:center;gap:35px;color:var(--muted);font:11px var(--mono)}#touch-controls{pointer-events:none}#joystick{position:absolute;bottom:140px;left:30px;width:100px;height:100px;border:2px solid #dcf4a455;border-radius:50%;pointer-events:auto;touch-action:none;background:#09161033}#joystick span{position:absolute;left:27px;top:27px;width:42px;height:42px;border-radius:50%;background:#d2ee9c66}#touch-fire,#touch-reload,#touch-shop{position:absolute;right:35px;bottom:143px;background:#bcdf7644;border:2px solid #e5ffc077;border-radius:50%;width:70px;height:70px;pointer-events:auto;touch-action:none;font-size:29px}#touch-reload{right:120px;bottom:135px;width:47px;height:47px;font-size:18px}#touch-shop{right:35px;bottom:226px;width:43px;height:43px;font-size:16px}@media(min-width:1600px){.lobby{padding:0 75px}.hero{min-height:505px}.hero-art{height:410px}.map-image{height:175px}}@media(max-width:1000px){.lobby{padding:0 28px}.header{gap:35px}.status{font-size:8px}.hero{gap:15px}.hero h1{font-size:40px}.hero-art{height:345px}.hero-meta{font-size:8px;gap:10px}.mode-info>span{font-size:9px}.launch-bar{gap:12px}.launch-bar .primary{gap:15px;padding:16px}.hud-help{display:none}}@media(max-width:720px){.lobby{padding:0 18px}.header{height:76px;gap:20px;flex-wrap:wrap}.brand{font-size:19px;gap:9px}.brand-icon{width:29px;height:29px;font-size:25px;line-height:29px}.status{display:none}nav{margin-left:auto;gap:15px}.nav{font-size:8px;letter-spacing:.5px}.hero{grid-template-columns:1fr;padding:26px 0 12px;gap:24px}.hero h1{font-size:45px}.hero-copy{padding-top:5px}.hero-art{height:240px;grid-row:2}.hero p{font-size:12px}.hero-meta{font-size:8px}.section-heading{margin-top:29px}.section-heading h2{font-size:20px}.section-note{display:none}.map-cards{gap:10px;grid-template-columns:1fr}.map-card{display:grid;grid-template-columns:40% 1fr}.map-image{height:100%}.map-detail{padding:15px}.map-detail h3{font-size:16px}.map-detail p{font-size:10px;margin-bottom:12px}.map-tags{font-size:8px}.launch-bar{flex-wrap:wrap;padding:16px}.mode-info{flex:1}.difficulty-label{margin-left:0;flex:1}.launch-bar .primary{flex:1;margin-top:8px;gap:20px}.mode-badge{width:38px}.bottom-info{font-size:8px}.bottom-info>span{gap:5px}.bottom-info kbd{font-size:7px}footer{font-size:8px}footer>span:nth-child(2){display:none}.operator-layout{grid-template-columns:1fr;gap:15px;margin:25px auto}.operator-preview{height:340px}.operator-options{padding:0 0 30px}.settings-panel{padding:22px;margin:24px auto}.settings-panel label{font-size:11px}.settings-panel input[type=range]{width:120px}.dialog{padding:22px}.dialog h2{font-size:24px}.control-list{grid-template-columns:1fr}.hud-top{padding:15px}.score{gap:14px;padding:8px 15px}.score>b{font-size:23px}.score strong{font-size:17px}.hud-map{font-size:10px;max-width:80px}.hud-map small{font-size:8px}#minimap{width:100px;height:100px;left:15px;top:70px}.hud-bottom{left:17px;right:17px;bottom:19px}.vitals{gap:8px}.vitals>strong{font-size:30px}.vitals>div{padding-left:9px}.weapon-info strong{font-size:32px}.buy-tip{font-size:9px;bottom:98px}.buy-tip span{display:none}.game-message{font-size:14px;top:33%}.kill-feed{right:15px;top:75px;font-size:8px;max-width:55%}.shop-grid{gap:9px}.shop-item{padding:12px}.shop-item h3{font-size:14px}.shop-foot{flex-wrap:wrap}.shop-foot .primary{width:100%}.overlay{padding:14px}.hud-help{display:none}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}.gun-sprite{width:120px;height:64px;object-fit:contain;image-rendering:pixelated;background:#141d18;border:1px solid #3a4c37}
+
+.peer-panel{max-width:none;margin:18px 0;padding:20px;border:1px solid #3d4b3e;background:#142019}.peer-panel label{display:block;margin:15px 0 8px;font-size:12px}.peer-panel textarea{display:block;width:100%;box-sizing:border-box;resize:vertical;background:#0d1712;border:1px solid #52624f;border-radius:4px;color:var(--text);padding:12px;font:12px var(--mono);overflow-wrap:anywhere}.peer-panel button{margin:10px 8px 0 0}.peer-panel p{line-height:1.6}.peer-panel [role=status]{color:var(--lime);min-height:1.6em}.peer-panel textarea:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+.vitals{display:grid;grid-template-columns:auto minmax(70px,170px) auto;align-items:center;gap:12px;padding:9px 13px;border:1px solid #9aa47b88;background:#08100de0;box-shadow:0 3px 0 #0008;min-width:310px}.vitals>.health-readout,.vitals>.health-bar,.vitals>.armor-readout{margin:0;padding:0;border:0}.health-readout{display:flex;align-items:center;gap:8px}.health-readout>div{display:flex;flex-direction:column;gap:1px}.health-icon{font-size:31px;line-height:1}.health-readout small,.armor-readout small{font-size:8px;color:#c7d4ab;letter-spacing:.1em}.health-readout strong{display:flex;align-items:baseline;gap:5px;font-size:26px;font-weight:400}.health-readout strong b{font:inherit}.health-readout em{font-size:10px;color:#b8c39e;font-style:normal}.health-bar{height:8px;border:1px solid #87a264!important;background:#182617;box-shadow:inset 0 1px #000}.health-bar i{display:block;height:100%;background:#a8d46b;box-shadow:0 0 8px #a8d46b;transition:width .16s ease,background .16s ease}.health-bar i.warning{background:#e4b664;box-shadow:0 0 8px #e4b664}.health-bar i.critical{background:#f36d59;box-shadow:0 0 8px #f36d59}.armor-readout{border-left:1px solid #9aa47b88!important;padding-left:12px!important;display:flex;flex-direction:column;gap:3px}.armor-readout b{font-size:20px;font-weight:400}@media(max-width:720px){.hud-bottom{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}.vitals{grid-template-columns:auto minmax(40px,1fr) auto;gap:8px;min-width:0;width:100%;padding:7px 9px}.health-icon{font-size:24px}.health-readout{gap:5px}.health-readout strong{font-size:21px}.health-readout em{font-size:8px}.health-bar{min-width:40px}.armor-readout{padding-left:8px!important}.armor-readout b{font-size:17px}}
+
+/* Tactical category-based buy terminal. The visual system is original to Sector. */
+.vitals>.health-readout{display:flex;flex-direction:row;align-items:center;gap:8px}.vitals>.health-bar{display:block}.vitals>.armor-readout{display:flex;flex-direction:column;gap:3px}@media(max-width:720px){.vitals>.health-readout{gap:5px}}
+.dialog-shop{width:min(1120px,100%);padding:0;background:#0d1518;border-color:#8c783f;overflow:auto}.buy-terminal{--buy-gold:#e1b75e;--buy-amber:#c88743;--buy-line:#485353;--buy-panel:#152126;--buy-deep:#0f191d;background:radial-gradient(ellipse at 72% 0,#56441f33,transparent 44%),#0d1518;color:#ebeee7}.buy-topbar{min-height:104px;display:flex;align-items:center;gap:26px;padding:22px 28px;border-bottom:1px solid var(--buy-line);background:linear-gradient(90deg,#162329,#10191d 58%,#272316)}.buy-topbar .eyebrow{color:#aeb9b6}.buy-topbar h2{margin:7px 0 0;font-size:26px;letter-spacing:.7px}.buy-status{margin-left:auto;display:flex;align-items:flex-end;flex-direction:column;gap:8px;font:10px var(--mono);letter-spacing:1.1px;color:#bfc7c0}.buy-status b{color:var(--buy-gold);font-size:14px}.buy-status strong{font:700 23px var(--mono);letter-spacing:0;color:var(--buy-gold)}.buy-close{width:34px;height:34px;background:transparent;color:#d9d4bd;font-size:29px;line-height:1;border:1px solid #59605c}.buy-close:hover{color:#fff;background:#3b3524;border-color:var(--buy-gold)}.buy-layout{display:grid;grid-template-columns:174px minmax(0,1fr) 210px;min-height:510px}.buy-categories{height:auto;display:flex;flex-direction:column;gap:3px;padding:20px 12px;background:#101b20;border-right:1px solid var(--buy-line)}.buy-categories>span,.buy-loadout>span{padding:0 9px 10px;color:#8f9c9a;font:9px var(--mono);letter-spacing:1.4px}.buy-category{min-height:48px;display:grid;grid-template-columns:31px 1fr 12px;align-items:center;gap:7px;padding:0 10px;background:transparent;border-left:2px solid transparent;color:#abb5b1;text-align:left;font-size:10px;letter-spacing:.75px}.buy-category b{color:#72807d;font:10px var(--mono)}.buy-category i{font-size:19px;font-style:normal;opacity:0}.buy-category:hover{background:#1b292d;color:#ecf0ea}.buy-category.active{background:linear-gradient(90deg,#5d492316,#2a302a);border-left-color:var(--buy-gold);color:#fff}.buy-category.active b,.buy-category.active i{color:var(--buy-gold);opacity:1}.buy-content{padding:23px 24px 26px;min-width:0;background:linear-gradient(135deg,#172428 0,#121d21 70%)}.buy-content-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:17px;border-bottom:1px solid #3f4a4c;padding-bottom:14px}.buy-content-head .eyebrow{color:var(--buy-gold)}.buy-content-head p{margin:7px 0 0;color:#98a39f;font-size:11px;line-height:1.45}.buy-count{white-space:nowrap;color:#a9b2ae;font:9px var(--mono);letter-spacing:1px;padding-top:4px}.buy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.buy-item{position:relative;display:flex;min-height:227px;flex-direction:column;padding:14px;border:1px solid #465254;background:linear-gradient(135deg,#202c30,#172226);box-shadow:inset 0 0 0 1px #ffffff05}.buy-item:hover{border-color:#8f8153}.buy-item.is-owned{border-color:#75864e;background:linear-gradient(135deg,#253027,#18251f)}.buy-item-top{display:flex;justify-content:space-between;align-items:center;color:#a9b2ac;font:9px var(--mono);letter-spacing:.9px}.buy-item-top span{color:#788583}.buy-item h3{margin:8px 0 0;font-size:17px;letter-spacing:.4px}.buy-item-visual{height:72px;display:flex;align-items:center;margin:3px 0 1px}.buy-item .gun-sprite{width:142px;height:68px;max-width:100%;object-fit:contain;object-position:left center;background:transparent;border:0}.buy-item .gun-icon{font:44px var(--mono);color:#bfab72;letter-spacing:-8px}.buy-item p{min-height:28px;margin:0;color:#9fa9a4;font-size:10px;line-height:1.35}.buy-item-stats{margin:9px 0 10px;padding-top:8px;border-top:1px solid #485353;color:#d0d5cc;font:9px var(--mono);letter-spacing:.4px}.buy-item button{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:auto;padding:10px 11px;background:#d6af5a;color:#15201e;font-size:10px;font-weight:800;letter-spacing:.7px}.buy-item button:hover:not(:disabled){background:#f1ca72}.buy-item button strong{font:700 12px var(--mono);letter-spacing:0}.buy-issued{display:block;margin-top:auto;padding:10px 11px;border:1px solid #607246;color:#d4e1b7;background:#1c2b20;font:9px var(--mono);letter-spacing:.8px;text-align:center}.buy-loadout{display:flex;flex-direction:column;gap:13px;padding:22px 17px;background:#121d21;border-left:1px solid var(--buy-line)}.buy-loadout>span{padding:0 0 5px}.buy-loadout>div{padding:10px 0;border-bottom:1px solid #3b494a;display:flex;flex-direction:column;gap:5px}.buy-loadout small{color:#899794;font:9px var(--mono);letter-spacing:.8px}.buy-loadout b{font-size:12px;letter-spacing:.6px;color:#e8ebe2}.buy-loadout p{margin:1px 0 auto;color:#919d99;font-size:10px;line-height:1.5}.buy-loadout .primary{width:100%;min-height:45px;padding:13px 15px;background:var(--buy-gold);color:#18211d;gap:15px}.buy-loadout .primary:hover{background:#f0ca76}.buy-loadout .text-button{align-self:flex-start;color:#b1b9ae}.buy-loadout .text-button:hover{color:var(--buy-gold)}
+@media(max-width:900px){.buy-layout{grid-template-columns:150px minmax(0,1fr)}.buy-loadout{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr) auto auto;align-items:center;gap:12px;border-left:0;border-top:1px solid var(--buy-line)}.buy-loadout>span{display:none}.buy-loadout>div{padding:0;border-bottom:0}.buy-loadout p{display:none}.buy-loadout .primary{width:auto}.buy-loadout .text-button{justify-self:start}}
+@media(max-width:720px){.dialog-shop{padding:0}.buy-topbar{min-height:84px;padding:17px;gap:12px}.buy-topbar h2{font-size:20px}.buy-status{gap:3px}.buy-status strong{font-size:17px}.buy-layout{display:block}.buy-categories{display:grid;grid-template-columns:repeat(3,1fr);padding:11px;border-right:0;border-bottom:1px solid var(--buy-line)}.buy-categories>span{grid-column:1/-1;padding:0 4px 4px}.buy-category{min-height:38px;padding:0 6px;grid-template-columns:20px 1fr}.buy-category i{display:none}.buy-content{padding:17px}.buy-content-head{margin-bottom:12px}.buy-grid{grid-template-columns:1fr}.buy-item{min-height:208px}.buy-loadout{display:flex;padding:16px;gap:10px}.buy-loadout>div{padding:7px 0;border-bottom:1px solid #3b494a}.buy-loadout .primary{width:100%;justify-content:space-between}.buy-loadout .text-button{align-self:center}}
 </style>
 </head>
 <body>
@@ -17,30 +27,34 @@
     <header class="header">
       <a class="brand" href="./" aria-label="Сектор — головна"><span class="brand-icon">S</span> СЕКТОР<span class="brand-slash">/</span></a>
       <nav aria-label="Головне меню"><button class="nav active" data-tab="play">ГРАТИ</button><button class="nav" data-tab="mp">МУЛЬТИПЛЕЄР</button><button class="nav" data-tab="operator">ОПЕРАТОР</button><button class="nav" data-tab="settings">НАЛАШТУВАННЯ</button></nav>
-      <span class="status"><i></i> ЛОКАЛЬНИЙ РЕЖИМ</span>
+      <span class="status" id="connection-status" role="status" aria-live="polite">ПЕРЕВІРКА З’ЄДНАННЯ…</span>
     </header>
     <main>
       <section id="tab-play" class="tab">
         <div class="hero">
-          <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ТАКТИЧНИЙ ШУТЕР У БРАУЗЕРІ <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Короткі бої, влучні постріли та жодних завантажень.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
-          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація індустріальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ТРЕНУВАЛЬНА ОПЕРАЦІЯ <b>01—03</b></div><div class="art-cross">+</div></div>
+          <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ПІКСЕЛЬНИЙ ТАКТИЧНИЙ ШУТЕР <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Піксельні мапи, снайперська оптика й короткі бої.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—09</b></div><div class="art-cross">+</div></div>
         </div>
-        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ЗОНА ОПЕРАЦІЇ<span>03</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
-        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> Магазин</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
+        <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
       </section>
       <section id="tab-mp" class="tab" hidden>
-        <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">НЕ ПІДКЛЮЧЕНО</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ</span></div>
         <div id="mp-home">
           <div class="settings-panel" style="margin:0 0 18px;max-width:none">
             <label>Позивний <input id="mp-nick" type="text" maxlength="16" placeholder="БОЄЦЬ" style="width:180px"></label>
+            <label>Спосіб гри <select id="mp-transport"><option value="server" selected>Онлайн · автоматичне підключення</option><option value="peer">Напряму з друзями</option></select></label>
+            <p id="mp-peer-help">Створи кімнату однією кнопкою. Передай другу запрошення, отримай його відповідь і прийми її тут. Власник має тримати вкладку гри відкритою.</p>
+            <div id="mp-server-options" hidden>
             <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
-            <p>Порожня адреса = той самий сервер, що віддав сторінку. Приватні кімнати видно лише за кодом.</p>
+            <p>Гра під’єднується до сервера одразу після запуску. Для GitHub Pages задай спільну адресу в <code>public/config.js</code> (wss://…).</p>
             <div class="dialog-actions" style="margin-top:0">
-              <button id="mp-connect" class="primary">ПІДКЛЮЧИТИСЯ <span>→</span></button>
+              <button id="mp-connect" class="primary">ПОВТОРИТИ ПІДКЛЮЧЕННЯ <span>↻</span></button>
               <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
               <button id="mp-refresh" class="secondary">ОНОВИТИ СПИСОК</button>
+            </div>
             </div>
           </div>
           <div class="launch-bar" style="flex-wrap:wrap">
@@ -49,24 +63,48 @@
                 <input id="mp-room-name" type="text" maxlength="24" placeholder="Назва кімнати" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
                 <select id="mp-room-map" title="Мапа"></select>
                 <select id="mp-room-max" title="Гравців"><option value="2">2 гравці</option><option value="4">4 гравці</option><option value="6" selected>6 гравців</option></select>
-                <select id="mp-room-visibility" title="Доступ"><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
+                <select id="mp-room-visibility" title="Доступ" hidden><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
               </span>
             </div>
             <button id="mp-create" class="primary">СТВОРИТИ <span>+</span></button>
           </div>
-          <div class="launch-bar" style="flex-wrap:wrap">
+          <div id="mp-peer-join" class="settings-panel peer-panel">
+            <h3>УВІЙТИ ДО ДРУГА</h3>
+            <label for="mp-peer-offer">Запрошення від власника</label>
+            <textarea id="mp-peer-offer" rows="3" maxlength="100000" spellcheck="false" placeholder="Встав запрошення SECTOR1.…"></textarea>
+            <div class="dialog-actions"><button id="mp-peer-answer" class="primary">ПРИЄДНАТИСЯ</button><button id="mp-peer-cancel" class="secondary" hidden>СКАСУВАТИ</button></div>
+            <div id="mp-peer-reply-panel" hidden>
+              <p>Надішли відповідь власнику. Кімната відкриється, коли він її прийме.</p>
+              <label for="mp-peer-reply">Твоя відповідь</label><textarea id="mp-peer-reply" rows="3" readonly spellcheck="false"></textarea>
+              <button id="mp-peer-copy-reply" class="secondary">КОПІЮВАТИ ВІДПОВІДЬ</button>
+            </div>
+            <p id="mp-peer-join-status" role="status" aria-live="polite"></p>
+          </div>
+          <div id="mp-code-join" class="launch-bar" style="flex-wrap:wrap" hidden>
             <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
             <input id="mp-join-code" type="text" maxlength="6" placeholder="КОД" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
             <button id="mp-join-btn" class="secondary">УВІЙТИ ЗА КОДОМ</button>
           </div>
-          <div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
+          <div id="mp-public" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
           <div id="mp-rooms" class="map-cards"></div>
+          </div>
         </div>
         <div id="mp-room" hidden>
           <div class="settings-panel" style="max-width:none">
             <h3 id="mp-room-title" style="margin-top:0">КІМНАТА</h3>
             <p id="mp-room-info"></p>
             <div id="mp-room-code" class="shop-balance" style="margin-bottom:12px"></div>
+            <div id="mp-peer-host" class="peer-panel" hidden>
+              <p>Для кожного друга створи окреме запрошення. Не закривай цю вкладку під час матчу.</p>
+              <button id="mp-peer-invite" class="secondary">ЗАПРОСИТИ ДРУГА</button>
+              <div id="mp-peer-invite-panel" hidden>
+                <label for="mp-peer-invite-text">1. Надішли це запрошення другу</label><textarea id="mp-peer-invite-text" rows="3" readonly spellcheck="false"></textarea>
+                <button id="mp-peer-copy-invite" class="secondary">КОПІЮВАТИ ЗАПРОШЕННЯ</button>
+                <label for="mp-peer-accept-text">2. Встав його відповідь</label><textarea id="mp-peer-accept-text" rows="3" maxlength="100000" spellcheck="false" placeholder="Відповідь SECTOR1.…"></textarea>
+                <button id="mp-peer-accept" class="primary">ПРИЙНЯТИ ДРУГА</button>
+              </div>
+              <p id="mp-peer-host-status" role="status" aria-live="polite"></p>
+            </div>
             <div id="mp-players" class="control-list"></div>
             <div class="dialog-actions">
               <button id="mp-ready" class="secondary">ГОТОВИЙ ✓</button>
@@ -87,39 +125,122 @@
     <footer><span>СЕКТОР © 2026</span><span>НЕВЕЛИКА ГРА. ВЕЛИКИЙ СЕКТОР.</span><button id="footer-credits" class="text-button">ПРО ГРУ ↗</button></footer>
   </div>
   <div id="hud" hidden>
-    <div class="hud-top"><div class="hud-map"><span id="map-name">ДЕПО</span><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
+    <div class="hud-top"><div class="hud-map"><span id="map-name">ДЮНИ</span><small id="phase-label">РАУНД 1</small></div><div class="score"><b id="blue-score">0</b><div><small id="round-label">РАУНД 1 / 12</small><strong id="timer">2:00</strong></div><b id="red-score">0</b></div><button id="pause-button" class="hud-button" aria-label="Пауза">Ⅱ</button></div>
     <canvas id="minimap" width="160" height="160" aria-label="Мінімапа"></canvas>
     <div id="kill-feed" class="kill-feed"></div>
     <div id="crosshair"><i></i><i></i><i></i><i></i></div><div id="hit-marker">×</div><div id="hurt"></div>
     <div id="game-message" class="game-message"></div>
-    <div id="buy-tip" class="buy-tip"><kbd>B</kbd> МАГАЗИН <span>· ПІДГОТОВКА ДО БОЮ</span></div>
-    <div class="hud-bottom"><div class="vitals"><span class="health-icon">+</span><strong id="health">100</strong><div><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
+    <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПІДГОТОВКА ДО БОЮ</span></div>
+    <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
     <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
   <div id="toast" class="toast" role="status" hidden></div>
   <script>
 (() => {
+// Shared address for every player of the published build. For GitHub Pages set
+// this to the public WebSocket endpoint, for example 'wss://game.example.com'.
+// Leave it empty only when the game and server share one host.
+const SERVER_URL = '';
+
 const WEAPONS = {
   pistol: { name: 'P-12', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
   smg: { name: 'VIPER', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
   rifle: { name: 'RANGER', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2400, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
   shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
-  kalash: { name: 'KALASH', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2500, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' }
+  kalash: { name: 'KALASH', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2500, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' },
+  marksman: { name: 'LOOKOUT M7', type: 'ТОЧНА ГВИНТІВКА', price: 1900, damage: 70, size: 10, rate: .68, reload: 2.35, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
+  sniper: { name: 'NORTHSTAR', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 3900, damage: 110, size: 5, rate: 1.12, reload: 3.05, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' }
 };
+// Original competitive layouts with two objective zones, a clearly marked MID route and flanks.
+// They are intentionally independent of Counter-Strike or Valve map data.
 const specs = [
-  { id:'depot', name:'ДЕПО', desc:'Сталь, бетон і короткі перестрілки.', tag:'ІНДУСТРІАЛЬНА ЗОНА', label:'БАЛАНС', wall:'#61746c', light:'#bcc1a0', sky:'#769391', floor:'#566257', accent:'#d7a05f', blocks:[[6,3,2,6,1],[12,2,2,4,1],[17,4,4,2,2],[3,11,4,2,2],[9,9,5,2,1],[12,14,2,6,1],[17,10,3,3,2],[4,17,4,3,2],[17,17,2,4,1],[9,5,1,2,3],[8,15,2,1,3]] },
-  { id:'port', name:'ПОРТ', desc:'Контейнери. Довгі лінії. Жодних гарантій.', tag:'ВАНТАЖНИЙ ТЕРМІНАЛ', label:'ДИСТАНЦІЯ', wall:'#5e777c', light:'#c0cebc', sky:'#859fa6', floor:'#555d5b', accent:'#c98650', blocks:[[5,3,2,7,2],[10,3,2,5,1],[16,2,2,6,2],[3,13,5,2,1],[10,11,6,2,2],[18,11,3,2,1],[4,18,5,2,2],[12,16,2,5,1],[18,16,2,4,2],[8,6,1,2,3]] },
-  { id:'city', name:'СТАРЕ МІСТО', desc:'Тихі двори. Небезпечні повороти.', tag:'МІСЬКИЙ КВАРТАЛ', label:'МАНЕВРИ', wall:'#aa9b7c', light:'#dbd0ab', sky:'#b5ab93', floor:'#7b7764', accent:'#608580', blocks:[[5,2,3,6,1],[11,2,3,5,1],[18,3,3,5,1],[2,11,5,3,1],[10,10,3,3,2],[16,10,5,3,1],[5,17,3,4,1],[11,16,3,6,1],[18,17,2,3,3],[8,9,1,1,3]] }
+  { id:'dunes', name:'ДЮНИ', desc:'Піщаний вузол із довгими флангами та відкритим центром.', tag:'ПУСТЕЛЬНИЙ КОМПЛЕКС', label:'ТРИ МАРШРУТИ', wall:'#b69662', light:'#eedcab', sky:'#c6ae7c', floor:'#907b5a', accent:'#5e8c8b', blocks:[[6,3,2,6,1],[11,2,3,3,1],[17,3,3,5,2],[3,10,4,2,2],[9,8,3,5,1],[14,10,3,2,3],[18,11,3,3,1],[5,16,3,4,1],[10,17,5,2,2],[17,17,2,4,1],[7,6,1,2,3]] },
+  { id:'arcade', name:'АРКАДА', desc:'Криті переходи, арки й небезпечні повороти.', tag:'МІСЬКИЙ КВАРТАЛ', label:'КОНТРОЛЬ ЦЕНТРУ', wall:'#aa9276', light:'#e5d3ac', sky:'#b8a185', floor:'#756f61', accent:'#678d8a', blocks:[[5,2,2,7,1],[10,3,5,2,2],[17,3,3,5,1],[3,11,5,3,1],[9,10,2,5,3],[14,10,5,2,2],[19,12,2,4,1],[5,17,3,4,2],[11,16,3,5,1],[16,17,4,2,1],[8,6,1,2,3]] },
+  { id:'furnace', name:'ГОРНИЛО', desc:'Промислові шахти, вузькі проходи й силові точки.', tag:'ЕНЕРГЕТИЧНИЙ ВУЗОЛ', label:'БЛИЖНІЙ БІЙ', wall:'#6c7771', light:'#c3c4a6', sky:'#596a70', floor:'#4d5b57', accent:'#d0784c', blocks:[[6,2,2,7,2],[12,2,3,5,1],[18,3,3,4,2],[3,11,5,2,1],[9,9,4,3,2],[15,10,3,5,1],[19,11,2,3,3],[5,17,4,2,2],[10,16,2,5,1],[16,17,3,3,2],[7,6,1,2,3]] },
+  { id:'canal', name:'КАНАЛ', desc:'Склади біля води з перехресним вогнем через містки.', tag:'ПОРТОВИЙ РАЙОН', label:'ДОВГІ ЛІНІЇ', wall:'#668187', light:'#c4d4ca', sky:'#789aa2', floor:'#52676b', accent:'#d59559', blocks:[[5,3,2,5,1],[10,2,4,3,2],[17,3,2,6,1],[3,11,5,2,2],[8,10,2,5,1],[13,10,5,2,3],[19,11,2,4,1],[5,16,2,5,1],[10,17,5,2,2],[17,16,2,4,1],[7,8,1,1,3]] },
+  { id:'citadel', name:'ЦИТАДЕЛЬ', desc:'Кам’яні двори, вузькі брами й захищений центр.', tag:'ГІРСЬКА ФОРТЕЦЯ', label:'МАНЕВРИ', wall:'#938a70', light:'#d9cfae', sky:'#9b9c8d', floor:'#68675c', accent:'#8b6b48', blocks:[[5,2,3,6,1],[11,3,3,4,1],[18,3,3,5,2],[2,11,5,2,1],[8,10,5,3,2],[16,10,5,3,1],[5,17,3,4,1],[11,16,3,5,1],[18,17,2,3,3],[8,8,1,1,3]] },
+  { id:'market', name:'РИНОК', desc:'Кам’яний ринок: фонтан у MID, аркові бокові галереї й відкриті двори.', tag:'МІСЬКИЙ РИНОК', label:'ФОНТАН У MID', wall:'#a88364', light:'#e8cf9b', sky:'#b7835d', floor:'#735c49', accent:'#6d8d78', blocks:[[5,2,3,5,2],[11,2,4,2,1],[18,3,2,6,3],[3,10,4,2,1],[8,8,2,4,2],[14,8,2,4,2],[10,10,2,2,3],[17,11,4,2,1],[5,16,2,5,3],[10,16,4,2,1],[17,17,3,3,2],[8,14,2,2,1]] },
+  { id:'terminal', name:'ТЕРМІНАЛ', desc:'Перони та службові коридори з кількома обходами.', tag:'ТРАНЗИТНИЙ ЦЕНТР', label:'ШВИДКИЙ ТЕМП', wall:'#727b81', light:'#cfd1b7', sky:'#84939a', floor:'#5b6368', accent:'#c97053', blocks:[[5,3,3,5,1],[11,2,2,6,2],[17,3,4,3,1],[3,11,5,3,2],[9,10,5,2,1],[16,10,4,4,2],[5,17,2,4,1],[10,16,4,2,3],[16,17,3,4,1],[8,6,1,2,3]] },
+  { id:'summit', name:'ВЕРШИНА', desc:'Холодна станція, відкриті підходи та міцні укриття.', tag:'ВИСОКОГІРНА БАЗА', label:'ДИСТАНЦІЯ', wall:'#74848b', light:'#d4ded5', sky:'#9aaebb', floor:'#5b6f78', accent:'#d7a85d', blocks:[[6,3,2,5,1],[11,2,4,3,2],[18,3,2,6,1],[3,10,4,3,1],[8,9,2,5,2],[13,10,5,2,1],[19,11,2,3,3],[5,17,4,2,1],[10,16,2,5,2],[16,17,4,3,1],[7,6,1,2,3]] },
+  { id:'palace', name:'ПАЛАЦ', desc:'Сонячний внутрішній двір, верхня тераса й три аркові проходи.', tag:'КОЛИШНЯ РЕЗИДЕНЦІЯ', label:'ВЕРХНЯ ТЕРАСА', wall:'#c8a471', light:'#f6dfad', sky:'#d39a61', floor:'#80654c', accent:'#4f8790', blue:[[2.5,4.5],[3.5,3.5],[3.5,5.5]], red:[[21.5,18.5],[20.5,19.5],[20.5,17.5]], blocks:[[5,2,3,3,2],[11,2,5,2,1],[18,3,3,5,3],[4,7,2,5,1],[8,7,2,3,2],[14,7,2,3,2],[10,10,4,2,3],[3,13,5,2,3],[8,13,2,3,2],[14,13,2,3,2],[18,12,2,5,1],[10,16,4,2,3],[5,18,3,3,1],[12,19,5,2,2]] }
 ];
+const TACTICAL_LAYOUTS = {
+  dunes:{a:{name:'ОАЗА',point:[6,17]},mid:{name:'КРИНИЦЯ',point:[12,13]},b:{name:'РАДАР',point:[18,6]}},
+  arcade:{a:{name:'ТЕАТР',point:[6,18]},mid:{name:'АРКА',point:[12,12]},b:{name:'БАЛКОН',point:[18,6]}},
+  furnace:{a:{name:'КРАН',point:[6,17]},mid:{name:'КОТЕЛ',point:[13,12]},b:{name:'ПІЧ',point:[18,6]}},
+  canal:{a:{name:'ДОК',point:[6,17]},mid:{name:'МІСТ',point:[12,12]},b:{name:'МАЯК',point:[18,6]}},
+  citadel:{a:{name:'НИЖНІЙ ДВІР',point:[6,17]},mid:{name:'БРАМА',point:[13,13]},b:{name:'ВЕРХНЯ БРАМА',point:[18,6]}},
+  market:{a:{name:'КРАМНИЦІ',point:[6,17]},mid:{name:'ФОНТАН',point:[12,12]},b:{name:'ЛОЖІ',point:[18,6]}},
+  terminal:{a:{name:'ПЕРОН',point:[6,17]},mid:{name:'ПЕРЕХІД',point:[12,12]},b:{name:'ВИХІД',point:[18,6]}},
+  summit:{a:{name:'АНГАР',point:[6,17]},mid:{name:'ВЕЖА',point:[12,12]},b:{name:'РАДІОВЕЖА',point:[18,6]}},
+  palace:{a:{name:'САД',point:[6,17]},mid:{name:'ДВІР',point:[12,13]},b:{name:'ТЕРАСА',point:[18,6]}}
+};
+function nearestOpen(grid,[x,y]){
+  let point=[1.5,1.5],distance=Infinity;
+  for(let gy=1;gy<23;gy++)for(let gx=1;gx<23;gx++)if(grid[gy][gx]===0){const next=(gx+.5-x)**2+(gy+.5-y)**2;if(next<distance){distance=next;point=[gx+.5,gy+.5];}}
+  return point;
+}
 const MAPS = specs.map(s=>{
   const grid = Array.from({length:24},(_,y)=>Array.from({length:24},(_,x)=>x===0||y===0||x===23||y===23?1:0));
   for(const [x,y,w,h,t] of s.blocks) for(let j=y;j<y+h;j++) for(let i=x;i<x+w;i++) grid[j][i]=t;
-  return {...s,grid,blue:[[2.5,3.5],[3.5,2.5],[3.5,4.5]],red:[[21.5,20.5],[20.5,21.5],[20.5,19.5]]};
+  const tactical=TACTICAL_LAYOUTS[s.id],mark=area=>({name:area.name,point:nearestOpen(grid,area.point)});
+  return {...s,sites:{a:mark(tactical.a),b:mark(tactical.b)},mid:mark(tactical.mid),routes:['ЛІВИЙ','MID','ПРАВИЙ'],grid,blue:s.blue||[[2.5,3.5],[3.5,2.5],[3.5,4.5]],red:s.red||[[21.5,20.5],[20.5,21.5],[20.5,19.5]]};
 });
 const SKINS = [{name:'Ліс',color:'#657f67'},{name:'Ніч',color:'#546477'},{name:'Пісок',color:'#ab9970'}];
 const GLOVES = [{name:'Графіт',color:'#333b37'},{name:'Олива',color:'#60714b'},{name:'Койот',color:'#93724e'}];
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+// Viewmodel mass, spring response, recoil impulse and barrel reach (map units).
+const WEAPON_PHYSICS = {
+  pistol: { mass:.8, frequency:20, kick:1, reach:.55 },
+  smg: { mass:1.1, frequency:19, kick:.65, reach:.7 },
+  rifle: { mass:1.6, frequency:17, kick:1.1, reach:.95 },
+  shotgun: { mass:2, frequency:15, kick:2.1, reach:1.05 },
+  kalash: { mass:1.8, frequency:16, kick:1.4, reach:1 },
+  marksman: { mass:2.1, frequency:14, kick:2.25, reach:1.22 },
+  sniper: { mass:2.7, frequency:14, kick:3.1, reach:1.42 }
+};
+function createWeaponMotion(){
+  return Object.fromEntries(['x','y','roll','kick','aim','wall'].map(key=>[key,{value:0,velocity:0}]));
+}
+// Exact damped-spring solution for a constant target: stable across frame rates.
+function weaponSpring(axis,target,frequency,dt){
+  const damping=frequency*.72,omega=frequency*Math.sqrt(1-.72**2);
+  const offset=axis.value-target,b=(axis.velocity+damping*offset)/omega;
+  const decay=Math.exp(-damping*dt),cos=Math.cos(omega*dt),sin=Math.sin(omega*dt);
+  axis.value=target+decay*(offset*cos+b*sin);
+  axis.velocity=decay*((-damping*offset+omega*b)*cos+(-damping*b-omega*offset)*sin);
+}
+function kickWeaponMotion(motion,id,aiming=false){
+  const force=WEAPON_PHYSICS[id].kick*(aiming?.6:1);
+  motion.kick.velocity=Math.min(600,motion.kick.velocity+force*220);
+  motion.roll.velocity=Math.max(-3,motion.roll.velocity-force*.85);
+}
+function stepWeaponMotion(motion,id,input,dt){
+  if(!Number.isFinite(dt)||dt<=0)return;
+  const profile=WEAPON_PHYSICS[id],steady=input.aiming?.35:1;
+  const turn=clamp(input.turn||0,-6,6),look=clamp(input.look||0,-3,3);
+  const side=clamp(input.side||0,-1,1),forward=clamp(input.forward||0,-1,1);
+  const bob=input.moving?Math.sin(input.walk||0):0;
+  const targets={
+    x:(-turn*4*profile.mass-side*7+bob*5)*steady,
+    y:(look*13*profile.mass+forward*4+Math.abs(bob)*4-(input.lift||0)*10)*steady,
+    roll:(-turn*.012*profile.mass-side*.035)*steady,
+    kick:0,aim:input.aiming?1:0,wall:clamp(input.wall||0,0,1)
+  };
+  if(input.landing)motion.y.velocity+=Math.min(3,Math.abs(input.landing))*65*profile.mass;
+  for(const key of Object.keys(targets))weaponSpring(motion[key],targets[key],profile.frequency,dt);
+}
+function weaponWallProximity(map,x,y,angle,id){
+  const reach=WEAPON_PHYSICS[id].reach;
+  for(let distance=.1;distance<=reach;distance+=.05){
+    // A narrow barrel volume catches corners as well as walls directly ahead.
+    for(const side of [-.08,0,.08]){
+      if(blocked(map,x+Math.cos(angle)*distance-Math.sin(angle)*side,y+Math.sin(angle)*distance+Math.cos(angle)*side))return 1-distance/reach;
+    }
+  }
+  return 0;
+}
 function blocked(map,x,y){ return (map.grid[Math.floor(y)]?.[Math.floor(x)]??1)!==0; }
 function canStand(map,x,y,r=.21){return !blocked(map,x-r,y-r)&&!blocked(map,x+r,y-r)&&!blocked(map,x-r,y+r)&&!blocked(map,x+r,y+r);}
 function moveActor(map,a,dx,dy){if(canStand(map,a.x+dx,a.y))a.x+=dx;if(canStand(map,a.x,a.y+dy))a.y+=dy;}
@@ -154,27 +275,53 @@ function tint(s,k){return `rgb(${hex(s).map(v=>Math.min(255,Math.max(0,Math.roun
 function poly(c,points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
 function mapArt(canvas,map,hero=false){
   const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-  c.clearRect(0,0,w,h);const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,tint(map.sky,.65));sky.addColorStop(1,'#142723');c.fillStyle=sky;c.fillRect(0,0,w,h);
-  c.fillStyle='#e5edb31a';c.beginPath();c.arc(w*.77,h*.2,h*.18,0,7);c.fill();
-  const scale=hero?w/35:w/31,ox=w*.53,oy=-h*.32;
-  const project=(x,y,z=0)=>[ox+(x-y)*scale,oy+(x+y)*scale*.49-z*scale];
-  poly(c,[project(-5,-5),project(32,-5),project(32,32),project(-5,32)],tint(map.floor,.77));
-  c.strokeStyle='#ced3a612';c.lineWidth=1;for(let i=0;i<30;i++){c.beginPath();c.moveTo(...project(i,0));c.lineTo(...project(i,30));c.stroke();c.beginPath();c.moveTo(...project(0,i));c.lineTo(...project(30,i));c.stroke();}
-  for(const x of [9,15]){poly(c,[project(x,0),project(x+.13,0),project(x+.13,26),project(x,26)],'#d5ce9580');}
-  const box=(x,y,bw,bh,z,color)=>{
-    poly(c,[project(x+bw,y),project(x+bw+z*.9,y+.4),project(x+bw+z*.9,y+bh+z*.5),project(x,y+bh)],'#0a171b55');
-    poly(c,[project(x,y,z),project(x+bw,y,z),project(x+bw,y+bh,z),project(x,y+bh,z)],tint(color,1.3));
-    poly(c,[project(x,y+bh,z),project(x+bw,y+bh,z),project(x+bw,y+bh),project(x,y+bh)],tint(color,.83));
-    poly(c,[project(x+bw,y,z),project(x+bw,y+bh,z),project(x+bw,y+bh),project(x+bw,y)],tint(color,.56));
-    c.strokeStyle='#111c2355';c.lineWidth=1;for(let k=.35;k<bw;k+=.55){c.beginPath();c.moveTo(...project(x+k,y+bh,z-.08));c.lineTo(...project(x+k,y+bh,.05));c.stroke();}
-    if(bw>1.5){poly(c,[project(x+.22,y+bh+.01,z*.68),project(x+Math.min(bw-.2,1.1),y+bh+.01,z*.68),project(x+Math.min(bw-.2,1.1),y+bh+.01,z*.32),project(x+.22,y+bh+.01,z*.32)],'#182829');}
+  c.imageSmoothingEnabled=false;c.clearRect(0,0,w,h);
+  c.fillStyle='#081312';c.fillRect(0,0,w,h);
+  for(let y=0;y<h;y+=8){c.fillStyle=y%16?'#10201d':'#132823';c.fillRect(0,y,w,8);}
+  const mapW=Math.floor(w*(hero?.76:.72)),mapH=Math.floor(h*(hero?.82:.78));
+  const tw=Math.max(4,Math.floor(mapW/24)),th=Math.max(4,Math.floor(mapH/24));
+  const pw=tw*24,ph=th*24,ox=Math.floor((w-pw)/2),oy=Math.floor((h-ph)/2);
+  c.fillStyle='#050b0b';c.fillRect(ox-7,oy-7,pw+14,ph+14);
+  c.fillStyle=tint(map.accent,.8);c.fillRect(ox-7,oy-7,pw+14,3);c.fillRect(ox-7,oy-7,3,ph+14);
+  c.fillStyle='#1b302b';c.fillRect(ox-4,oy-4,pw+8,ph+8);
+  for(let y=0;y<24;y++)for(let x=0;x<24;x++){
+    const px=ox+x*tw,py=oy+y*th,type=map.grid[y][x];
+    if(!type){
+      c.fillStyle=(x*11+y*7)%5===0?tint(map.floor,.82):map.floor;c.fillRect(px,py,tw,th);
+      if((x+y*3)%7===0){c.fillStyle='#dce8c016';c.fillRect(px+1,py+1,Math.max(1,tw-3),1);}
+      continue;
+    }
+    const color=type===2?map.accent:type===3?tint(map.wall,.62):map.wall;
+    c.fillStyle='#07100f99';c.fillRect(px+2,py+2,tw,th);
+    c.fillStyle=tint(color,.63);c.fillRect(px,py,tw,th);
+    c.fillStyle=tint(color,1.2);c.fillRect(px+1,py+1,Math.max(1,tw-2),Math.max(2,Math.floor(th*.35)));
+    c.fillStyle='#08121166';c.fillRect(px,py+th-2,tw,2);
+    if(type===2){c.fillStyle='#fff0bb66';c.fillRect(px+Math.floor(tw*.35),py+1,Math.max(1,Math.floor(tw*.16)),Math.max(1,th-2));}
+    if(type===3){c.fillStyle='#0a1514aa';c.fillRect(px+Math.floor(tw*.25),py+Math.floor(th*.25),Math.max(1,Math.floor(tw*.5)),Math.max(1,Math.floor(th*.5)));}
+  }
+  if(map.id==='palace'){
+    const cx=Math.round(ox+pw*.5),cy=Math.round(oy+ph*.47),archW=Math.max(12,tw*2),archH=Math.max(11,Math.floor(th*2.2)),column=Math.max(3,Math.floor(tw*.45));
+    c.fillStyle=tint(map.light,.92);c.fillRect(cx-archW,cy-archH,archW*2,3);c.fillRect(cx-archW+3,cy-archH+3,archW*2-6,3);
+    c.fillStyle=tint(map.light,.67);c.fillRect(cx-archW,cy-archH+6,column,archH-6);c.fillRect(cx+archW-column,cy-archH+6,column,archH-6);
+    c.fillStyle=tint(map.wall,.5);c.fillRect(cx-archW+column,cy-archH+7,archW*2-column*2,archH-7);
+    c.fillStyle=tint(map.accent,1.18);c.fillRect(cx-3,cy-archH+9,6,archH-9);c.fillRect(cx-archW+4,cy-archH+8,archW-7,2);c.fillRect(cx+3,cy-archH+8,archW-7,2);
+  }
+  const mark=(label,point,color)=>{
+    const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);
+    c.fillStyle='#07110ed9';c.fillRect(x-6,y-6,13,13);c.fillStyle=color;c.fillRect(x-4,y-4,9,9);
+    c.fillStyle='#07110e';c.font=`bold ${Math.max(7,Math.min(tw,th))}px monospace`;c.textAlign='center';c.textBaseline='middle';c.fillText(label,x+.5,y+.5);c.textAlign='left';c.textBaseline='alphabetic';
   };
-  const blocks=map.blocks.map(b=>[...b]);blocks.push([1,1,1,21,1],[1,1,21,1,1]);blocks.sort((a,b)=>a[0]+a[1]-b[0]-b[1]);
-  for(const [x,y,bw,bh,t]of blocks)box(x,y,bw,bh,t===3?.8:t===2?1.7:map.id==='city'?3.9:3,t===2?map.accent:map.wall);
-  for(const [x,y]of [[8,12],[15,15],[18,8],[3,9]])box(x,y,.8,.8,.7,map.accent);
-  if(hero){const [x,y]=project(14,18);c.fillStyle='#07120f66';c.beginPath();c.ellipse(x,y,12,5,0,0,7);c.fill();const sprite=makeOperator('#5b7367','#cede9e');c.drawImage(sprite,x-17,y-61,34,64);}
-  const fade=c.createLinearGradient(0,h*.2,0,h);fade.addColorStop(0,'#0c211400');fade.addColorStop(1,'#071c2266');c.fillStyle=fade;c.fillRect(0,0,w,h);
-  c.strokeStyle='#dfebc817';for(let i=0;i<h;i+=4){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}
+  mark('A',map.sites.a.point,'#d89a57');mark('M',map.mid.point,'#f4d47c');mark('B',map.sites.b.point,'#79a5a1');
+  const spawn=(point,color)=>{const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);c.fillStyle='#07110e';c.fillRect(x-3,y-3,7,7);c.fillStyle=color;c.fillRect(x-2,y-2,5,5);};
+  map.blue.forEach(p=>spawn(p,'#c3f66b'));map.red.forEach(p=>spawn(p,'#f4a46a'));
+  c.fillStyle='#0b1715dd';c.fillRect(ox+5,oy+5,Math.min(148,pw-10),23);
+  c.fillStyle='#d9ead7';c.font=`bold ${hero?13:10}px monospace`;c.fillText(`PIXEL // ${map.name}`,ox+11,oy+15);
+  c.fillStyle=tint(map.accent,1.3);c.font=`${hero?8:7}px monospace`;c.fillText(`A / ${map.mid.name} / B`,ox+11,oy+24);
+  if(hero){
+    const sprite=makeOperator('#5b7367','#cede9e');const x=ox+pw-Math.max(37,tw*2),y=oy+ph-Math.max(72,th*7);
+    c.drawImage(sprite,x,y,Math.max(34,tw*2),Math.max(68,th*7));
+  }
+  c.globalAlpha=.22;c.fillStyle='#e4f5ce';for(let y=0;y<h;y+=4)c.fillRect(0,y,w,1);c.globalAlpha=1;
 }
 function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   const cv=document.createElement('canvas');cv.width=128;cv.height=256;const c=cv.getContext('2d');
@@ -199,13 +346,210 @@ function loadWeaponSprites(){
   return out;
 }
 function weaponSpriteReady(img){return !!img&&img.complete&&img.naturalWidth>0;}
+const WEAPON_MUZZLES={pistol:155,smg:215,rifle:290,shotgun:315,kalash:290,marksman:345,sniper:385};
+function drawScopeOverlay(c,w,h,id,alpha=1){
+  if((id!=='marksman'&&id!=='sniper')||alpha<=0)return;
+  const cx=w*.5,cy=h*.5,r=Math.min(w,h)*(id==='sniper'?.45:.42);
+  c.save();c.globalAlpha=alpha;c.fillStyle='#020506';c.beginPath();c.rect(0,0,w,h);c.arc(cx,cy,r,0,Math.PI*2,true);c.fill('evenodd');
+  c.strokeStyle='#303b3b';c.lineWidth=Math.max(5,Math.round(r*.045));c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+  c.strokeStyle='#a7c58b';c.lineWidth=1;c.globalAlpha=alpha*.72;
+  c.beginPath();c.moveTo(cx-r*.66,cy);c.lineTo(cx+r*.66,cy);c.moveTo(cx,cy-r*.66);c.lineTo(cx,cy+r*.66);c.stroke();
+  for(const s of [-1,1])for(let i=1;i<=4;i++){
+    const d=i*r*.12;c.beginPath();c.moveTo(cx+s*d,cy-5);c.lineTo(cx+s*d,cy+5);c.moveTo(cx-5,cy+s*d);c.lineTo(cx+5,cy+s*d);c.stroke();
+  }
+  c.fillStyle='#d9f1bd';c.fillRect(cx-2,cy-2,4,4);c.restore();
+}
+// Rear view down the barrel. The front sight's tip is exactly (0, 0),
+// matching the screen-centre ray used for hit detection.
+function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
+  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun';
+  const shape=(points,color)=>{poly(c,points,color);c.strokeStyle='#11191f';c.lineWidth=2;c.lineJoin='round';c.stroke();};
+  const line=(points,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();};
+  const body=pistol?40:id==='smg'?48:shotgun?54:ak?56:60,front=pistol?12:18,kick=flash>0?flash*6:0;
+  // Hands and sleeves stay below the sight picture.
+  shape([[-body,125],[-body-38,175],[-180,500],[-40,500],[6,210]],tint(skin,.8));
+  shape([[body-3,120],[body+43,157],[190,500],[50,500],[-7,210]],skin);
+  shape([[-body-4,101],[-body-27,139],[-body-16,196],[-12,211],[9,165],[-9,125]],glove);
+  shape([[body-8,112],[body+25,143],[body+17,206],[14,223],[-10,171],[10,133]],glove);
+  // Tapered top plane gives a view along the weapon rather than its side.
+  const fore=ak||shotgun?'#995d35':id==='rifle'?'#596451':'#3e4b54';
+  shape([[-front,25],[front,25],[body,187+kick],[-body,187+kick]],fore);
+  shape([[-front,25],[-body,187+kick],[-body,285],[-front-10,72]],'#263039');
+  shape([[front,25],[front+10,72],[body,285],[body,187+kick]],'#1d272f');
+  if(ak||shotgun){
+    for(let i=0;i<6;i++){const y=50+i*13,half=front+(body-front)*(y-25)/162;line([[-half+3,y],[half-3,y]],'#593d2c',3);}
+  }else if(!pistol){
+    for(let i=0;i<8;i++){const y=40+i*11,half=10+i*2;line([[-half,y],[half,y]],'#899396',3);}
+  }
+  shape([[-body+7,116+kick],[body-7,116+kick],[body+12,265],[-body-12,265]],'#47535c');
+  shape([[-body+14,124+kick],[body-14,124+kick],[body-1,244],[-body+1,244]],'#67747b');
+  line([[0,125+kick],[0,243]],'#8a989d');
+  if(pistol){
+    for(let i=0;i<5;i++){const y=161+i*15;line([[-body+10,y],[-body+18,y+8]],'#212d36',3);line([[body-10,y],[body-18,y+8]],'#212d36',3);}
+  }else{
+    shape([[body-1,149],[body+23,155],[body+24,168],[body+2,166]],'#8a989b');
+  }
+  // Rear sight is connected to the receiver and leaves the target visible.
+  shape([[-body+2,13],[-18,0],[-11,0],[-11,28],[11,28],[11,0],[18,0],[body-2,13],[body-2,38],[-body+2,38]],'#202b33');
+  shape([[-body+2,38],[-body+10,38],[-body+6,123],[-body-4,123]],'#303d46');
+  shape([[body-10,38],[body-2,38],[body+4,123],[body-6,123]],'#303d46');
+  line([[-body+2,14],[-19,2],[-12,2]],'#93a0a5',3);
+  line([[12,2],[19,2],[body-2,14]],'#93a0a5',3);
+  if(id==='rifle'||id==='smg'){
+    // Aperture sight: thin ring, never a filled disc over the target.
+    c.strokeStyle='#202b33';c.lineWidth=6;c.beginPath();c.arc(0,0,27,0,Math.PI*2);c.stroke();
+    c.strokeStyle='#8b999b';c.lineWidth=1.5;c.beginPath();c.arc(0,0,30,Math.PI,Math.PI*2);c.stroke();
+  }else{
+    c.fillStyle='#d1ddab';c.fillRect(-25,8,5,4);c.fillRect(20,8,5,4);
+  }
+  // Bright tip at the exact aim point; the post extends down, not over it.
+  shape([[-3,0],[3,0],[5,26],[-5,26]],'#18232b');
+  c.fillStyle='#d4ee9a';c.fillRect(-2,0,4,3);
+  if(flash>.55){
+    // Muzzle gas to either side preserves the centre of the sight picture.
+    for(const side of [-1,1])poly(c,[[side*34,15],[side*62,-8],[side*48,17],[side*76,25],[side*40,29]],'#ffd18a');
+  }
+}
+// Large, continuous silhouettes with visible upper faces and separate grips.
+// Coordinates run from the muzzle on the left to the stock on the right.
+function drawHeldWeapon(c,id,{skin,glove,ads=0,reload=0,flash=0}={}){
+  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun',scoped=id==='marksman'||id==='sniper';
+  const metal='#39444c',edge='#82919a',dark='#1b232b',wood='#95572d';
+  const shape=(points,color)=>{
+    poly(c,points,color);c.strokeStyle='#101820';c.lineWidth=2;c.lineJoin='round';c.stroke();
+  };
+  const line=(points,color,width=2)=>{
+    c.strokeStyle=color;c.lineWidth=width;c.beginPath();
+    points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();
+  };
+  const solid=(points,color,depth=9)=>{
+    const top=points.map(([x,y])=>[x-depth*.65,y-depth]);
+    shape(top,tint(color,1.4));
+    for(let i=0;i<points.length;i++){
+      const j=(i+1)%points.length;
+      shape([points[i],points[j],top[j],top[i]],tint(color,points[j][0]>points[i][0]?1.35:.7));
+    }
+    shape(points,color);
+  };
+  const rect=(x,y,w,h,color,depth=7)=>solid([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],color,depth);
+  const hand=(x,y,angle=0)=>{
+    c.save();c.translate(x,y);c.rotate(angle);
+    solid([[-23,-15],[9,-22],[28,-9],[29,32],[12,47],[-19,37]],glove,5);
+    for(let i=0;i<3;i++)line([[-17,1+i*10],[17,5+i*10]],tint(glove,1.55),3);
+    shape([[-20,-13],[-8,-23],[7,-18],[14,9],[1,18],[-11,8]],tint(glove,1.3));
+    c.restore();
+  };
+  const angle=.48+ads*.85;
+  const sleeveEnd=(x,y)=>[x*Math.cos(angle)+y*Math.sin(angle),-x*Math.sin(angle)+y*Math.cos(angle)];
+  c.save();c.translate(0,-120);c.rotate(angle);
+  // Sleeves sit behind the gun, with hands wrapping the grip and fore-end.
+  solid([[55,88],[105,100],sleeveEnd(240,600),sleeveEnd(80,600),[68,157]],skin,10);
+  if(!pistol)solid([[-145,60],[-112,76],[-110,160],sleeveEnd(-300,600),sleeveEnd(-460,600),[-162,113]],tint(skin,.8),8);
+  if(pistol){
+    solid([[10,10],[63,12],[82,109],[31,119],[10,94]],dark,12);
+    rect(25,99,59,13,'#303941');
+    if(reload>.15&&reload<.58){
+      c.save();c.translate(43,105+(reload-.15)*320);c.rotate((reload-.15)*1.4);
+      c.globalAlpha=1-(reload-.15)*1.8;rect(-9,0,25,65,metal,6);c.restore();
+    }
+    for(let i=0;i<6;i++)line([[30+i*3,37+i*10],[58+i*3,34+i*10]],'#525c60',2);
+    // Open trigger guard, with a distinct curved trigger inside.
+    line([[-42,15],[-36,59],[12,63],[28,33]],dark,10);
+    line([[-13,18],[-18,36],[-7,44]],edge,4);
+    solid([[-149,-10],[65,-10],[64,20],[8,31],[-47,25],[-149,15]],'#424c52',11);
+    const slide=flash>.55?13:0;
+    c.save();c.translate(slide,0);
+    solid([[-155,-48],[49,-48],[65,-34],[63,-8],[-155,-8]],metal,13);
+    rect(-85,-45,36,12,'#131d24',2);
+    for(let i=0;i<6;i++)line([[20+i*6,-39],[15+i*6,-14]],edge,2);
+    rect(-143,-61,10,12,dark,3);rect(44,-61,13,12,dark,4);
+    c.restore();
+    hand(57,73,-.18);
+    line([[-145,-43],[-102,-43]],'#b1bec4',2);
+  }else{
+    // Stock and pistol grip: rifle/AK have full stocks; SMG has a folding stock.
+    if(id==='smg'){
+      line([[69,-13],[156,-10],[174,30]],'#7e8a90',10);
+      line([[71,14],[153,16],[174,50]],dark,9);rect(163,17,17,47,dark);
+    }else{
+      solid([[65,-21],[102,-20],[169,1],[180,63],[150,77],[78,25]],ak||shotgun?wood:scoped?'#555d57':'#414c46',13);
+      solid([[167,-1],[180,2],[191,66],[177,74]],dark,8);
+      if(ak||shotgun)line([[109,9],[151,23],[164,53]],'#c38a50',3);
+      else line([[108,6],[149,20],[156,46],[129,40]],'#8b988b',3);
+    }
+    solid([[23,18],[66,23],[84,95],[49,112],[22,91]],ak?'#70472e':dark,9);
+    line([[-22,27],[-15,63],[23,68],[40,38]],dark,9);
+    line([[3,27],[-1,43],[9,49]],edge,3);
+    // Magazines remain visibly separate from the firing hand.
+    if(!shotgun){
+      const removed=reload>.15&&reload<.58;
+      c.save();if(removed){c.translate(0,(reload-.15)*310);c.rotate((reload-.15)*.8);c.globalAlpha=1-(reload-.15)*1.8;}
+      if(ak){
+        solid([[-84,22],[-42,26],[-39,65],[-21,106],[7,128],[-18,149],[-53,126],[-72,92]],'#303941',10);
+        for(let i=0;i<3;i++)line([[-72+i*10,39],[-63+i*10,85],[-44+i*10,116],[-18+i*10,135]],'#6a7379',3);
+      }else{
+        const length=id==='smg'?107:scoped?104:82;
+        solid([[-69,20],[-32,24],[-23,length],[-63,length+7]],id==='rifle'?'#626958':scoped?'#4b5556':dark,9);
+        for(let i=0;i<3;i++)line([[-60+i*10,39],[-55+i*10,length-9]],'#8a9181',2);
+        rect(-63,length-4,43,12,dark,4);
+      }
+      c.restore();
+    }
+    // Long barrel and (for the shotgun) the lower magazine tube.
+    const muzzle=WEAPON_MUZZLES[id];
+    rect(-muzzle,-30,muzzle-137,14,'#46525b',7);
+    rect(-muzzle,-34,23,23,dark,7);
+    line([[-muzzle+6,-31],[-muzzle+6,-16]],'#88969d',2);
+    if(shotgun)rect(-284,-8,177,12,dark,7);
+    if(ak)rect(-245,-48,107,9,dark,5);
+    // Front sight visibly breaks the barrel silhouette.
+    rect(-muzzle+43,-57,9,28,dark,4);
+    line([[-muzzle+39,-54],[-muzzle+49,-64],[-muzzle+58,-54]],edge,4);
+    const fore=ak||shotgun?wood:id==='rifle'?'#4d5e4e':scoped?'#5b6257':'#353f48';
+    solid([[-203,-34],[-91,-34],[-81,16],[-188,16],[-206,3]],fore,12);
+    for(let i=0;i<(ak?3:7);i++)line([[-187+i*13,-23],[-182+i*13,8]],tint(fore,.52),4);
+    // Receiver, top cover, ejection port, charging handle and fasteners.
+    solid([[-104,-40],[64,-40],[81,-23],[72,22],[-95,22]],metal,14);
+    solid([[-91,-50],[48,-50],[63,-40],[-104,-40]],'#67747b',6);
+    if(scoped){
+      const optic=id==='sniper'?98:78;
+      solid([[-optic*.48,-112],[optic*.36,-112],[optic*.48,-78],[-optic*.58,-78]],'#263138',12);
+      rect(-optic*.43,-107,optic*.82,22,'#111a20',6);
+      c.fillStyle='#93b4a0';c.fillRect(-optic*.34,-103,optic*.62,5);
+      c.fillStyle='#17232a';c.beginPath();c.arc(-optic*.46,-96,13,0,Math.PI*2);c.fill();c.beginPath();c.arc(optic*.4,-96,13,0,Math.PI*2);c.fill();
+      c.strokeStyle='#9bab9d';c.lineWidth=3;c.beginPath();c.moveTo(-18,-78);c.lineTo(-18,-55);c.moveTo(20,-78);c.lineTo(20,-55);c.stroke();
+    }
+    rect(-40,-30,54,18,'#131c22',3);
+    line([[-33,-26],[7,-26]],'#a0a9a9',3);
+    rect(1,-15,29,6,'#839096',4);
+    for(const x of [-82,49]){c.fillStyle='#a4adae';c.beginPath();c.arc(x,7,3,0,Math.PI*2);c.fill();}
+    if(!ak&&!shotgun){
+      for(let i=0;i<12;i++)rect(-91+i*12,-60,7,7,dark,3);
+      // Compact rear sight, with daylight through its centre.
+      line([[24,-53],[24,-79],[51,-79],[51,-53]],dark,8);
+      line([[27,-76],[48,-76]],'#90a2a4',2);
+    }else rect(38,-64,14,12,dark,4);
+    hand(56,82,-.23);
+    hand(-151,35,.1);
+  }
+  if(flash>.55&&reload<=0){
+    c.save();c.translate(-WEAPON_MUZZLES[id]-9,pistol?-27:-24);
+    poly(c,[[-68,0],[-20,-8],[-36,-27],[-9,-15],[6,-29],[7,-7],[24,0],[7,9],[1,27],[-10,13],[-39,28],[-23,9]],'#ffbc51');
+    poly(c,[[-39,0],[-5,-8],[12,0],[-5,8]],'#fff5cb');c.restore();
+  }
+  c.restore();
+}
 function textures(map){
   let seed=97;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
-  return [null,...[1,2,3].map(type=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');c.fillStyle=type===2?map.accent:map.wall;c.fillRect(0,0,64,64);
-    for(let i=0;i<2800;i++){c.fillStyle=rand()>.5?'#ffffff0b':'#00000010';c.fillRect(rand()*64,rand()*64,1+rand()*3,1+rand()*2);}
-    if(type===1){c.fillStyle='#15221f55';for(let y=0;y<64;y+=16)c.fillRect(0,y,64,1);for(let y=0;y<64;y+=16)for(let x=(y%32?16:0);x<64;x+=32)c.fillRect(x,y,1,16);c.fillStyle='#e2dfb522';c.fillRect(0,1,64,1);}
-    if(type===2){for(let x=0;x<64;x+=8){c.fillStyle='#121c2244';c.fillRect(x,0,2,64);c.fillStyle='#fff1c522';c.fillRect(x+2,0,1,64);}c.fillStyle='#22302c';c.fillRect(0,4,64,3);c.fillRect(0,58,64,3);c.fillStyle='#e2d8b3';c.fillRect(22,19,21,12);c.fillStyle='#544e38';c.font='bold 8px monospace';c.fillText('07',26,28);}
-    if(type===3){c.fillStyle='#202d2bbb';c.fillRect(0,0,64,5);c.fillRect(0,59,64,5);c.fillRect(0,0,5,64);c.fillRect(59,0,5,64);c.strokeStyle='#2a342b';c.lineWidth=6;c.beginPath();c.moveTo(5,5);c.lineTo(59,59);c.moveTo(59,5);c.lineTo(5,59);c.stroke();}
+  return [null,...[1,2,3].map(type=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');c.imageSmoothingEnabled=false;
+    const base=type===2?map.accent:type===3?tint(map.wall,.6):map.wall;c.fillStyle=base;c.fillRect(0,0,64,64);
+    for(let y=0;y<64;y+=8)for(let x=0;x<64;x+=8){c.fillStyle=(x/8+y/8+Math.floor(rand()*3))%3===0?tint(base,.76):tint(base,1.04);c.fillRect(x,y,8,8);c.fillStyle='#ffffff16';c.fillRect(x+1,y+1,6,1);if(rand()>.64){c.fillStyle='#07121038';c.fillRect(x+2,y+4,2,2);}}
+    if(type===1){c.fillStyle='#10201e77';for(let y=0;y<64;y+=16)c.fillRect(0,y,64,2);for(let y=0;y<64;y+=16)for(let x=(y%32?16:0);x<64;x+=32)c.fillRect(x,y,2,16);c.fillStyle='#e2dfb544';c.fillRect(0,2,64,2);}
+    if(type===2){for(let x=0;x<64;x+=8){c.fillStyle='#121c2266';c.fillRect(x,0,2,64);c.fillStyle='#fff1c533';c.fillRect(x+2,0,1,64);}c.fillStyle='#22302c';c.fillRect(0,5,64,4);c.fillRect(0,56,64,4);c.fillStyle='#e2d8b3';c.fillRect(20,19,24,14);c.fillStyle='#544e38';c.font='bold 8px monospace';c.fillText('PX',25,29);}
+    if(type===3){c.fillStyle='#202d2bbb';c.fillRect(0,0,64,6);c.fillRect(0,58,64,6);c.fillRect(0,0,6,64);c.fillRect(58,0,6,64);c.fillStyle='#0d1619';for(let i=8;i<58;i+=12){c.fillRect(i,i,7,7);c.fillRect(57-i,i,7,7);}}
+    if(map.id==='palace'&&type===1){c.fillStyle=tint(map.light,.54);for(let x=6;x<64;x+=20){c.fillRect(x,8,5,48);c.fillRect(x-2,5,9,4);c.fillRect(x-1,56,7,3);}}
+    if(map.id==='palace'&&type===2){c.fillStyle=tint(map.accent,1.24);for(let x=6;x<64;x+=16){c.fillRect(x,12,4,4);c.fillRect(x,44,4,4);}}
+    if(map.id==='palace'&&type===3){c.fillStyle=tint(map.light,.88);c.fillRect(7,8,50,4);c.fillRect(10,12,44,4);c.fillStyle='#3b3027';c.fillRect(18,26,28,32);c.fillRect(15,32,34,26);c.fillRect(21,22,22,36);c.fillRect(26,18,12,40);c.fillStyle=tint(map.accent,1.12);c.fillRect(29,31,6,27);}
     return cv;})];
 }
 
@@ -372,22 +716,254 @@ function snapshotRoom(room) {
   };
 }
 
+// Browser-hosted matches. Signalling is exchanged manually; game traffic uses WebRTC.
+
+
+function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
+  const room=createRoom({...options,id:'peer-room',code:'',isPublic:false,hostId:'host',mapId:clamp(Math.floor(Number(options.mapId)||0),0,MAPS.length-1)});
+  addPlayer(room,'host',nick);
+  const send=(id,msg)=>deliver(id,msg);
+  const broadcast=msg=>{for(const id of Object.keys(room.players))send(id,msg);};
+  const publish=()=>broadcast({t:S2C.ROOM,room:snapshotRoom(room)});
+  const error=(id,message)=>send(id,{t:S2C.ERROR,message});
+  function spawn(p){
+    const positions=p.team?MAPS[room.mapId].red:MAPS[room.mapId].blue;
+    const mates=Object.values(room.players).filter(q=>q.team===p.team);
+    [p.x,p.y]=positions[mates.indexOf(p)%positions.length];
+    p.angle=p.team?3.8:.72;p.hp=100;p.alive=true;p.moving=false;
+    p.weapon='pistol';p.ammo=12;p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
+  }
+  function finish(events){
+    if(events.length)broadcast({t:S2C.EVENTS,events});
+    if(room.phase==='finished')broadcast({t:S2C.MATCH_END,room:snapshotRoom(room)});
+  }
+  return {
+    room,
+    join(id,name){
+      if(id==='host'||Object.hasOwn(room.players,id))return false;
+      const result=addPlayer(room,id,name);
+      if(!result.ok){error(id,result.message);return false;}
+      send(id,{t:S2C.WELCOME,id,rooms:[]});send(id,{t:S2C.JOINED,room:snapshotRoom(room)});publish();return true;
+    },
+    leave(id){
+      if(id==='host'||!Object.hasOwn(room.players,id))return;
+      removePlayer(room,id);
+      if(room.phase==='playing'&&!Object.values(room.players).some(p=>p.team!==room.players.host.team)){
+        room.phase='finished';room.winner=room.players.host.team;
+        finish([{t:'finish',winner:room.winner,score:teamScores(room)}]);
+      }
+      publish();
+    },
+    receive(id,msg){
+      if(!msg||typeof msg.t!=='string'||!Object.hasOwn(room.players,id))return;
+      const p=room.players[id];
+      switch(msg.t){
+        case C2S.READY: if(setReady(room,id,msg.ready))publish();break;
+        case C2S.START:
+          if(!canStart(room,id)){error(id,'Потрібні щонайменше двоє гравців і готовність усіх');break;}
+          for(const actor of Object.values(room.players)){spawn(actor);actor.kills=0;actor.deaths=0;actor.ready=false;}
+          room.phase='playing';room.timeLeft=room.matchTime;room.winner=-1;
+          broadcast({t:S2C.MATCH_START,room:snapshotRoom(room)});break;
+        case C2S.STATE: {
+          if(room.phase!=='playing'||!p.alive)break;
+          const x=Number(msg.x),y=Number(msg.y),angle=Number(msg.angle);
+          if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)){
+            p.x=x;p.y=y;p.angle=angle;p.moving=!!msg.moving;
+          }
+          if(Object.hasOwn(WEAPONS,msg.weapon)&&msg.weapon!==p.weapon){p.weapon=msg.weapon;p.ammo=WEAPONS[p.weapon].size;p.reloadingUntil=0;}
+          break;
+        }
+        case C2S.SHOOT: {
+          if(room.phase!=='playing'||!p.alive||p.reloadingUntil||p.ammo<=0)break;
+          const w=WEAPONS[p.weapon],time=now();
+          if(msg.weapon!==p.weapon||time-p.lastShotAt<w.rate*.8)break;
+          p.lastShotAt=time;p.flashAt=time;p.ammo--;
+          const events=[];
+          if(!p.ammo){p.reloadingUntil=time+w.reload;events.push({t:'reload',id});}
+          const target=Object.hasOwn(room.players,msg.target)?room.players[msg.target]:null;
+          if(target&&target.alive&&target.team!==p.team){
+            const distance=Math.hypot(target.x-p.x,target.y-p.y),angle=Math.atan2(target.y-p.y,target.x-p.x);
+            const diff=Math.abs(Math.atan2(Math.sin(angle-p.angle),Math.cos(angle-p.angle)));
+            if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y)){
+              const amount=w.damage*(msg.head?(w.headMult||2):1)*(p.weapon==='shotgun'?w.pellets*clamp(1-distance/14,.15,1):1);
+              applyDamage(target,amount,!!msg.head);
+              if(target.hp<=0){target.alive=false;target.deaths++;target.respawnIn=MP.RESPAWN_DELAY;p.kills++;events.push({t:'kill',source:id,target:target.id,sourceNick:p.nick,targetNick:target.nick});}
+            }
+          }
+          events.push(...matchTick(room,0));finish(events);break;
+        }
+        case C2S.CHAT: {
+          const text=String(msg.text||'').trim().slice(0,120);
+          if(text)broadcast({t:S2C.EVENTS,events:[{t:'chat',id,nick:p.nick,text}]});break;
+        }
+        case C2S.LEAVE: this.leave(id);break;
+      }
+    },
+    tick(dt){
+      if(room.phase!=='playing')return;
+      const events=matchTick(room,dt);
+      for(const event of events)if(event.t==='respawn')spawn(room.players[event.id]);
+      for(const p of Object.values(room.players))if(p.reloadingUntil&&now()>=p.reloadingUntil){p.reloadingUntil=0;p.ammo=WEAPONS[p.weapon].size;}
+      finish(events);
+      if(room.phase==='playing')broadcast({t:S2C.SNAPSHOT,snap:snapshotRoom(room)});
+    }
+  };
+}
+
+function encodePeerSignal(signal){return 'SECTOR1.'+btoa(encodeURIComponent(JSON.stringify(signal)));}
+function decodePeerSignal(text,type){
+  const value=String(text||'').replace(/\s/g,'');
+  if(value.length>100000||!value.startsWith('SECTOR1.'))throw new Error('Встав повне запрошення або відповідь із гри');
+  let signal;
+  try{signal=JSON.parse(decodeURIComponent(atob(value.slice(8))));}catch{throw new Error('Код пошкоджено — скопіюй його повністю');}
+  if(!signal||signal.type!==type||typeof signal.id!=='string'||!/^p[a-zA-Z0-9-]{6,80}$/.test(signal.id)||typeof signal.sdp!=='string'||!signal.sdp.startsWith('v=0'))throw new Error(type==='offer'?'Потрібне запрошення від власника кімнати':'Потрібна відповідь друга на це запрошення');
+  return signal;
+}
+
+function createPeerClient(handlers, dependencies={}){
+  const RTC=dependencies.RTC||globalThis.RTCPeerConnection;
+  const peers=new Map();let host=null,closed=false,timer=null,pending=null,guestNick='',lastError='';
+  const dispatch=msg=>{
+    if(closed)return;
+    const routes={welcome:['onWelcome',msg],joined:['onJoined',msg.room],room:['onRoom',msg.room],matchStart:['onMatchStart',msg.room],snapshot:['onSnapshot',msg.snap],events:['onEvents',msg.events],matchEnd:['onMatchEnd',msg.room],error:['onError',msg.message]};
+    if(msg.t===S2C.WELCOME)client.myId=msg.id;
+    const route=routes[msg.t];if(route)handlers[route[0]]?.(route[1]);
+  };
+  const sendChannel=(peer,msg)=>{
+    if(peer?.channel?.readyState!=='open')return;
+    if(peer.channel.bufferedAmount>=262144&&[C2S.STATE,S2C.SNAPSHOT].includes(msg.t))return;
+    try{peer.channel.send(JSON.stringify(msg));}catch{}
+  };
+  const fail=message=>{lastError=message;handlers.onError?.(message);};
+  function removePeer(id){
+    const peer=peers.get(id);if(!peer)return;
+    peers.delete(id);clearTimeout(peer.timeout);clearTimeout(peer.disconnectTimer);
+    peer.cancelGather?.();peer.pc.onconnectionstatechange=null;peer.pc.ondatachannel=null;
+    if(peer.channel){peer.channel.onclose=null;peer.channel.onmessage=null;peer.channel.onopen=null;peer.channel.onerror=null;}
+    peer.pc.close();if(pending===id)pending=null;
+    if(host)host.leave(id);
+    else if(!closed){client.connected=false;handlers.onClose?.(lastError);}
+  }
+  function newPeer(id){
+    if(!RTC)throw new Error('Цей браузер не підтримує гру напряму. Відкрий гру в сучасному Chrome або Firefox');
+    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const peer={pc,channel:null,id};peers.set(id,peer);
+    pc.onconnectionstatechange=()=>{
+      if(pc.connectionState==='failed'){fail('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером');removePeer(id);}
+      else if(pc.connectionState==='disconnected'){
+        clearTimeout(peer.disconnectTimer);peer.disconnectTimer=setTimeout(()=>removePeer(id),10000);
+      }else if(pc.connectionState==='connected')clearTimeout(peer.disconnectTimer);
+    };
+    return peer;
+  }
+  function wire(peer,channel){
+    if(closed||!peers.has(peer.id)){channel.close?.();return;}
+    peer.channel=channel;
+    channel.onopen=()=>{
+      if(closed||!peers.has(peer.id))return;
+      clearTimeout(peer.timeout);
+      if(host){if(pending===peer.id)pending=null;}
+      else{client.connected=true;sendChannel(peer,{t:C2S.HELLO,nick:guestNick});}
+    };
+    channel.onmessage=event=>{
+      if(closed||typeof event.data!=='string'||event.data.length>32768)return;
+      let msg;try{msg=JSON.parse(event.data);}catch{return;}
+      if(!msg||typeof msg.t!=='string')return;
+      if(host){
+        if(msg.t===C2S.HELLO){if(!host.join(peer.id,msg.nick)&&!host.room.players[peer.id])removePeer(peer.id);}
+        else if(msg.t===C2S.LEAVE)removePeer(peer.id);
+        else host.receive(peer.id,msg);
+      }else dispatch(msg);
+    };
+    channel.onclose=()=>removePeer(peer.id);
+    channel.onerror=()=>{fail('Зв’язок із гравцем перервано');removePeer(peer.id);};
+  }
+  async function gather(peer,description){
+    await peer.pc.setLocalDescription(description);
+    if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
+    if(peer.pc.iceGatheringState==='complete')return;
+    await new Promise((resolve,reject)=>{
+      const finish=error=>{clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);peer.cancelGather=null;error?reject(error):resolve();};
+      const check=()=>{if(peer.pc.iceGatheringState==='complete')finish();};
+      // Manual signalling must contain every candidate; never export a partial offer.
+      const timeout=setTimeout(()=>finish(new Error('Не вдалося підготувати запрошення. Перевір мережу й спробуй ще раз')),15000);
+      peer.cancelGather=()=>finish(new Error('Запрошення скасовано'));
+      peer.pc.addEventListener('icegatheringstatechange',check);check();
+    });
+  }
+  const client={
+    kind:'peer',connected:false,myId:null,
+    host(options,nick){
+      if(closed||host||peers.size)throw new Error('Кімнату вже створено');
+      host=createPeerHost(options,nick,(id,msg)=>id==='host'?dispatch(msg):sendChannel(peers.get(id),msg));
+      client.connected=true;client.myId='host';
+      dispatch({t:S2C.WELCOME,id:'host',rooms:[]});dispatch({t:S2C.JOINED,room:snapshotRoom(host.room)});
+      let last=Date.now();timer=setInterval(()=>{const current=Date.now();host.tick(Math.min(2,(current-last)/1000));last=current;},1000/MP.TICK_HZ);
+      return snapshotRoom(host.room);
+    },
+    async invite(){
+      if(closed||!host||host.room.phase!=='lobby')throw new Error('Запрошувати друзів можна в лобі кімнати');
+      if(Object.keys(host.room.players).length>=host.room.maxPlayers)throw new Error('Кімната заповнена');
+      if(pending)removePeer(pending);
+      const id='p'+(globalThis.crypto?.randomUUID?.()||makeCode()+Date.now().toString(36));
+      const peer=newPeer(id);pending=id;wire(peer,peer.pc.createDataChannel('sector'));
+      try{
+        await gather(peer,await peer.pc.createOffer());
+        if(closed||!peers.has(id))throw new Error('Запрошення скасовано');
+        return encodePeerSignal({type:'offer',id,sdp:peer.pc.localDescription.sdp});
+      }catch(error){removePeer(id);throw error;}
+    },
+    async answer(text,nick){
+      if(closed||host||peers.size)throw new Error('Спершу вийди з поточної кімнати');
+      const signal=decodePeerSignal(text,'offer');guestNick=sanitizeNick(nick);
+      const peer=newPeer(signal.id);peer.pc.ondatachannel=event=>wire(peer,event.channel);
+      try{
+        await peer.pc.setRemoteDescription({type:'offer',sdp:signal.sdp});
+        await gather(peer,await peer.pc.createAnswer());
+        if(closed||!peers.has(signal.id))throw new Error('Приєднання скасовано');
+        if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Відповідь не прийнято або мережа блокує з’єднання. Спробуй нове запрошення');removePeer(signal.id);},180000);
+        return encodePeerSignal({type:'answer',id:signal.id,sdp:peer.pc.localDescription.sdp});
+      }catch(error){removePeer(signal.id);throw error;}
+    },
+    async accept(text){
+      const signal=decodePeerSignal(text,'answer');
+      const peer=peers.get(signal.id);
+      if(closed||!host||!peer||signal.id!==pending)throw new Error('Ця відповідь не відповідає поточному запрошенню');
+      if(peer.pc.remoteDescription)throw new Error('Цю відповідь уже прийнято');
+      await peer.pc.setRemoteDescription({type:'answer',sdp:signal.sdp});
+      if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Мережа блокує пряме з’єднання. Спробуйте іншу мережу або режим із сервером');removePeer(signal.id);},30000);
+    },
+    send(msg){if(closed)return;if(host)host.receive('host',msg);else sendChannel([...peers.values()][0],msg);},
+    close(){
+      if(closed)return;closed=true;client.connected=false;clearInterval(timer);
+      for(const id of [...peers.keys()])removePeer(id);
+    }
+  };
+  return client;
+}
+
+
+
+
 
 
 
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
 const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mpNick:'',mpServer:''};
 try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
-settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,2);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
+settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
-let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false,mpSilentClose=false;
+let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
+let mpEpoch=0,mpPeerBusy=false;
 let audio;
+let gunMotion=createWeaponMotion(),gunSample=null;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
 function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
@@ -402,7 +978,9 @@ function sound(kind='shot',weapon='pistol'){
 }
 
 function renderCards(){
-  $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">0${i+1} / SECTOR</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>${m.tag}</span><span>${m.label} ↗</span></div></div></button>`).join('');
+  const count=String(MAPS.length).padStart(2,'0');
+  $('#map-count').textContent=count;$('#hero-map-count').textContent=`01—${count}`;
+  $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">${String(i+1).padStart(2,'0')} / ${count}</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>A / B · ТОЧКИ</span><span>MID · ${m.mid.name} ↗</span></div></div></button>`).join('');
   $$('.map-card').forEach((card,i)=>{mapArt(card.querySelector('canvas'),MAPS[i]);card.onclick=()=>{settings.map=i;map=MAPS[i];save();renderCards();mapArt($('#hero-canvas'),map,true);};});
 }
 function renderOperator(){
@@ -419,15 +997,16 @@ renderCards();renderOperator();mapArt($('#hero-canvas'),map,true);
 
 function release(){shootHeld=false;touchFire=false;keys.clear();stick={x:0,y:0};if(document.pointerLockElement===canvas)document.exitPointerLock();}
 function lock(){if(touchDevice)return;try{const p=canvas.requestPointerLock?.();p?.catch(()=>toast('Натисни на ігровий екран. Також можна оглядатися, затиснувши мишу.'));}catch{toast('Для огляду затисни мишу на ігровому екрані.');}}
-function dialog(type,html){modal=type;$('#dialog').innerHTML=html;$('#overlay').hidden=false;release();$('#dialog').querySelector('button')?.focus();}
+function dialog(type,html){modal=type;const panel=$('#dialog');panel.className=`dialog dialog-${type}`;panel.innerHTML=html;$('#overlay').hidden=false;release();panel.querySelector('button')?.focus();}
 function closeDialog(resume=true){$('#overlay').hidden=true;modal='';if(resume&&state==='playing'){paused=false;lock();}}
 function header(label,title){return `<div class="dialog-header"><span class="eyebrow">${label}</span><button class="dialog-close" aria-label="Закрити">×</button></div><h2>${title}</h2>`;}
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Магазин під час підготовки'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
-function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: три мапи, командні бої з ботами, магазин і кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: вісім оригінальних піксельних мап, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
 function start(){
+  if(mpClient)mpDisconnect(true);
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
   wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
   player=actor(...map.blue[0],0,'ТИ');player.isPlayer=true;actors=[player,actor(...map.blue[1],0,'РИСЬ'),actor(...map.blue[2],0,'СОКІЛ'),...map.red.map((p,i)=>actor(...p,1,['КВАРЦ','ТІНЬ','ГРІМ'][i]))];
@@ -442,23 +1021,50 @@ function nextRound(){
     for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
   });
-  $('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
+  resetGunMotion();$('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
 }
 function beginFight(){closeDialog(false);paused=false;phase='fight';clock=120;keys.clear();shootHeld=false;touchFire=false;$('#game-message').textContent='ТРИМАЙ СЕКТОР';setTimeout(()=>{if(state==='playing'&&phase==='fight'&&player.hp>0)$('#game-message').textContent='';},1800);sound('win');updateHUD();}
 function inBuyZone(){return Math.hypot(player.x-map.blue[0][0],player.y-map.blue[0][1])<4;}
-function openShop(){
+const SHOP_CATEGORIES=[
+  {id:'all',number:'00',name:'КАТАЛОГ'},
+  {id:'pistol',number:'01',name:'ПІСТОЛЕТИ'},
+  {id:'smg',number:'02',name:'ПП'},
+  {id:'rifle',number:'03',name:'АВТОМАТИ'},
+  {id:'sniper',number:'04',name:'СНАЙПЕРСЬКІ'},
+  {id:'heavy',number:'05',name:'ВАЖКЕ'},
+  {id:'gear',number:'06',name:'СПОРЯДЖЕННЯ'}
+];
+function openShop(category='all'){
   if(state!=='playing'||phase!=='buy'||player.hp<=0)return toast('Магазин доступний під час підготовки до раунду');
   if(!inBuyZone())return toast('Повернися до стартової зони');
   reload=0;reloadTotal=0;reloadStage=0;
-  const items=Object.entries(WEAPONS).filter(([,w])=>w.price).map(([id,w])=>({id,...w}));items.push({id:'armor',name:'БРОНЕЖИЛЕТ',type:'ЗАХИСТ',price:650,icon:'◇',description:'50 броні · поглинає частину шкоди в корпус'});
-  dialog('shop',`<div class="dialog-header"><span class="eyebrow">СПОРЯДЖЕННЯ / РАУНД ${round}</span><span class="shop-balance">₡ ${player.money.toLocaleString('uk')}</span></div><h2>ПІДГОТУЙСЯ ДО БОЮ</h2><p>Закупівля: <b id="shop-timer">${Math.ceil(clock)}</b> с · Пістолет і патрони видаються безкоштовно.</p><div class="shop-grid">${items.map(w=>{const owned=w.id==='armor'?player.armor>=50:player.primary===w.id,disabled=owned||player.money<w.price;return `<article class="shop-item"><small>${w.type}</small><h3>${w.name}</h3>${WEAPON_FILES[w.id]?`<img class="gun-sprite" src="${WEAPON_FILES[w.id]}" alt="Зброя ${w.name}" draggable="false">`:`<div class="gun-icon">${w.icon}</div>`}<p>${w.description}</p><button data-buy="${w.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<w.price?'БРАКУЄ КРЕДИТІВ':'КУПИТИ'}</span><span>₡ ${w.price.toLocaleString('uk')}</span></button></article>`;}).join('')}</div><div class="shop-foot"><p>Основна: ${player.primary?WEAPONS[player.primary].name:'немає'} · Броня: ${Math.ceil(player.armor)}<br>Заміна основної зброї — без повернення її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button></div><button id="shop-close" class="text-button">ЗАКРИТИ МАГАЗИН / B</button>`);
+  const items=[
+    {id:'pistol',category:'pistol',issued:true,...WEAPONS.pistol},
+    {id:'smg',category:'smg',...WEAPONS.smg},
+    {id:'rifle',category:'rifle',...WEAPONS.rifle},
+    {id:'kalash',category:'rifle',...WEAPONS.kalash},
+    {id:'marksman',category:'sniper',...WEAPONS.marksman},
+    {id:'sniper',category:'sniper',...WEAPONS.sniper},
+    {id:'shotgun',category:'heavy',...WEAPONS.shotgun},
+    {id:'armor',category:'gear',name:'БРОНЕЖИЛЕТ',type:'ЗАХИСТ',price:650,icon:'◇',description:'50 броні · поглинає частину шкоди в корпус'}
+  ].filter(item=>category==='all'||item.category===category);
+  const itemCard=item=>{
+    const owned=item.id==='pistol'||(item.id==='armor'?player.armor>=50:player.primary===item.id);
+    const disabled=owned||player.money<item.price;
+    const stats=item.id==='armor'?'50 БРОНІ · ЗАХИСТ КОРПУСУ':`${item.damage} ШКОДИ · ${item.size} У МАГАЗИНІ${item.scope?` · ОПТИКА ×${item.scope<=.3?'4':'2'}`:''}`;
+    const visual=WEAPON_FILES[item.id]?`<img class="gun-sprite" src="${WEAPON_FILES[item.id]}" alt="Зброя ${item.name}" draggable="false">`:`<div class="gun-icon">${item.icon}</div>`;
+    const action=item.issued?'<span class="buy-issued">ВИДАНО БЕЗКОШТОВНО</span>':`<button data-buy="${item.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<item.price?'БРАКУЄ КРЕДИТІВ':'КУПИТИ'}</span><strong>₡ ${item.price.toLocaleString('uk')}</strong></button>`;
+    return `<article class="buy-item ${owned?'is-owned':''}"><div class="buy-item-top"><small>${item.type}</small><span>${item.category.toUpperCase()}</span></div><h3>${item.name}</h3><div class="buy-item-visual">${visual}</div><p>${item.description}</p><div class="buy-item-stats">${stats}</div>${action}</article>`;
+  };
+  dialog('shop',`<div class="buy-terminal"><header class="buy-topbar"><div><span class="eyebrow">ЗАКУПІВЛЯ / РАУНД ${round}</span><h2>ВИБІР СПОРЯДЖЕННЯ</h2></div><div class="buy-status"><span>ЧАС <b id="shop-timer">${Math.ceil(clock)}</b> С</span><strong>₡ ${player.money.toLocaleString('uk')}</strong></div><button id="shop-close-icon" class="buy-close" aria-label="Закрити закупівлю">×</button></header><div class="buy-layout"><nav class="buy-categories" aria-label="Категорії спорядження"><span>КАТЕГОРІЇ</span>${SHOP_CATEGORIES.map(c=>`<button class="buy-category ${category===c.id?'active':''}" data-category="${c.id}" aria-pressed="${category===c.id}"><b>${c.number}</b><span>${c.name}</span><i>›</i></button>`).join('')}</nav><main class="buy-content"><div class="buy-content-head"><div><span class="eyebrow">${category==='all'?'УСЕ СПОРЯДЖЕННЯ':SHOP_CATEGORIES.find(c=>c.id===category).name}</span><p>Пістолет і запас патронів видаються на початку кожного раунду.</p></div><span class="buy-count">${items.length} ПОЗ.</span></div><div class="buy-grid">${items.map(itemCard).join('')}</div></main><aside class="buy-loadout"><span>ПОТОЧНЕ СПОРЯДЖЕННЯ</span><div><small>ОСНОВНА ЗБРОЯ</small><b>${player.primary?WEAPONS[player.primary].name:'НЕ ВИБРАНО'}</b></div><div><small>ЗАПАСНА</small><b>${WEAPONS.pistol.name}</b></div><div><small>БРОНЯ</small><b>${Math.ceil(player.armor)} / 50</b></div><p>Заміна основної зброї не повертає її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button><button id="shop-close" class="text-button">ЗАКРИТИ / B</button></aside></div></div>`);
+  $$('[data-category]').forEach(button=>button.onclick=()=>openShop(button.dataset.category));
   $$('[data-buy]').forEach(b=>b.onclick=()=>{
     if(phase!=='buy'||!inBuyZone())return;
     const id=b.dataset.buy;
     if(id!=='armor'&&player.primary&&player.primary!==id){const oldName=WEAPONS[player.primary].name;b.innerHTML=`ЗАМІНИТИ ${oldName}? НАТИСНИ ЩЕ РАЗ`;if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';return;}}
-    const result=purchase(player,id);if(result.ok){sound('buy');openShop();updateHUD();}else toast(result.message);
+    const result=purchase(player,id);if(result.ok){sound('buy');openShop(category);updateHUD();}else toast(result.message);
   });
-  $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();
+  $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();$('#shop-close-icon').onclick=()=>closeDialog();
 }
 function pause(){if(state!=='playing'||phase==='finished')return;if(mpMode)return mpPause();paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
 $('#pause-button').onclick=pause;
@@ -473,9 +1079,35 @@ function endMatch(){
   phase='finished';const won=score[0]>score[1];dialog('result',`<span class="eyebrow">ОПЕРАЦІЮ ЗАВЕРШЕНО / ${map.name}</span><h2>${score[0]===score[1]?'НІЧИЯ':won?'СЕКТОР ПІД КОНТРОЛЕМ':'СЕКТОР ВТРАЧЕНО'}</h2><div class="result-score"><span>${score[0]}</span><small>:</small><span>${score[1]}</span></div><div class="result-stats"><span>${kills} УСУНЕНЬ</span><span>${deaths} СМЕРТЕЙ</span><span>${round} РАУНДІВ</span></div><div class="dialog-actions"><button id="again" class="primary">ЩЕ ОДИН МАТЧ <span>↗</span></button><button id="menu" class="secondary">ОБРАТИ ІНШУ МАПУ</button></div>`);$('#again').onclick=start;$('#menu').onclick=leave;
 }
 function logKill(source,target){feed.unshift({source:source.name,target:target.name,t:6});feed=feed.slice(0,4);paintFeed();}
-function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${f.source}</b> &nbsp; ━ &nbsp; <em>${f.target}</em></div>`).join('');}
+function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${escapeText(f.source)}</b> &nbsp; ━ &nbsp; <em>${escapeText(f.target)}</em></div>`).join('');}
 function damage(target,n,source,head=false){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId,head});return;}if(target.hp<=0)return;applyDamage(target,n,head);if(target.isPlayer){hurtTime=.45;sound('hit');}if(target.hp<=0){source.money=Math.min(10000,source.money+200);logKill(source,target);if(source.isPlayer)kills++;if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
 function currentWeapon(){return WEAPONS[player.weapon];}
+function aimProgress(){return player?.hp>0?(settings.motion?clamp(gunMotion.aim.value,0,1):Number(aiming)):0;}
+function viewFov(){const zoom=player&&WEAPONS[player.weapon]?.scope||.5;return .78-(.78-zoom)*aimProgress();}
+function resetGunMotion(){
+  gunMotion=createWeaponMotion();
+  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon}:null;
+}
+function updateGunMotion(dt){
+  if(!player||player.hp<=0||modal||!settings.motion){resetGunMotion();return;}
+  if(!gunSample)resetGunMotion();
+  const previous=gunSample;
+  if(previous.weapon!==player.weapon){resetGunMotion();gunMotion.y.value=65;}
+  if(dt>0){
+    const dx=(player.x-previous.x)/dt,dy=(player.y-previous.y)/dt;
+    const turn=Math.atan2(Math.sin(player.angle-previous.angle),Math.cos(player.angle-previous.angle))/dt;
+    stepWeaponMotion(gunMotion,player.weapon,{
+      turn,look:(pitch-previous.pitch)/dt,
+      side:(-dx*Math.sin(player.angle)+dy*Math.cos(player.angle))/3.3,
+      forward:(dx*Math.cos(player.angle)+dy*Math.sin(player.angle))/3.3,
+      moving:player.moving,walk,aiming,lift:jumpVelocity,
+      landing:previous.jump>0&&jump===0?previous.velocity:0,
+      wall:weaponWallProximity(map,player.x,player.y,player.angle,player.weapon)
+    },dt);
+  }
+  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon};
+}
+function kickGun(){if(settings.motion)kickWeaponMotion(gunMotion,player.weapon,aiming);}
 function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
 function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
@@ -486,26 +1118,30 @@ function shoot(){
   if(mpMode){
     if(mpReloadT>0)return;
     if(mpMyAmmo()<=0){sound('empty');nextShot=.3;return;}
-    nextShot=w.rate;recoil=1;sound('shot',player.weapon);
+    nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);
     if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
+    let shotTarget=null,shotHead=false;
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
-      damage(a,0,player,height>.8);hitTime=.15;sound('hit');break;
+      if(a.team===player.team)break;
+      shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
     }
+    if(mpClient?.kind==='peer')mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
+    mpClient?.send({t:C2S.SHOOT,weapon:player.weapon,target:shotTarget,head:shotHead});
     updateHUD();return;
   }
   const inv=player.inventory[player.weapon];if(!inv.ammo){sound('empty');nextShot=.3;reloadWeapon();return;}
-  inv.ammo--;nextShot=w.rate;recoil=1;sound('shot',player.weapon);let anyHit=false;
+  inv.ammo--;nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);let anyHit=false;
   if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*(aiming?.5:.78)),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
       const height=.5+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y))continue;
       const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
@@ -518,7 +1154,8 @@ function updatePlayer(dt){
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
-  moveActor(map,player,dx,dy);player.moving=Math.hypot(dx,dy)>.001;
+  const oldX=player.x,oldY=player.y;
+  moveActor(map,player,dx,dy);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
   if(player.moving){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(jump>0||jumpVelocity>0){jumpVelocity-=dt*4;jump=Math.max(0,jump+jumpVelocity*dt);if(jump===0)jumpVelocity=0;}
@@ -539,17 +1176,22 @@ function update(dt){
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);if(player)player.spray=Math.max(0,(player.spray||0)-dt*1.8);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=5)||round>=12)endMatch();else nextRound();}return;}
-  clock-=dt;updatePlayer(dt);
+  clock-=dt;updatePlayer(dt);updateGunMotion(dt);
   if(phase==='buy'){if(clock<=0)beginFight();return;}
   if(reload>0){reload-=dt;const p=reloadProgress();if(reloadStage===0&&p>=.38){reloadStage=1;sound('reload');}else if(reloadStage===1&&p>=.72){reloadStage=2;sound('reload');}if(reload<=0){reload=0;reloadTotal=0;reloadStage=0;const inv=player.inventory[player.weapon],take=Math.min(currentWeapon().size-inv.ammo,inv.reserve);inv.ammo+=take;inv.reserve-=take;sound('reload');updateHUD();}}
   if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
   updateBots(dt);const winner=roundWinner(actors,clock<=0);if(winner!==null)endRound(winner);
 }
+function updateVitals(){
+  const hp=Math.max(0,Math.ceil(player.hp)),armor=Math.max(0,Math.ceil(player.armor||0));
+  $('#health').textContent=hp;$('#armor').textContent=armor;
+  const bar=$('#health-bar');if(bar){bar.style.width=hp+'%';bar.classList.toggle('warning',hp>25&&hp<=50);bar.classList.toggle('critical',hp<=25);}
+}
 function updateHUD(){
   if(!player)return;
   if(mpMode){
     const me=mpMe(),reloading=!me||me.ammo<=0;
-    $('#health').textContent=Math.max(0,Math.ceil(player.hp));$('#armor').textContent=Math.ceil(player.armor||0);
+    updateVitals();
     $('#ammo').textContent=reloading?'··':me.ammo;$('#reserve').textContent='∞';
     $('#weapon-name').textContent=reloading?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;
     $('#money').textContent='МЕРЕЖА';
@@ -560,19 +1202,20 @@ function updateHUD(){
     $('#map-name').textContent=map.name;
     const blues=mpRoom?mpRoom.players.filter(p=>p.team===0).length:0,reds=mpRoom?mpRoom.players.filter(p=>p.team===1).length:0;
     $('#phase-label').textContent=`${blues} ВАРТА / ${reds} РЕЙД`;
-    $('#buy-tip').hidden=true;$('#crosshair').hidden=!me||!me.alive;
+    $('#buy-tip').hidden=true;$('#crosshair').hidden=!me||!me.alive||aimProgress()>.65;
     $('#crosshair').style.opacity=reloading?'.25':'1';
     $('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);
     return;
   }
-  const inv=player.inventory[player.weapon];$('#health').textContent=Math.ceil(player.hp);$('#armor').textContent=Math.ceil(player.armor);$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+  const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`₡ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,clock)/60)}:${String(Math.floor(Math.max(0,clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 12`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} ВАРТА / ${actors.filter(a=>a.team===1&&a.hp>0).length} РЕЙД`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
 function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);}
 addEventListener('resize',resize);
 function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>a.team===0&&a.hp>0)||player;}
 function render(){
   if(state!=='playing')return;
-  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=aiming&&player.hp>0?.5:.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
+  ctx.imageSmoothingEnabled=false;
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
@@ -599,7 +1242,7 @@ function render(){
   renderMinimap(view);
 }
 function drawGun(w,h){
-  const pistol=player.weapon==='pistol',shotgun=player.weapon==='shotgun',kalash=player.weapon==='kalash',moving=player.moving&&settings.motion;
+  const pistol=player.weapon==='pistol';
   const p=reloadProgress();
   const downHold=p<=0?0:p<.25?p/.25:p<.65?1:1-(p-.65)/.35;
   const dip=p>0?Math.sin(p*Math.PI):0;
@@ -608,85 +1251,35 @@ function drawGun(w,h){
   const dropY=downHold*105+dip*18-cockJerk*22;
   const tilt=downHold*.5-cockJerk*.09;
   ctx.save();const scale=Math.min(w/900,h/560);
-  ctx.translate(w*(aiming?.51:.63)+(moving?Math.sin(walk)*7:0)+sway*scale,h+(moving?Math.abs(Math.cos(walk))*5:0)+(settings.motion?recoil*17:0)+dropY*scale);ctx.scale(scale,scale);ctx.rotate(-tilt*.55);
-  const poly=(pts,c)=>{ctx.fillStyle=c;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();};const glove=GLOVES[settings.glove].color,skin=SKINS[settings.skin].color;
-  poly([[-105,0],[-88,-85],[-34,-141],[20,-112],[52,0]],tint(skin,.8));
-  if(!pistol){ctx.save();ctx.translate(38,-28);poly([[-87,-80],[-72,-123],[-20,-155],[19,-118],[-16,-69]],glove);ctx.restore();}
-  // Зсув затвора/затворної рами під час фази досилання (p 0.72–0.92): зброя смикається вгору.
-  const slideDy=-cockJerk*16;
-  ctx.save();ctx.translate(0,slideDy*.4);
-  // Об'ємні грані як у low-poly рендері: світлий верх, темний низ, блік і контур.
-  const box=(x,y,w2,h2,base,top,outline='#0d1514')=>{
-    const g=ctx.createLinearGradient(0,y-h2,0,y);
-    g.addColorStop(0,top);g.addColorStop(.45,base);g.addColorStop(1,tint(base,.5));
-    ctx.fillStyle=g;ctx.fillRect(x,y-h2,w2,h2);
-    ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillRect(x,y-h2,w2,2);
-    ctx.strokeStyle=outline;ctx.lineWidth=2;ctx.strokeRect(x+.5,y-h2+.5,Math.max(1,w2-1),Math.max(1,h2-1));
-  };
-  const rail=(x,top,n)=>{for(let i=0;i<n;i++){ctx.fillStyle='#0d1514';ctx.fillRect(x+i*9,top-5,4,5);}};
-  if(pistol){
-    poly([[-12,0],[-26,-82],[10,-149],[50,-126],[56,-39],[106,0]],glove);
-    poly([[-15,-95],[-28,-150],[-6,-192],[24,-182],[30,-112]],'#222b2a');
-    ctx.strokeStyle='#0d1514';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(6,-168);ctx.lineTo(6,-146);ctx.lineTo(32,-146);ctx.stroke();
-    box(0,-192,58,26,'#2c3937','#7d8a7c');
-    box(-10,-192,10,26,'#1a2221','#3d4a48');
-    for(let i=0;i<3;i++){ctx.fillStyle='#0d1514';ctx.fillRect(4+i*6,-190,2,20);}
-    ctx.fillStyle='#0d1514';ctx.fillRect(48,-204,6,12);ctx.fillStyle='#bddd75';ctx.fillRect(49,-204,4,3);
-  }
-  else{
-    poly([[13,0],[-7,-60],[33,-132],[84,-111],[129,-32],[163,0]],glove);
-    if(player.weapon==='smg'){
-      poly([[-72,-138],[-38,-152],[-38,-106],[-72,-96]],'#1c2827');
-      box(-35,-186,72,34,'#243432','#7d8a7c');
-      rail(-30,-220,7);
-      box(37,-180,46,18,'#1c2827','#43514d');
-      ctx.fillStyle='#0d1514';ctx.fillRect(78,-184,5,10);
-      ctx.save();ctx.translate(-8,-152);ctx.rotate(.12);box(-7,0,14,58,'#1f2827','#4b5854');ctx.restore();
-    }else if(player.weapon==='rifle'){
-      poly([[-78,-142],[-42,-154],[-42,-106],[-78,-96]],'#232d2c');
-      ctx.fillStyle='#101817';ctx.fillRect(-78,-142,10,44);
-      box(-42,-192,92,40,'#243432','#7d8a7c');
-      rail(-36,-232,9);
-      box(-28,-172,56,20,'#3a4a3f','#66795c');
-      box(50,-180,56,12,'#1c2827','#43514d');
-      ctx.fillStyle='#0d1514';ctx.fillRect(97,-198,6,18);ctx.fillStyle='#bddd75';ctx.fillRect(98,-198,4,3);
-      ctx.save();ctx.translate(-4,-152);ctx.rotate(.22);box(-8,0,16,52,'#1f2827','#4b5854');ctx.restore();
-      ctx.fillStyle='#0d1514';ctx.beginPath();ctx.arc(-30,-172,3,0,7);ctx.fill();ctx.beginPath();ctx.arc(40,-172,3,0,7);ctx.fill();
-    }else if(player.weapon==='shotgun'){
-      poly([[-80,-140],[-44,-152],[-44,-106],[-80,-94]],'#5a4327');
-      ctx.fillStyle='#101817';ctx.fillRect(-80,-140,10,46);
-      box(-46,-190,78,36,'#2b3231','#6e7a6f');
-      box(32,-182,76,20,'#23282b','#4a5451');
-      ctx.fillStyle='#0d1514';ctx.beginPath();ctx.arc(106,-172,3,0,7);ctx.fill();
-      box(-28,-170,52,26,'#7a5a36','#b08a52');
-      for(let i=0;i<3;i++){ctx.fillStyle='#0d1514';ctx.fillRect(-22+i*15,-168,3,22);}
-    }else{
-      poly([[-80,-140],[-44,-152],[-44,-106],[-80,-94]],'#6e4525');
-      ctx.fillStyle='#101817';ctx.fillRect(-80,-140,10,46);
-      box(-46,-194,88,36,'#2b3231','#6e7a6f');
-      box(-10,-194,52,10,'#1a2221','#3d4a48');
-      box(-36,-174,56,22,'#8a5a33','#c08a4e');
-      ctx.fillStyle='#0d1514';ctx.fillRect(-36,-160,56,3);
-      ctx.save();ctx.translate(-14,-152);ctx.rotate(.3);box(-9,0,18,26,'#232a29','#454f4c');ctx.restore();
-      ctx.save();ctx.translate(-5,-128);ctx.rotate(.52);box(-9,0,18,22,'#232a29','#454f4c');ctx.restore();
-      box(42,-182,58,10,'#23282b','#4a5451');
-      box(94,-185,14,14,'#1a2221','#3d4a48');
-      ctx.fillStyle='#0d1514';ctx.fillRect(86,-198,5,16);
-      box(-52,-196,10,10,'#1a2221','#3d4a48');
-    }
-    poly([[13,-76],[47,-58],[40,0],[12,-5]],'#1c2827');ctx.fillStyle='#c3f66b';ctx.fillRect(22,-116,13,3);
-  }
+  const physical=settings.motion,ads=aimProgress(),scoped=!!currentWeapon().scope;
+  const wall=physical?clamp(gunMotion.wall.value,0,1):0;
+  const gx=physical?gunMotion.x.value:0,gy=physical?gunMotion.y.value+gunMotion.kick.value:0;
+  const angle=.48+ads*.85,muzzle=WEAPON_MUZZLES[player.weapon];
+  const aimX=w*.5+(muzzle*Math.cos(angle)-24*Math.sin(angle))*scale;
+  const aimY=h*.5+(120+muzzle*Math.sin(angle)+24*Math.cos(angle))*scale;
+  const originX=w*(pistol?.64:.78)*(1-ads)+aimX*ads;
+  const originY=h*(1-ads)+aimY*ads;
+  ctx.translate(originX+(sway+gx-wall*25)*scale,originY+(dropY+gy+wall*90)*scale);
+  ctx.scale(scale*(1-wall*.12),scale*(1-wall*.12));ctx.rotate(-tilt*.55+(physical?gunMotion.roll.value:0)-wall*.28);
+  ctx.globalAlpha=1-ads;
+  drawHeldWeapon(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,ads,reload:p,flash:recoil});
   ctx.restore();
-  // Магазин, що випадає (фаза 0.08–0.5), та рука з новим магазином (фаза 0.42–0.75).
-  if(p>.06&&p<.52){const q=(p-.06)/.46;ctx.save();ctx.globalAlpha=1-q*.9;ctx.translate(pistol?30:-10,-120+q*190);ctx.rotate(.5+q*1.4);ctx.fillStyle='#1d2a28';ctx.fillRect(-9,-26,18,52);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-26,18,5);ctx.restore();}
-  if(p>.4&&p<.78){const q=p<.6?(p-.4)/.2:1-(p-.6)/.18;ctx.save();ctx.globalAlpha=.95;ctx.translate(pistol?8:-24,-60+q*46);ctx.rotate(.12);ctx.fillStyle=glove;ctx.fillRect(-16,-18,32,36);ctx.fillStyle='#222f2d';ctx.fillRect(-9,-52,18,40);ctx.fillStyle='#c3f66b';ctx.fillRect(-9,-52,18,4);ctx.restore();}
-  if(recoil>.55&&reload<=0){ctx.save();const fp={pistol:[62,-205],smg:[86,-171],rifle:[109,-174],shotgun:[111,-172],kalash:[111,-177]}[player.weapon]||[60,-210];ctx.translate(fp[0],fp[1]);poly([[0,-35],[7,-11],[29,-19],[12,1],[24,18],[2,10],[-20,23],[-12,0],[-30,-14],[-6,-10]],'#ffd887');ctx.fillStyle='#fff9df';ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.fill();ctx.restore();}ctx.restore();
+  if(ads>0&&!scoped){
+    ctx.save();ctx.globalAlpha=ads;
+    ctx.translate(w*.5+(1-ads)*w*.18,h*.5+(1-ads)*h*.25);
+    ctx.scale(scale,scale);
+    drawWeaponSights(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,flash:recoil});
+    ctx.restore();
+  }
+  if(scoped&&ads>0)drawScopeOverlay(ctx,w,h,player.weapon,ads);
   // Шкала прогресу перезаряджання під прицілом.
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
   mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/24;
   for(let y=0;y<24;y++)for(let x=0;x<24;x++)if(map.grid[y][x]){mc.fillStyle=map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s-.6,s-.6);}
+  const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
+  tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
   for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
   mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
 }
@@ -702,8 +1295,8 @@ addEventListener('keydown',e=>{
   if(modal||paused)return;keys.add(e.code);
   if(mpMode){
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
-    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');
-    if(e.code==='KeyB')toast('Магазина в мережі немає — усі 5 стволів доступні на 1–5');
+    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
+    if(e.code==='KeyB')toast('Магазина в мережі немає — усі 7 стволів доступні на 1–7');
     if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
     if(e.code==='Tab'&&mpRoom)toast(`ВАРТА ${mpRoom.score[0]} : ${mpRoom.score[1]} РЕЙД · Фраги: ${kills} · Смерті: ${deaths}`);
     return;
@@ -712,7 +1305,7 @@ addEventListener('keydown',e=>{
   if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
-canvas.addEventListener('mousedown',e=>{if(state!=='playing'||paused||modal)return;initAudio();if(!document.pointerLockElement){dragging=true;lock();}if(e.button===0){shootHeld=true;shoot();}if(e.button===2)aiming=true;});
+canvas.addEventListener('mousedown',e=>{if(state!=='playing'||paused||modal)return;initAudio();if(!document.pointerLockElement){dragging=true;lock();}if(e.button===0){shootHeld=true;shoot();}if(e.button===2&&player.hp>0&&reload<=0&&mpReloadT<=0)aiming=true;});
 addEventListener('mouseup',e=>{dragging=false;if(e.button===0)shootHeld=false;if(e.button===2)aiming=false;});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('mousemove',e=>{if(state!=='playing'||paused||modal||player.hp<=0)return;if(document.pointerLockElement===canvas||dragging){player.angle+=e.movementX*.0026*settings.sensitivity*(aiming?.6:1);pitch=clamp(pitch-e.movementY*.0019*settings.sensitivity,-.45,.45);}});
@@ -730,68 +1323,158 @@ canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paus
 function mpMe(){return mpRoom&&mpMyId?mpRoom.players.find(p=>p.id===mpMyId):null;}
 function mpMyAmmo(){const me=mpMe();return me?me.ammo:0;}
 function mpSetStatus(t){const e=$('#mp-status');if(e)e.textContent=t;}
-function mpTabOpened(){
+function mpSetConnectionStatus(t,connected=false){const e=$('#connection-status');if(!e)return;e.textContent=t;e.classList.toggle('connected',connected);}
+function mpSetup(){
   if(!mpWired){
     mpWired=true;
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
-    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=settings.mpServer||'';
-    $('#mp-connect').onclick=mpConnect;$('#mp-disconnect').onclick=()=>mpDisconnect();
-    $('#mp-refresh').onclick=()=>{if(mpClient&&mpClient.connected)mpClient.send({t:C2S.LIST});else toast('Спочатку підключися до сервера');};
+    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
+    if(!$('#mp-transport').value)$('#mp-transport').value='server';
+    $('#mp-connect').onclick=()=>mpConnect();
+    $('#mp-transport').onchange=()=>{mpDisconnect(true);mpTransportChanged();};
+    mpWirePeer();$('#mp-disconnect').onclick=()=>mpDisconnect();
+    $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
     $('#mp-create').onclick=()=>{
-      if(!mpClient||!mpClient.connected)return toast('Спочатку підключися до сервера');
       settings.mpNick=$('#mp-nick').value;save();
-      mpClient.send({t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)});
+      const options={t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)};
+      if(mpUsesPeer()){
+        mpDisconnect(true);mpClient=createPeerClient(mpHandlers(mpEpoch));mpClient.host(options,settings.mpNick);
+      }else mpServerAction(options);
     };
     $('#mp-join-btn').onclick=()=>{
-      if(!mpClient||!mpClient.connected)return toast('Спочатку підключися до сервера');
       const code=$('#mp-join-code').value.trim().toUpperCase();
       if(code.length!==6)return toast('Код має 6 символів');
-      mpClient.send({t:C2S.JOIN_CODE,code});
+      mpServerAction({t:C2S.JOIN_CODE,code});
     };
     $('#mp-ready').onclick=()=>{if(mpClient&&mpRoom){const me=mpMe();mpClient.send({t:C2S.READY,ready:!(me&&me.ready)});}};
     $('#mp-start').onclick=()=>{if(mpClient&&mpRoom)mpClient.send({t:C2S.START});};
-    $('#mp-leave').onclick=()=>{if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
+    $('#mp-leave').onclick=()=>{if(mpClient?.kind==='peer'){mpDisconnect();return;}if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
     const sendChat=()=>{const inp=$('#mp-chat-input'),text=inp.value.trim();if(text&&mpClient&&mpRoom){mpClient.send({t:C2S.CHAT,text});inp.value='';}};
     $('#mp-chat-send').onclick=sendChat;
     $('#mp-chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();e.stopPropagation();});
   }
-  mpShowHome();
-  if(mpClient&&mpClient.connected&&!mpRoom)mpClient.send({t:C2S.LIST});
 }
-function mpConnect(){
-  if(mpClient)mpDisconnect(true);
+function mpTabOpened(){
+  mpSetup();
+  mpTransportChanged();
+  if(mpRoom)mpShowRoom();else mpShowHome();
+  if(mpClient&&mpClient.connected&&!mpRoom&&mpClient.kind!=='peer')mpClient.send({t:C2S.LIST});
+}
+function mpUsesPeer(){return $('#mp-transport').value!=='server';}
+function mpTransportChanged(){
+  const peer=mpUsesPeer();
+  $('#mp-server-options').hidden=peer;$('#mp-peer-help').hidden=!peer;
+  $('#mp-peer-join').hidden=!peer;$('#mp-room-visibility').hidden=peer;
+  $('#mp-code-join').hidden=peer;$('#mp-public').hidden=peer;
+  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+}
+function mpServerAction(action){
+  if(mpClient?.connected&&mpMyId&&mpClient.kind!=='peer')mpClient.send(action);
+  else mpConnect(action);
+}
+function mpHandlers(epoch,action=null,automatic=false){
+  const active=fn=>(...args)=>{if(epoch===mpEpoch)fn(...args);};
+  return {
+    onOpen:active(()=>mpClient.send({t:C2S.HELLO,nick:settings.mpNick})),
+    onWelcome:active(msg=>{
+      mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();
+      mpSetStatus(mpClient.kind==='peer'?'КІМНАТА НАПРЯМУ З ДРУЗЯМИ':`НА ЗВʼЯЗКУ · ${mpRooms.length} КІМНАТ`);
+      mpSetConnectionStatus(mpClient.kind==='peer'?'НАПРЯМУ З ДРУЗЯМИ':'ОНЛАЙН · СЕРВЕР ПІДКЛЮЧЕНО',true);
+      if(mpClient.kind!=='peer'){
+        $('#mp-disconnect').hidden=false;
+        mpListTimer=setInterval(()=>{if(mpClient?.connected&&!mpRoom&&!mpMode&&!$('#tab-mp').hidden)mpClient.send({t:C2S.LIST});},3000);
+        if(action)mpClient.send(action);
+      }
+    }),
+    onRooms:active(rooms=>{mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}}),
+    onJoined:active(room=>{mpRoom=room;mpChat=[];mpShowRoom();}),
+    onRoom:active(room=>{mpRoom=room;if(!mpMode)mpShowRoom();}),
+    onMatchStart:active(room=>mpStartMatch(room)),
+    onSnapshot:active(snap=>{if(mpMode)mpApplySnapshot(snap);}),
+    onEvents:active(events=>{if(mpRoom||mpMode)mpHandleEvents(events);}),
+    onMatchEnd:active(room=>{mpRoom=room;mpShowResult({winner:room.winner,score:room.score});}),
+    onError:active(message=>{
+      if(!automatic)toast(message);
+      if(mpClient?.kind==='peer'){
+        $('#mp-peer-host-status').textContent=message;$('#mp-peer-join-status').textContent=message;
+      }else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
+    }),
+    onClose:active(message=>{const peer=mpClient?.kind==='peer';mpDisconnect();const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');if(!automatic)toast(reason);if(peer)$('#mp-peer-join-status').textContent=reason;})
+  };
+}
+function mpConnect(action=null,automatic=false){
+  mpDisconnect(true);
   settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
   const url=defaultMpUrl(settings.mpServer);
-  mpSetStatus('ПІДКЛЮЧЕННЯ…');
-  mpSilentClose=false;
-  mpClient=createMpClient(url,{
-    onOpen(){mpClient.send({t:C2S.HELLO,nick:settings.mpNick});},
-    onWelcome(msg){mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${mpRooms.length} КІМНАТ`);$('#mp-disconnect').hidden=false;mpListTimer=setInterval(()=>{if(mpClient&&mpClient.connected&&!mpRoom&&!mpMode&&!$('#tab-mp').hidden)mpClient.send({t:C2S.LIST});},3000);},
-    onRooms(rooms){mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}},
-    onJoined(room){mpRoom=room;mpChat=[];mpShowRoom();},
-    onRoom(room){if(mpMode)return;mpRoom=room;mpShowRoom();},
-    onMatchStart(room){mpStartMatch(room);},
-    onSnapshot(snap){if(mpMode)mpApplySnapshot(snap);},
-    onEvents(events){if(mpRoom||mpMode)mpHandleEvents(events);},
-    onMatchEnd(room){mpRoom=room;mpShowResult({winner:room.winner,score:room.score});},
-    onError(message){toast(message);},
-    onClose(){if(!mpSilentClose)toast('Зʼєднання з сервером втрачено');mpDisconnect(true);},
-  });
-  if(!mpClient){mpSetStatus('НЕ ПІДКЛЮЧЕНО');toast('Не вдалося створити зʼєднання');}
+  if(!url){mpSetStatus('ВКАЖИ АДРЕСУ ІГРОВОГО СЕРВЕРА');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');if(!automatic)toast('Для гри без ігрового сервера вибери «Напряму з друзями»');return;}
+  mpSetStatus('ПІДКЛЮЧЕННЯ…');mpSetConnectionStatus('ПІДКЛЮЧЕННЯ ДО СЕРВЕРА…');
+  mpClient=createMpClient(url,mpHandlers(mpEpoch,action,automatic));
+  if(!mpClient){mpSetStatus('НЕ ВДАЛОСЯ ПІДКЛЮЧИТИСЯ');mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
+}
+function mpAutoConnect(){
+  mpSetup();
+  if(mpUsesPeer())return;
+  const shared=String(SERVER_URL||'').trim();
+  if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
+  if(!defaultMpUrl($('#mp-server').value)){
+    mpSetStatus('СЕРВЕР НЕ НАЛАШТОВАНО');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    return;
+  }
+  mpConnect(null,true);
 }
 function mpDisconnect(silent=false){
-  mpSilentClose=!!silent;
+  mpEpoch++;mpPeerBusy=false;
   clearInterval(mpListTimer);mpListTimer=0;
-  if(mpClient){try{mpClient.close();}catch{}mpClient=null;}
-  mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;
+  const old=mpClient;mpClient=null;if(old){try{old.close();}catch{}}
+  mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;mpRooms=[];
+  $('#mp-disconnect').hidden=true;
+  for(const id of ['mp-peer-invite-panel','mp-peer-reply-panel','mp-peer-cancel','mp-peer-host'])$('#'+id).hidden=true;
+  for(const id of ['mp-peer-invite-text','mp-peer-accept-text','mp-peer-reply'])$('#'+id).value='';
+  for(const id of ['mp-peer-invite','mp-peer-answer','mp-peer-accept'])$('#'+id).disabled=false;
+  $('#mp-peer-host-status').textContent='';$('#mp-peer-join-status').textContent='';
   if(!silent){
     state='lobby';paused=false;modal='';release();
     $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
     tab('mp');
-  }else{
-    $('#mp-disconnect').hidden=true;mpSetStatus(silent&&mpRoom?'НЕ ПІДКЛЮЧЕНО':($('#mp-status')?$('#mp-status').textContent:''));
-    if(state==='lobby'){mpShowHome();tab('mp');}
   }
+  if(state==='lobby')mpShowHome();
+  mpTransportChanged();
+}
+async function mpPeerTask(button,status,work){
+  if(mpPeerBusy)return;mpPeerBusy=true;
+  const client=mpClient;$('#'+button).disabled=true;$('#'+status).textContent='ГОТУЄМО З’ЄДНАННЯ…';
+  try{await work(client);}catch(error){if(client===mpClient){$('#'+status).textContent=error.message;toast(error.message);}}
+  finally{if(client===mpClient){mpPeerBusy=false;$('#'+button).disabled=false;}}
+}
+async function mpCopy(id){
+  const field=$('#'+id);if(!field.value)return;
+  try{await navigator.clipboard.writeText(field.value);toast('Скопійовано — надішли другу');}
+  catch{field.focus();field.select();toast('Текст виділено. Натисни Ctrl+C та надішли другу');}
+}
+function mpWirePeer(){
+  $('#mp-peer-invite').onclick=()=>mpPeerTask('mp-peer-invite','mp-peer-host-status',async client=>{
+    const text=await client.invite();if(client!==mpClient)return;
+    $('#mp-peer-invite-text').value=text;$('#mp-peer-accept-text').value='';$('#mp-peer-invite-panel').hidden=false;
+    $('#mp-peer-host-status').textContent='Надішли запрошення другу й встав його відповідь нижче.';
+  });
+  $('#mp-peer-accept').onclick=()=>mpPeerTask('mp-peer-accept','mp-peer-host-status',async client=>{
+    await client.accept($('#mp-peer-accept-text').value);if(client!==mpClient)return;
+    $('#mp-peer-host-status').textContent='Відповідь прийнято. Чекаємо на друга…';
+  });
+  $('#mp-peer-answer').onclick=()=>{
+    if(mpPeerBusy)return;
+    const text=$('#mp-peer-offer').value;
+    mpDisconnect(true);settings.mpNick=$('#mp-nick').value;save();
+    mpClient=createPeerClient(mpHandlers(mpEpoch));$('#mp-peer-cancel').hidden=false;
+    return mpPeerTask('mp-peer-answer','mp-peer-join-status',async client=>{
+      const answer=await client.answer(text,settings.mpNick);if(client!==mpClient)return;
+      $('#mp-peer-reply').value=answer;$('#mp-peer-reply-panel').hidden=false;
+      $('#mp-peer-join-status').textContent='Передай відповідь власнику та залишай цю вкладку відкритою.';
+    });
+  };
+  $('#mp-peer-cancel').onclick=()=>mpDisconnect();
+  $('#mp-peer-copy-invite').onclick=()=>mpCopy('mp-peer-invite-text');
+  $('#mp-peer-copy-reply').onclick=()=>mpCopy('mp-peer-reply');
 }
 function mpShowHome(){
   $('#mp-home').hidden=false;$('#mp-room').hidden=true;
@@ -799,14 +1482,14 @@ function mpShowHome(){
 }
 function mpRenderRooms(){
   const box=$('#mp-rooms');if(!box)return;
-  if(!mpClient||!mpClient.connected){box.innerHTML='<p style="color:var(--muted)">Підключися до сервера, щоб побачити публічні кімнати.</p>';return;}
+  if(!mpClient||!mpClient.connected){box.innerHTML='<p style="color:var(--muted)">Створи кімнату або онови список — підключення автоматичне.</p>';return;}
   if(!mpRooms.length){box.innerHTML='<p style="color:var(--muted)">Публічних кімнат немає — створи свою або ввійди за кодом.</p>';return;}
   box.innerHTML=mpRooms.map(r=>{
     const m=MAPS[clamp(r.mapId,0,MAPS.length-1)];
     const phase=r.phase==='playing'?'БІЙ ТРИВАЄ':r.phase==='finished'?'МАТЧ ЗАВЕРШЕНО':'ЛОБІ · МОЖНА ЗАЙТИ';
-    return `<div class="map-card"><div class="map-detail"><h3>${r.name}</h3><p>${m.name} · ${r.players}/${r.maxPlayers} · ${phase}</p><div class="map-tags"><span>${r.isPublic?'ПУБЛІЧНА':'ПРИВАТНА'}</span><button class="text-button" data-join="${r.id}" ${r.phase!=='lobby'||r.players>=r.maxPlayers?'disabled':''}>УВІЙТИ ↗</button></div></div></div>`;
+    return `<div class="map-card"><div class="map-detail"><h3>${escapeText(r.name)}</h3><p>${m.name} · ${r.players}/${r.maxPlayers} · ${phase}</p><div class="map-tags"><span>${r.isPublic?'ПУБЛІЧНА':'ПРИВАТНА'}</span><button class="text-button" data-join="${escapeText(r.id)}" ${r.phase!=='lobby'||r.players>=r.maxPlayers?'disabled':''}>УВІЙТИ ↗</button></div></div></div>`;
   }).join('');
-  box.querySelectorAll('[data-join]').forEach(b=>b.onclick=()=>mpClient.send({t:C2S.JOIN,id:b.dataset.join}));
+  box.querySelectorAll('[data-join]').forEach(b=>b.onclick=()=>mpServerAction({t:C2S.JOIN,id:b.dataset.join}));
 }
 function mpShowRoom(){
   $('#mp-home').hidden=true;$('#mp-room').hidden=false;
@@ -817,9 +1500,12 @@ function mpRenderRoom(){
   const m=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   const me=room.players.find(p=>p.id===mpMyId);
   $('#mp-room-title').textContent=`КІМНАТА · ${room.name}`;
-  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі стволи доступні`;
-  $('#mp-room-code').textContent=room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
-  $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${p.nick}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
+  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі 7 стволів доступні`;
+  $('#mp-peer-host').hidden=mpClient?.kind!=='peer'||room.hostId!==mpMyId;
+  $('#mp-peer-invite').disabled=room.phase!=='lobby'||room.players.length>=room.maxPlayers||mpPeerBusy;
+  if(mpClient?.kind==='peer'&&room.players.length>1)$('#mp-peer-host-status').textContent=`У кімнаті ${room.players.length} гравців. Позначте готовність для початку.`;
+  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА ЗАПРОШЕННЯМ':room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${escapeText(p.nick)}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
   $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
   const startBtn=$('#mp-start');
   startBtn.hidden=room.hostId!==mpMyId;
@@ -829,7 +1515,7 @@ function mpRenderRoom(){
 }
 function mpRenderChat(){
   const box=$('#mp-chat');if(!box)return;
-  box.innerHTML=mpChat.map(c=>`<div><b>${c.nick}</b> &nbsp; ━ &nbsp; <em>${c.text}</em></div>`).join('');
+  box.innerHTML=mpChat.map(c=>`<div><b>${escapeText(c.nick)}</b> &nbsp; ━ &nbsp; <em>${escapeText(c.text)}</em></div>`).join('');
 }
 function mpStartMatch(room){
   initAudio();
@@ -839,7 +1525,7 @@ function mpStartMatch(room){
   blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);
   redSprite=makeOperator('#aa7853','#ffbd73');
   const me=room.players.find(p=>p.id===mpMyId);
-  player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;
+  player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;player.angle=me.angle;
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
   for(const p of room.players){
     if(p.id===mpMyId)continue;
@@ -848,6 +1534,7 @@ function mpStartMatch(room){
   actors=[player,...mpRemotes.values()];
   state='playing';phase='mp';paused=false;modal='';mpMode=true;
   pitch=0;aiming=false;shootHeld=false;touchFire=false;nextShot=0;reload=0;reloadTotal=0;reloadStage=0;recoil=0;hitTime=0;hurtTime=0;keys.clear();
+  jump=0;jumpVelocity=0;resetGunMotion();
   $('#overlay').hidden=true;$('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;
   $('#touch-controls').hidden=!touchDevice;
   resize();updateHUD();lock();
@@ -861,7 +1548,7 @@ function mpApplySnapshot(snap){
     const wasAlive=player.hp>0;
     player.hp=me.hp;player.armor=me.armor||0;
     if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
-    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;$('#game-message').textContent='';}
+    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;jump=0;jumpVelocity=0;resetGunMotion();$('#game-message').textContent='';}
     if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
   }
   const seen=new Set();
@@ -883,7 +1570,7 @@ function mpHandleEvents(events){
       feed.unshift({source:e.sourceNick,target:e.targetNick,t:6});feed=feed.slice(0,4);paintFeed();sound('hit');
       if(e.source===mpMyId)kills++;if(e.target===mpMyId)deaths++;
     }else if(e.t==='reload'){
-      if(e.id===mpMyId)mpReloadT=(WEAPONS[player.weapon]||WEAPONS.pistol).reload;
+      if(e.id===mpMyId){mpReloadT=(WEAPONS[player.weapon]||WEAPONS.pistol).reload;aiming=false;}
     }else if(e.t==='chat'){
       mpChat.push(e);mpChat=mpChat.slice(-30);mpRenderChat();
     }else if(e.t==='finish'){
@@ -893,9 +1580,8 @@ function mpHandleEvents(events){
   updateHUD();
 }
 function mpUpdate(dt){
-  elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);mpReloadT=Math.max(0,mpReloadT-dt);player.spray=Math.max(0,(player.spray||0)-dt*1.8);
-  feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
-  updatePlayer(dt);
+  mpReloadT=Math.max(0,mpReloadT-dt);
+  updatePlayer(dt);updateGunMotion(dt);
   const me=mpMe();
   if(me&&me.alive&&player.hp>0&&mpClient){
     mpSendTimer-=dt;
@@ -931,16 +1617,27 @@ function mpShowLobby(){
   if(mpRoom)mpShowRoom();else mpShowHome();
 }
 
+mpAutoConnect();
+
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
 
 // Клієнт мультиплеєра: з'єднання, лобі, кімнати. Без прямого доступу до DOM гри:
 // вся інтеграція — через handlers, які передає game.js.
 
 function defaultMpUrl(custom) {
   const c = String(custom || '').trim();
-  if (c) return c.replace(/\/$/, '') + (c.endsWith(MP.PATH) ? '' : MP.PATH);
+  if (c) {
+    try {
+      const url=new URL(c.replace(/^http:/,'ws:').replace(/^https:/,'wss:'));
+      if(!['ws:','wss:'].includes(url.protocol))return null;
+      const path=url.pathname.replace(/\/$/,'');
+      url.pathname=path.endsWith(MP.PATH)?path:path+MP.PATH;
+      return url.toString();
+    } catch { return null; }
+  }
   if (typeof location !== 'undefined' && location.host) {
+    if(location.hostname?.endsWith('.github.io'))return null;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${proto}//${location.host}${MP.PATH}`;
   }
@@ -958,18 +1655,22 @@ function createMpClient(url, handlers) {
     handlers.onError && handlers.onError('Не вдалося підключитися');
     return null;
   }
+  let finished=false;
+  const finish=()=>{if(finished)return;finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;handlers.onClose?.();};
+  const timeout=setTimeout(()=>{if(!client.myId){handlers.onError?.('Сервер не відповів. Повтори спробу або перевір адресу');finish();try{ws.close();}catch{}}},10000);
   const client = {
-    connected: false, myId: null,
+    connected: false, connecting:true, myId: null,
     send(o) { try { if (ws.readyState === 1) ws.send(JSON.stringify(o)); } catch {} },
-    close() { try { ws.close(); } catch {} },
+    close() { finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;try { ws.close(); } catch {} },
   };
-  ws.onopen = () => { client.connected = true; handlers.onOpen && handlers.onOpen(); };
+  ws.onopen = () => { if(finished)return;client.connected = true; handlers.onOpen && handlers.onOpen(); };
   ws.onmessage = ev => {
+    if(finished)return;
     let msg;
     try { msg = JSON.parse(ev.data); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
     switch (msg.t) {
-      case S2C.WELCOME: client.myId = msg.id; handlers.onWelcome && handlers.onWelcome(msg); break;
+      case S2C.WELCOME: clearTimeout(timeout);client.connecting=false;client.myId = msg.id; handlers.onWelcome && handlers.onWelcome(msg); break;
       case S2C.ROOMS: handlers.onRooms && handlers.onRooms(msg.rooms || []); break;
       case S2C.JOINED: handlers.onJoined && handlers.onJoined(msg.room); break;
       case S2C.ROOM: handlers.onRoom && handlers.onRoom(msg.room); break;
@@ -980,8 +1681,8 @@ function createMpClient(url, handlers) {
       case S2C.ERROR: handlers.onError && handlers.onError(msg.message || 'Помилка сервера'); break;
     }
   };
-  ws.onclose = () => { client.connected = false; handlers.onClose && handlers.onClose(); };
-  ws.onerror = () => { handlers.onError && handlers.onError('Зʼєднання розірвано'); };
+  ws.onclose = finish;
+  ws.onerror = () => { if(!finished){handlers.onError?.('Сервер недоступний');finish();try{ws.close();}catch{}} };
   return client;
 }
 

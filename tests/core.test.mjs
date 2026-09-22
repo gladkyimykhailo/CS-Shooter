@@ -6,8 +6,16 @@ test('кожна мапа має прохідні точки старту та �
   for(const map of MAPS){
     for(const [x,y]of [...map.blue,...map.red])assert.ok(canStand(map,x,y),`${map.id}: spawn ${x},${y}`);
     for(const a of map.blue)for(const b of map.red){const p=findPath(map,...a,...b);assert.ok(p.length>0,`${map.id}: route`);for(const step of p)assert.ok(canStand(map,step.x,step.y));}
+    assert.ok(map.mid?.name&&Array.isArray(map.mid.point),`${map.id}: MID metadata`);assert.ok(canStand(map,...map.mid.point),`${map.id}: MID is reachable`);
+    for(const [label,site]of Object.entries(map.sites||{})){assert.ok(site.name&&canStand(map,...site.point),`${map.id}: ${label} site`);}
+    for(const start of [...map.blue,...map.red]){assert.ok(findPath(map,...start,...map.mid.point).length>0,`${map.id}: spawn reaches MID`);for(const site of Object.values(map.sites))assert.ok(findPath(map,...start,...site.point).length>0,`${map.id}: spawn reaches tactical site`);}
     assert.equal(lineOfSight(map,...map.blue[0],...map.red[0]),false,`${map.id}: safe spawn`);
   }
+});
+test('палац має власний двір, терасу та відокремлені стартові зони',()=>{
+  const palace=MAPS.find(map=>map.id==='palace');
+  assert.ok(palace);assert.equal(palace.name,'ПАЛАЦ');assert.match(palace.desc,/двір/);assert.equal(palace.label,'ВЕРХНЯ ТЕРАСА');
+  assert.notDeepEqual(palace.blue,MAPS[0].blue);assert.notDeepEqual(palace.red,MAPS[0].red);
 });
 test('колізії не дозволяють пройти зовнішню стіну та дозволяють рух уздовж неї',()=>{
   const a={x:1.3,y:1.5};moveActor(MAPS[0],a,-.4,.4);assert.equal(a.x,1.3);assert.equal(a.y,1.9);assert.equal(canStand(MAPS[0],-1,2),false);
@@ -30,7 +38,13 @@ test('раунд завершується за усуненням, часом, �
   assert.equal(roundWinner([{team:0,hp:1},{team:0,hp:1},{team:1,hp:100}],true),0);
 });
 test('зброя має скінченні параметри й осмислений запас патронів',()=>{for(const w of Object.values(WEAPONS)){assert.ok(w.damage>0&&w.size>0&&w.reload>0&&w.rate>0);assert.ok(w.pellets>=1);}});
-test('калаш: ціна як у CS, ваншот у голову без броні',()=>{
+test('дві снайперські гвинтівки мають оптику, різну ціну й запас патронів',()=>{
+  const light=WEAPONS.marksman,heavy=WEAPONS.sniper;
+  assert.ok(light.scope<.5&&heavy.scope<light.scope);assert.ok(heavy.damage>light.damage);assert.ok(heavy.price>light.price);
+  const p=buyer();assert.equal(purchase(p,'marksman').ok,true);assert.equal(p.primary,'marksman');assert.deepEqual(p.inventory.marksman,{ammo:10,reserve:30});
+  p.money=5000;assert.equal(purchase(p,'sniper').ok,true);assert.equal(p.primary,'sniper');assert.deepEqual(p.inventory.sniper,{ammo:5,reserve:15});
+});
+test('калаш: ціна й ваншот у голову без броні',()=>{
   const k=WEAPONS.kalash;
   assert.equal(k.price,2500);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);
   assert.ok(k.damage*(k.headMult||2)>=100,'34 × 3 = 102: ваншот у голову');
