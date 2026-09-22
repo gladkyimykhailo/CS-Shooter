@@ -158,7 +158,7 @@ test('смерть прибирає основну зброю у наступн�
 });
 
 test('обрана мапа та вигляд зберігаються; усі мапи запускають і відмальовують бій',()=>{
-  const ids=['dunes','arcade','furnace','canal','citadel','market','terminal','summit','palace'];
+  const ids=['dunes','terraces','furnace','canal','citadel','market','terminal','summit','palace'];
   for(let i=0;i<ids.length;i++){const f=fixture({map:i,skin:2,glove:1});f.game.start();f.game.beginFight();f.game.step(.016);assert.equal(f.game.get().map,ids[i]);assert.ok(f.drawCalls()>1000);}
   const f=fixture();f.document.querySelectorAll('[data-skin]')[1].onclick();const stored=JSON.parse(f.storage.get('sector-settings'));assert.equal(stored.skin,1);
 });

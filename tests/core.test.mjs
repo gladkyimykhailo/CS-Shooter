@@ -17,6 +17,12 @@ test('палац має власний двір, терасу та відокр�
   assert.ok(palace);assert.equal(palace.name,'ПАЛАЦ');assert.match(palace.desc,/двір/);assert.equal(palace.label,'ВЕРХНЯ ТЕРАСА');
   assert.notDeepEqual(palace.blue,MAPS[0].blue);assert.notDeepEqual(palace.red,MAPS[0].red);
 });
+test('тераси мають власну схему з нижніми й верхніми сходами та балконом',()=>{
+  const terraces=MAPS.find(map=>map.id==='terraces');
+  assert.ok(terraces);assert.equal(terraces.name,'ТЕРАСИ');assert.match(terraces.desc,/Високі сходи/);
+  assert.equal(terraces.sites.a.name,'НИЖНІ СХОДИ');assert.equal(terraces.mid.name,'ВЕРХНІ СХОДИ');assert.equal(terraces.sites.b.name,'БАЛКОН');
+  assert.equal(MAPS.some(map=>map.id==='arcade'),false);
+});
 test('колізії не дозволяють пройти зовнішню стіну та дозволяють рух уздовж неї',()=>{
   const a={x:1.3,y:1.5};moveActor(MAPS[0],a,-.4,.4);assert.equal(a.x,1.3);assert.equal(a.y,1.9);assert.equal(canStand(MAPS[0],-1,2),false);
 });
