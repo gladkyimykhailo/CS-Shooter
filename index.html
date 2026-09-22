@@ -33,9 +33,9 @@
       <section id="tab-play" class="tab">
         <div class="hero">
           <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ПІКСЕЛЬНИЙ ТАКТИЧНИЙ ШУТЕР <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Піксельні мапи, снайперська оптика й короткі бої.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
-          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—08</b></div><div class="art-cross">+</div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—09</b></div><div class="art-cross">+</div></div>
         </div>
-        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">08</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
         <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
@@ -152,7 +152,7 @@ const WEAPONS = {
   marksman: { name: 'LOOKOUT M7', type: 'ТОЧНА ГВИНТІВКА', price: 1900, damage: 70, size: 10, rate: .68, reload: 2.35, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
   sniper: { name: 'NORTHSTAR', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 3900, damage: 110, size: 5, rate: 1.12, reload: 3.05, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' }
 };
-// Original competitive layouts with two objective zones, a centre route and flanks.
+// Original competitive layouts with two objective zones, a clearly marked MID route and flanks.
 // They are intentionally independent of Counter-Strike or Valve map data.
 const specs = [
   { id:'dunes', name:'ДЮНИ', desc:'Піщаний вузол із довгими флангами та відкритим центром.', tag:'ПУСТЕЛЬНИЙ КОМПЛЕКС', label:'ТРИ МАРШРУТИ', wall:'#b69662', light:'#eedcab', sky:'#c6ae7c', floor:'#907b5a', accent:'#5e8c8b', blocks:[[6,3,2,6,1],[11,2,3,3,1],[17,3,3,5,2],[3,10,4,2,2],[9,8,3,5,1],[14,10,3,2,3],[18,11,3,3,1],[5,16,3,4,1],[10,17,5,2,2],[17,17,2,4,1],[7,6,1,2,3]] },
@@ -160,14 +160,32 @@ const specs = [
   { id:'furnace', name:'ГОРНИЛО', desc:'Промислові шахти, вузькі проходи й силові точки.', tag:'ЕНЕРГЕТИЧНИЙ ВУЗОЛ', label:'БЛИЖНІЙ БІЙ', wall:'#6c7771', light:'#c3c4a6', sky:'#596a70', floor:'#4d5b57', accent:'#d0784c', blocks:[[6,2,2,7,2],[12,2,3,5,1],[18,3,3,4,2],[3,11,5,2,1],[9,9,4,3,2],[15,10,3,5,1],[19,11,2,3,3],[5,17,4,2,2],[10,16,2,5,1],[16,17,3,3,2],[7,6,1,2,3]] },
   { id:'canal', name:'КАНАЛ', desc:'Склади біля води з перехресним вогнем через містки.', tag:'ПОРТОВИЙ РАЙОН', label:'ДОВГІ ЛІНІЇ', wall:'#668187', light:'#c4d4ca', sky:'#789aa2', floor:'#52676b', accent:'#d59559', blocks:[[5,3,2,5,1],[10,2,4,3,2],[17,3,2,6,1],[3,11,5,2,2],[8,10,2,5,1],[13,10,5,2,3],[19,11,2,4,1],[5,16,2,5,1],[10,17,5,2,2],[17,16,2,4,1],[7,8,1,1,3]] },
   { id:'citadel', name:'ЦИТАДЕЛЬ', desc:'Кам’яні двори, вузькі брами й захищений центр.', tag:'ГІРСЬКА ФОРТЕЦЯ', label:'МАНЕВРИ', wall:'#938a70', light:'#d9cfae', sky:'#9b9c8d', floor:'#68675c', accent:'#8b6b48', blocks:[[5,2,3,6,1],[11,3,3,4,1],[18,3,3,5,2],[2,11,5,2,1],[8,10,5,3,2],[16,10,5,3,1],[5,17,3,4,1],[11,16,3,5,1],[18,17,2,3,3],[8,8,1,1,3]] },
-  { id:'yard', name:'ВЕРФ', desc:'Контейнери створюють лабіринт для швидких виходів.', tag:'ВАНТАЖНА ВЕРФ', label:'ФЛАНГИ', wall:'#607d7e', light:'#c2d0b8', sky:'#6f9296', floor:'#4d6260', accent:'#c9834e', blocks:[[5,2,2,8,2],[10,3,2,5,1],[16,2,2,7,2],[3,13,5,2,1],[9,11,7,2,2],[18,11,3,3,1],[5,17,5,2,2],[12,16,2,5,1],[18,16,2,4,2],[8,7,1,2,3]] },
+  { id:'market', name:'РИНОК', desc:'Кам’яний ринок: фонтан у MID, аркові бокові галереї й відкриті двори.', tag:'МІСЬКИЙ РИНОК', label:'ФОНТАН У MID', wall:'#a88364', light:'#e8cf9b', sky:'#b7835d', floor:'#735c49', accent:'#6d8d78', blocks:[[5,2,3,5,2],[11,2,4,2,1],[18,3,2,6,3],[3,10,4,2,1],[8,8,2,4,2],[14,8,2,4,2],[10,10,2,2,3],[17,11,4,2,1],[5,16,2,5,3],[10,16,4,2,1],[17,17,3,3,2],[8,14,2,2,1]] },
   { id:'terminal', name:'ТЕРМІНАЛ', desc:'Перони та службові коридори з кількома обходами.', tag:'ТРАНЗИТНИЙ ЦЕНТР', label:'ШВИДКИЙ ТЕМП', wall:'#727b81', light:'#cfd1b7', sky:'#84939a', floor:'#5b6368', accent:'#c97053', blocks:[[5,3,3,5,1],[11,2,2,6,2],[17,3,4,3,1],[3,11,5,3,2],[9,10,5,2,1],[16,10,4,4,2],[5,17,2,4,1],[10,16,4,2,3],[16,17,3,4,1],[8,6,1,2,3]] },
-  { id:'summit', name:'ВЕРШИНА', desc:'Холодна станція, відкриті підходи та міцні укриття.', tag:'ВИСОКОГІРНА БАЗА', label:'ДИСТАНЦІЯ', wall:'#74848b', light:'#d4ded5', sky:'#9aaebb', floor:'#5b6f78', accent:'#d7a85d', blocks:[[6,3,2,5,1],[11,2,4,3,2],[18,3,2,6,1],[3,10,4,3,1],[8,9,2,5,2],[13,10,5,2,1],[19,11,2,3,3],[5,17,4,2,1],[10,16,2,5,2],[16,17,4,3,1],[7,6,1,2,3]] }
+  { id:'summit', name:'ВЕРШИНА', desc:'Холодна станція, відкриті підходи та міцні укриття.', tag:'ВИСОКОГІРНА БАЗА', label:'ДИСТАНЦІЯ', wall:'#74848b', light:'#d4ded5', sky:'#9aaebb', floor:'#5b6f78', accent:'#d7a85d', blocks:[[6,3,2,5,1],[11,2,4,3,2],[18,3,2,6,1],[3,10,4,3,1],[8,9,2,5,2],[13,10,5,2,1],[19,11,2,3,3],[5,17,4,2,1],[10,16,2,5,2],[16,17,4,3,1],[7,6,1,2,3]] },
+  { id:'palace', name:'ПАЛАЦ', desc:'Сонячний внутрішній двір, верхня тераса й три аркові проходи.', tag:'КОЛИШНЯ РЕЗИДЕНЦІЯ', label:'ВЕРХНЯ ТЕРАСА', wall:'#c8a471', light:'#f6dfad', sky:'#d39a61', floor:'#80654c', accent:'#4f8790', blue:[[2.5,4.5],[3.5,3.5],[3.5,5.5]], red:[[21.5,18.5],[20.5,19.5],[20.5,17.5]], blocks:[[5,2,3,3,2],[11,2,5,2,1],[18,3,3,5,3],[4,7,2,5,1],[8,7,2,3,2],[14,7,2,3,2],[10,10,4,2,3],[3,13,5,2,3],[8,13,2,3,2],[14,13,2,3,2],[18,12,2,5,1],[10,16,4,2,3],[5,18,3,3,1],[12,19,5,2,2]] }
 ];
+const TACTICAL_LAYOUTS = {
+  dunes:{a:{name:'ОАЗА',point:[6,17]},mid:{name:'КРИНИЦЯ',point:[12,13]},b:{name:'РАДАР',point:[18,6]}},
+  arcade:{a:{name:'ТЕАТР',point:[6,18]},mid:{name:'АРКА',point:[12,12]},b:{name:'БАЛКОН',point:[18,6]}},
+  furnace:{a:{name:'КРАН',point:[6,17]},mid:{name:'КОТЕЛ',point:[13,12]},b:{name:'ПІЧ',point:[18,6]}},
+  canal:{a:{name:'ДОК',point:[6,17]},mid:{name:'МІСТ',point:[12,12]},b:{name:'МАЯК',point:[18,6]}},
+  citadel:{a:{name:'НИЖНІЙ ДВІР',point:[6,17]},mid:{name:'БРАМА',point:[13,13]},b:{name:'ВЕРХНЯ БРАМА',point:[18,6]}},
+  market:{a:{name:'КРАМНИЦІ',point:[6,17]},mid:{name:'ФОНТАН',point:[12,12]},b:{name:'ЛОЖІ',point:[18,6]}},
+  terminal:{a:{name:'ПЕРОН',point:[6,17]},mid:{name:'ПЕРЕХІД',point:[12,12]},b:{name:'ВИХІД',point:[18,6]}},
+  summit:{a:{name:'АНГАР',point:[6,17]},mid:{name:'ВЕЖА',point:[12,12]},b:{name:'РАДІОВЕЖА',point:[18,6]}},
+  palace:{a:{name:'САД',point:[6,17]},mid:{name:'ДВІР',point:[12,13]},b:{name:'ТЕРАСА',point:[18,6]}}
+};
+function nearestOpen(grid,[x,y]){
+  let point=[1.5,1.5],distance=Infinity;
+  for(let gy=1;gy<23;gy++)for(let gx=1;gx<23;gx++)if(grid[gy][gx]===0){const next=(gx+.5-x)**2+(gy+.5-y)**2;if(next<distance){distance=next;point=[gx+.5,gy+.5];}}
+  return point;
+}
 const MAPS = specs.map(s=>{
   const grid = Array.from({length:24},(_,y)=>Array.from({length:24},(_,x)=>x===0||y===0||x===23||y===23?1:0));
   for(const [x,y,w,h,t] of s.blocks) for(let j=y;j<y+h;j++) for(let i=x;i<x+w;i++) grid[j][i]=t;
-  return {...s,grid,blue:[[2.5,3.5],[3.5,2.5],[3.5,4.5]],red:[[21.5,20.5],[20.5,21.5],[20.5,19.5]]};
+  const tactical=TACTICAL_LAYOUTS[s.id],mark=area=>({name:area.name,point:nearestOpen(grid,area.point)});
+  return {...s,sites:{a:mark(tactical.a),b:mark(tactical.b)},mid:mark(tactical.mid),routes:['ЛІВИЙ','MID','ПРАВИЙ'],grid,blue:s.blue||[[2.5,3.5],[3.5,2.5],[3.5,4.5]],red:s.red||[[21.5,20.5],[20.5,21.5],[20.5,19.5]]};
 });
 const SKINS = [{name:'Ліс',color:'#657f67'},{name:'Ніч',color:'#546477'},{name:'Пісок',color:'#ab9970'}];
 const GLOVES = [{name:'Графіт',color:'#333b37'},{name:'Олива',color:'#60714b'},{name:'Койот',color:'#93724e'}];
@@ -281,22 +299,24 @@ function mapArt(canvas,map,hero=false){
     if(type===2){c.fillStyle='#fff0bb66';c.fillRect(px+Math.floor(tw*.35),py+1,Math.max(1,Math.floor(tw*.16)),Math.max(1,th-2));}
     if(type===3){c.fillStyle='#0a1514aa';c.fillRect(px+Math.floor(tw*.25),py+Math.floor(th*.25),Math.max(1,Math.floor(tw*.5)),Math.max(1,Math.floor(th*.5)));}
   }
-  const nearestFloor=(gx,gy)=>{
-    let pick=[2.5,2.5],best=Infinity;
-    for(let y=1;y<23;y++)for(let x=1;x<23;x++)if(map.grid[y][x]===0){const distance=(x+.5-gx)**2+(y+.5-gy)**2;if(distance<best){best=distance;pick=[x+.5,y+.5];}}
-    return pick;
-  };
+  if(map.id==='palace'){
+    const cx=Math.round(ox+pw*.5),cy=Math.round(oy+ph*.47),archW=Math.max(12,tw*2),archH=Math.max(11,Math.floor(th*2.2)),column=Math.max(3,Math.floor(tw*.45));
+    c.fillStyle=tint(map.light,.92);c.fillRect(cx-archW,cy-archH,archW*2,3);c.fillRect(cx-archW+3,cy-archH+3,archW*2-6,3);
+    c.fillStyle=tint(map.light,.67);c.fillRect(cx-archW,cy-archH+6,column,archH-6);c.fillRect(cx+archW-column,cy-archH+6,column,archH-6);
+    c.fillStyle=tint(map.wall,.5);c.fillRect(cx-archW+column,cy-archH+7,archW*2-column*2,archH-7);
+    c.fillStyle=tint(map.accent,1.18);c.fillRect(cx-3,cy-archH+9,6,archH-9);c.fillRect(cx-archW+4,cy-archH+8,archW-7,2);c.fillRect(cx+3,cy-archH+8,archW-7,2);
+  }
   const mark=(label,point,color)=>{
     const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);
     c.fillStyle='#07110ed9';c.fillRect(x-6,y-6,13,13);c.fillStyle=color;c.fillRect(x-4,y-4,9,9);
     c.fillStyle='#07110e';c.font=`bold ${Math.max(7,Math.min(tw,th))}px monospace`;c.textAlign='center';c.textBaseline='middle';c.fillText(label,x+.5,y+.5);c.textAlign='left';c.textBaseline='alphabetic';
   };
-  mark('A',nearestFloor(6,17),'#d89a57');mark('B',nearestFloor(18,6),'#79a5a1');
+  mark('A',map.sites.a.point,'#d89a57');mark('M',map.mid.point,'#f4d47c');mark('B',map.sites.b.point,'#79a5a1');
   const spawn=(point,color)=>{const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);c.fillStyle='#07110e';c.fillRect(x-3,y-3,7,7);c.fillStyle=color;c.fillRect(x-2,y-2,5,5);};
   map.blue.forEach(p=>spawn(p,'#c3f66b'));map.red.forEach(p=>spawn(p,'#f4a46a'));
   c.fillStyle='#0b1715dd';c.fillRect(ox+5,oy+5,Math.min(148,pw-10),23);
   c.fillStyle='#d9ead7';c.font=`bold ${hero?13:10}px monospace`;c.fillText(`PIXEL // ${map.name}`,ox+11,oy+15);
-  c.fillStyle=tint(map.accent,1.3);c.font=`${hero?8:7}px monospace`;c.fillText('A / MID / B',ox+11,oy+24);
+  c.fillStyle=tint(map.accent,1.3);c.font=`${hero?8:7}px monospace`;c.fillText(`A / ${map.mid.name} / B`,ox+11,oy+24);
   if(hero){
     const sprite=makeOperator('#5b7367','#cede9e');const x=ox+pw-Math.max(37,tw*2),y=oy+ph-Math.max(72,th*7);
     c.drawImage(sprite,x,y,Math.max(34,tw*2),Math.max(68,th*7));
@@ -527,6 +547,9 @@ function textures(map){
     if(type===1){c.fillStyle='#10201e77';for(let y=0;y<64;y+=16)c.fillRect(0,y,64,2);for(let y=0;y<64;y+=16)for(let x=(y%32?16:0);x<64;x+=32)c.fillRect(x,y,2,16);c.fillStyle='#e2dfb544';c.fillRect(0,2,64,2);}
     if(type===2){for(let x=0;x<64;x+=8){c.fillStyle='#121c2266';c.fillRect(x,0,2,64);c.fillStyle='#fff1c533';c.fillRect(x+2,0,1,64);}c.fillStyle='#22302c';c.fillRect(0,5,64,4);c.fillRect(0,56,64,4);c.fillStyle='#e2d8b3';c.fillRect(20,19,24,14);c.fillStyle='#544e38';c.font='bold 8px monospace';c.fillText('PX',25,29);}
     if(type===3){c.fillStyle='#202d2bbb';c.fillRect(0,0,64,6);c.fillRect(0,58,64,6);c.fillRect(0,0,6,64);c.fillRect(58,0,6,64);c.fillStyle='#0d1619';for(let i=8;i<58;i+=12){c.fillRect(i,i,7,7);c.fillRect(57-i,i,7,7);}}
+    if(map.id==='palace'&&type===1){c.fillStyle=tint(map.light,.54);for(let x=6;x<64;x+=20){c.fillRect(x,8,5,48);c.fillRect(x-2,5,9,4);c.fillRect(x-1,56,7,3);}}
+    if(map.id==='palace'&&type===2){c.fillStyle=tint(map.accent,1.24);for(let x=6;x<64;x+=16){c.fillRect(x,12,4,4);c.fillRect(x,44,4,4);}}
+    if(map.id==='palace'&&type===3){c.fillStyle=tint(map.light,.88);c.fillRect(7,8,50,4);c.fillRect(10,12,44,4);c.fillStyle='#3b3027';c.fillRect(18,26,28,32);c.fillRect(15,32,34,26);c.fillRect(21,22,22,36);c.fillRect(26,18,12,40);c.fillStyle=tint(map.accent,1.12);c.fillRect(29,31,6,27);}
     return cv;})];
 }
 
@@ -957,7 +980,7 @@ function sound(kind='shot',weapon='pistol'){
 function renderCards(){
   const count=String(MAPS.length).padStart(2,'0');
   $('#map-count').textContent=count;$('#hero-map-count').textContent=`01—${count}`;
-  $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">${String(i+1).padStart(2,'0')} / ${count}</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>${m.tag}</span><span>${m.label} ↗</span></div></div></button>`).join('');
+  $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">${String(i+1).padStart(2,'0')} / ${count}</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>A / B · ТОЧКИ</span><span>MID · ${m.mid.name} ↗</span></div></div></button>`).join('');
   $$('.map-card').forEach((card,i)=>{mapArt(card.querySelector('canvas'),MAPS[i]);card.onclick=()=>{settings.map=i;map=MAPS[i];save();renderCards();mapArt($('#hero-canvas'),map,true);};});
 }
 function renderOperator(){
@@ -1255,6 +1278,8 @@ function drawGun(w,h){
 function renderMinimap(view){
   mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/24;
   for(let y=0;y<24;y++)for(let x=0;x<24;x++)if(map.grid[y][x]){mc.fillStyle=map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s-.6,s-.6);}
+  const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
+  tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
   for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
   mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
 }
