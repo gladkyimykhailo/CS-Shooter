@@ -20,6 +20,11 @@
 @media(max-width:900px){.buy-layout{grid-template-columns:150px minmax(0,1fr)}.buy-loadout{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr) auto auto;align-items:center;gap:12px;border-left:0;border-top:1px solid var(--buy-line)}.buy-loadout>span{display:none}.buy-loadout>div{padding:0;border-bottom:0}.buy-loadout p{display:none}.buy-loadout .primary{width:auto}.buy-loadout .text-button{justify-self:start}}
 @media(max-width:720px){.dialog-shop{padding:0}.buy-topbar{min-height:84px;padding:17px;gap:12px}.buy-topbar h2{font-size:20px}.buy-status{gap:3px}.buy-status strong{font-size:17px}.buy-layout{display:block}.buy-categories{display:grid;grid-template-columns:repeat(3,1fr);padding:11px;border-right:0;border-bottom:1px solid var(--buy-line)}.buy-categories>span{grid-column:1/-1;padding:0 4px 4px}.buy-category{min-height:38px;padding:0 6px;grid-template-columns:20px 1fr}.buy-category i{display:none}.buy-content{padding:17px}.buy-content-head{margin-bottom:12px}.buy-grid{grid-template-columns:1fr}.buy-item{min-height:208px}.buy-loadout{display:flex;padding:16px;gap:10px}.buy-loadout>div{padding:7px 0;border-bottom:1px solid #3b494a}.buy-loadout .primary{width:100%;justify-content:space-between}.buy-loadout .text-button{align-self:center}}
 </style>
+  <style>
+    body.no-online .online-block { display: none !important; }
+    .mp-offline-note { display: none; }
+    body.no-online .mp-offline-note { display: block; }
+  </style>
 </head>
 <body>
   <canvas id="game" aria-label="Ігровий світ" hidden></canvas>
@@ -42,50 +47,40 @@
       </section>
       <section id="tab-mp" class="tab" hidden>
         <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ</span></div>
+        <p id="mp-code-status" role="status" aria-live="polite"></p>
+        <p class="mp-offline-note" style="color:var(--muted)">Сервер кімнат зараз не підключений. З ботами можна грати одразу.</p>
         <div id="mp-home">
           <div class="settings-panel" style="margin:0 0 18px;max-width:none">
             <label>Позивний <input id="mp-nick" type="text" maxlength="16" placeholder="БОЄЦЬ" style="width:180px"></label>
-            <label>Спосіб гри <select id="mp-transport"><option value="server" selected>Онлайн · автоматичне підключення</option><option value="peer">Напряму з друзями</option></select></label>
-            <p id="mp-peer-help">Створи кімнату однією кнопкою. Передай другу запрошення, отримай його відповідь і прийми її тут. Власник має тримати вкладку гри відкритою.</p>
+            <label>Спосіб гри <select id="mp-transport"><option value="code">Напряму з друзями · за кодом</option><option value="server" selected>Онлайн · автоматичне підключення</option></select></label>
+            <p id="mp-code-help">Створи кімнату, скопіюй короткий код і надішли другу. Друг вводить код і приєднується автоматично. Тримай цю вкладку відкритою.</p>
             <div id="mp-server-options" hidden>
             <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
-            <p>Гра під’єднується до сервера одразу після запуску. Для GitHub Pages задай спільну адресу в <code>public/config.js</code> (wss://…).</p>
-            <div class="dialog-actions" style="margin-top:0">
+            <p>Обидва гравці мають використовувати одну адресу сервера. Якщо гру відкрито із сервера, адреса визначається автоматично.</p>
+            <div id="mp-server-actions" class="dialog-actions" style="margin-top:0">
               <button id="mp-connect" class="primary">ПОВТОРИТИ ПІДКЛЮЧЕННЯ <span>↻</span></button>
               <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
               <button id="mp-refresh" class="secondary">ОНОВИТИ СПИСОК</button>
             </div>
             </div>
           </div>
-          <div class="launch-bar" style="flex-wrap:wrap">
-            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b>
+          <div class="launch-bar online-block" style="flex-wrap:wrap">
+            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b><span>Вхід лише за кодом — друг введе 4 символи або відкриє посилання</span>
               <span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
                 <input id="mp-room-name" type="text" maxlength="24" placeholder="Назва кімнати" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
                 <select id="mp-room-map" title="Мапа"></select>
                 <select id="mp-room-max" title="Гравців"><option value="2">2 гравці</option><option value="4">4 гравці</option><option value="6" selected>6 гравців</option></select>
-                <select id="mp-room-visibility" title="Доступ" hidden><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
+                <select id="mp-room-visibility" title="Доступ"><option value="private" selected>Приватна (код)</option><option value="public">Публічна</option></select>
               </span>
             </div>
-            <button id="mp-create" class="primary">СТВОРИТИ <span>+</span></button>
+            <button id="mp-create" class="primary">СТВОРИТИ КІМНАТУ <span>+</span></button>
           </div>
-          <div id="mp-peer-join" class="settings-panel peer-panel">
-            <h3>УВІЙТИ ДО ДРУГА</h3>
-            <label for="mp-peer-offer">Запрошення від власника</label>
-            <textarea id="mp-peer-offer" rows="3" maxlength="100000" spellcheck="false" placeholder="Встав запрошення SECTOR1.…"></textarea>
-            <div class="dialog-actions"><button id="mp-peer-answer" class="primary">ПРИЄДНАТИСЯ</button><button id="mp-peer-cancel" class="secondary" hidden>СКАСУВАТИ</button></div>
-            <div id="mp-peer-reply-panel" hidden>
-              <p>Надішли відповідь власнику. Кімната відкриється, коли він її прийме.</p>
-              <label for="mp-peer-reply">Твоя відповідь</label><textarea id="mp-peer-reply" rows="3" readonly spellcheck="false"></textarea>
-              <button id="mp-peer-copy-reply" class="secondary">КОПІЮВАТИ ВІДПОВІДЬ</button>
-            </div>
-            <p id="mp-peer-join-status" role="status" aria-live="polite"></p>
-          </div>
-          <div id="mp-code-join" class="launch-bar" style="flex-wrap:wrap" hidden>
+          <div id="mp-code-join" class="launch-bar online-block" style="flex-wrap:wrap">
             <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
-            <input id="mp-join-code" type="text" maxlength="6" placeholder="КОД" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
-            <button id="mp-join-btn" class="secondary">УВІЙТИ ЗА КОДОМ</button>
+            <input id="mp-join-code" type="text" maxlength="4" placeholder="КОД" autocomplete="off" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
+            <button id="mp-join-btn" class="secondary">ПРИЄДНАТИСЬ</button>
           </div>
-          <div id="mp-public" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
+          <div id="mp-public" class="online-block" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
           <div id="mp-rooms" class="map-cards"></div>
           </div>
         </div>
@@ -94,16 +89,15 @@
             <h3 id="mp-room-title" style="margin-top:0">КІМНАТА</h3>
             <p id="mp-room-info"></p>
             <div id="mp-room-code" class="shop-balance" style="margin-bottom:12px"></div>
-            <div id="mp-peer-host" class="peer-panel" hidden>
-              <p>Для кожного друга створи окреме запрошення. Не закривай цю вкладку під час матчу.</p>
-              <button id="mp-peer-invite" class="secondary">ЗАПРОСИТИ ДРУГА</button>
-              <div id="mp-peer-invite-panel" hidden>
-                <label for="mp-peer-invite-text">1. Надішли це запрошення другу</label><textarea id="mp-peer-invite-text" rows="3" readonly spellcheck="false"></textarea>
-                <button id="mp-peer-copy-invite" class="secondary">КОПІЮВАТИ ЗАПРОШЕННЯ</button>
-                <label for="mp-peer-accept-text">2. Встав його відповідь</label><textarea id="mp-peer-accept-text" rows="3" maxlength="100000" spellcheck="false" placeholder="Відповідь SECTOR1.…"></textarea>
-                <button id="mp-peer-accept" class="primary">ПРИЙНЯТИ ДРУГА</button>
-              </div>
-              <p id="mp-peer-host-status" role="status" aria-live="polite"></p>
+            <div class="dialog-actions online-block" style="margin-top:0;margin-bottom:12px">
+              <button id="mp-copy-link" class="secondary">КОПІЮВАТИ ПОСИЛАННЯ</button>
+              <span style="color:var(--muted);font-size:13px">Дай другу код або посилання — за посиланням він зайде сам.</span>
+            </div>
+            <div id="mp-short-code-panel" class="peer-panel" hidden>
+              <label for="mp-short-code">Код кімнати — надішли другу</label>
+              <input id="mp-short-code" type="text" readonly maxlength="4" style="font-size:28px;letter-spacing:8px;width:150px;text-align:center" aria-label="Код кімнати">
+              <button id="mp-copy-code" class="secondary">КОПІЮВАТИ КОД</button>
+              <p>Друг обирає «Напряму з друзями · за кодом», вводить код і приєднується. Тримай цю вкладку відкритою.</p>
             </div>
             <div id="mp-players" class="control-list"></div>
             <div class="dialog-actions">
@@ -584,13 +578,37 @@ function lineOfSight(map,x,y,tx,ty,z=floorHeight(map,x,y)+.5,tz=floorHeight(map,
   for(let s=.08;s<d;s+=.08){const px=x+(tx-x)*s/d,py=y+(ty-y)*s/d;if(blocked(map,px,py)||floorHeight(map,px,py)>z+(tz-z)*s/d+.001)return false;}
   return true;
 }
+const pathWorkspaces=new WeakMap();
+const pathDirections=[[1,0],[0,1],[-1,0],[0,-1]];
 function findPath(map,sx,sy,tx,ty){
   sx=Math.floor(sx);sy=Math.floor(sy);tx=Math.floor(tx);ty=Math.floor(ty);
-  if(blocked(map,tx,ty))return [];
-  const queue=[[sx,sy]], prev=new Map([[`${sx},${sy}`,null]]);
-  for(let i=0;i<queue.length;i++){
-    const [x,y]=queue[i];if(x===tx&&y===ty){const path=[];let key=`${x},${y}`;while(prev.get(key)!==null){const [px,py]=key.split(',').map(Number);path.unshift({x:px+.5,y:py+.5});key=prev.get(key);}return path;}
-    for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const nx=x+dx,ny=y+dy,k=`${nx},${ny}`;if(!prev.has(k)&&!blocked(map,nx+.5,ny+.5)&&(!map.heights||canTraverse(map,x+.5,y+.5,nx+.5,ny+.5))){prev.set(k,`${x},${y}`);queue.push([nx,ny]);}}
+  const n=map.size;
+  if(![sx,sy,tx,ty].every(Number.isFinite)||sx<0||sy<0||sx>=n||sy>=n||blocked(map,tx,ty))return [];
+  if(sx===tx&&sy===ty)return [];
+  let work=pathWorkspaces.get(map);
+  if(!work||work.grid!==map.grid||work.heights!==map.heights||work.n!==n){
+    work={grid:map.grid,heights:map.heights,n,edges:new Int8Array(n*n).fill(-1),queue:new Int32Array(n*n),prev:new Int32Array(n*n)};
+    // Built-in geometry is static. Custom/edited maps get a fresh graph so
+    // callers can change their cells between searches without stale routes.
+    if(MAPS.includes(map))pathWorkspaces.set(map,work);
+  }
+  const {edges,queue,prev}=work,start=sy*n+sx,target=ty*n+tx;
+  prev.fill(-2);prev[start]=-1;queue[0]=start;let length=1;
+  for(let i=0;i<length;i++){
+    const key=queue[i],x=key%n,y=Math.floor(key/n);
+    if(key===target){const path=[];for(let k=key;prev[k]!==-1;k=prev[k])path.push({x:k%n+.5,y:Math.floor(k/n)+.5});return path.reverse();}
+    if(edges[key]===-1){
+      let mask=0;
+      for(let d=0;d<4;d++){
+        const [dx,dy]=pathDirections[d],nx=x+dx,ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<n&&ny<n&&!blocked(map,nx+.5,ny+.5)&&(!map.heights||canTraverse(map,x+.5,y+.5,nx+.5,ny+.5)))mask|=1<<d;
+      }
+      edges[key]=mask;
+    }
+    for(let d=0;d<4;d++)if(edges[key]&(1<<d)){
+      const next=key+pathDirections[d][0]+pathDirections[d][1]*n;
+      if(prev[next]===-2){prev[next]=key;queue[length++]=next;}
+    }
   }return [];
 }
 function applyDamage(actor,damage,head=false){const absorbed=head?0:Math.min(actor.armor,damage*.5);actor.armor-=absorbed;actor.hp=Math.max(0,actor.hp-damage+absorbed);return actor.hp;}
@@ -1014,16 +1032,24 @@ function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths
   for(let x=0;x<w;x+=colStep){
     const camera=2*x/w-1,rx=ca-sa*fov*camera,ry=sa+ca*fov*camera;
     const surfaces=terrainColumn(map,view.x,view.y,rx,ry);
-    for(let i=surfaces.length-1;i>=0;i--){
+    // A height field forms a continuous silhouette from the bottom of a ray.
+    // Paint near-to-far, clipping everything behind the visible silhouette.
+    let uncovered=h;
+    const columnEnd=Math.min(w,x+colStep);
+    for(let i=0;i<surfaces.length;i++){
       const s=surfaces[i],near=Math.max(.001,s.near),isFloor=s.kind==='floor';
       if(isFloor&&s.z>=eye)continue;
       const top=isFloor?horizon+projection*(eye-s.z)/Math.max(.001,s.far):horizon+projection*(eye-s.high)/near;
       const bottom=horizon+projection*(eye-(isFloor?s.z:s.low))/near;
-      const start=Math.max(0,Math.ceil(top-.5)),end=Math.min(h,Math.ceil(bottom-.5));
+      const start=Math.max(0,Math.ceil(top-.5)),projectedEnd=Math.min(h,Math.ceil(bottom-.5));
+      // Keep the wall distance even when a nearer platform fully hides it;
+      // actor labels use this separate wall-only buffer.
+      if(s.kind==='wall'&&projectedEnd>start)for(let k=x;k<columnEnd;k++)zbuffer[k]=near;
+      const end=Math.min(uncovered,projectedEnd);
       if(end<=start)continue;
+      uncovered=start;
       if(s.kind==='wall'){
         ctx.drawImage(wallTextures[s.type]||wallTextures[1],s.tx,(start-top)*64/(bottom-top),1,(end-start)*64/(bottom-top),x,start,colStep,end-start);
-        for(let k=x;k<Math.min(w,x+colStep);k++)zbuffer[k]=near;
       }else{
         ctx.fillStyle=isFloor?floors[s.material]||floors[0]:s.side?'#94754e':'#ad8a5b';
         ctx.fillRect(x,start,colStep,end-start);
@@ -1032,9 +1058,11 @@ function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths
       const distance=isFloor?(near+s.far)*.5:near;
       ctx.fillStyle=`rgba(12,20,20,${Math.min(.72,distance/48+(isFloor?s.checker*.045:s.side?.12:0))})`;
       ctx.fillRect(x,start,colStep,end-start);
+      const floorProjection=projection*(eye-s.z);
       for(let y=start;y<end;y++){
-        const depth=isFloor?projection*(eye-s.z)/(y+.5-horizon):near;
-        for(let k=x;k<Math.min(w,x+colStep);k++)depths[y*w+k]=depth;
+        const depth=isFloor?floorProjection/(y+.5-horizon):near;
+        const offset=y*w;
+        for(let k=x;k<columnEnd;k++)depths[offset+k]=depth;
       }
     }
   }
@@ -1049,7 +1077,7 @@ const MP = {
   KILL_TARGET: 20,
   MATCH_TIME: 300,
   RESPAWN_DELAY: 3,
-  CODE_LEN: 6,
+  CODE_LEN: 4,
 };
 
 // Типи повідомлень клієнт -> сервер
@@ -1063,7 +1091,8 @@ const S2C = {
   MATCH_START: 'matchStart', SNAPSHOT: 'snapshot', EVENTS: 'events', MATCH_END: 'matchEnd', ERROR: 'error',
 };
 
-const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+// Короткий код кімнати як у balloon-catcher: 4 символи, без схожих I/O/0/1.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode(rand = Math.random) {
   let s = '';
   for (let i = 0; i < MP.CODE_LEN; i++) s += CODE_ALPHABET[Math.floor(rand() * CODE_ALPHABET.length)];
@@ -1203,7 +1232,7 @@ function snapshotRoom(room) {
   };
 }
 
-// Browser-hosted matches. Signalling is exchanged manually; game traffic uses WebRTC.
+// Browser-hosted matches. Signalling may be manual or automatic; gameplay uses WebRTC.
 
 
 function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
@@ -1336,7 +1365,7 @@ function createPeerClient(handlers, dependencies={}){
   }
   function newPeer(id){
     if(!RTC)throw new Error('Цей браузер не підтримує гру напряму. Відкрий гру в сучасному Chrome або Firefox');
-    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]});
     const peer={pc,channel:null,id};peers.set(id,peer);
     pc.onconnectionstatechange=()=>{
       if(pc.connectionState==='failed'){fail('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером');removePeer(id);}
@@ -1369,20 +1398,36 @@ function createPeerClient(handlers, dependencies={}){
     channel.onerror=()=>{fail('Зв’язок із гравцем перервано');removePeer(peer.id);};
   }
   async function gather(peer,description){
+    client.signalWarning='';
     await peer.pc.setLocalDescription(description);
     if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
-    if(peer.pc.iceGatheringState==='complete')return;
-    await new Promise((resolve,reject)=>{
-      const finish=error=>{clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);peer.cancelGather=null;error?reject(error):resolve();};
+    if(peer.pc.iceGatheringState!=='complete')await new Promise((resolve,reject)=>{
+      let finished=false;
+      const finish=error=>{
+        if(finished)return;finished=true;
+        clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);
+        peer.pc.removeEventListener('icecandidate',candidate);peer.cancelGather=null;
+        error?reject(error):resolve();
+      };
       const check=()=>{if(peer.pc.iceGatheringState==='complete')finish();};
-      // Manual signalling must contain every candidate; never export a partial offer.
-      const timeout=setTimeout(()=>finish(new Error('Не вдалося підготувати запрошення. Перевір мережу й спробуй ще раз')),15000);
+      const candidate=event=>{if(event.candidate===null)finish();};
+      // A stalled STUN request must not discard usable candidates. Export a
+      // snapshot at the deadline; later candidates are not manually signalled.
+      const timeout=setTimeout(()=>finish(),dependencies.iceGatheringTimeoutMs??15000);
       peer.cancelGather=()=>finish(new Error('Запрошення скасовано'));
-      peer.pc.addEventListener('icegatheringstatechange',check);check();
+      peer.pc.addEventListener('icegatheringstatechange',check);
+      peer.pc.addEventListener('icecandidate',candidate);check();
     });
+    if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
+    const sdp=peer.pc.localDescription?.sdp||'';
+    const candidates=[...sdp.matchAll(/^a=candidate:[^\r\n]+\btyp (host|srflx|prflx|relay)\b/gm)];
+    if(!candidates.length)throw new Error('Браузер не знайшов жодної адреси для прямого зв’язку. Спробуй іншу мережу або режим із ігровим сервером.');
+    if(candidates.every(candidate=>candidate[1]==='host'))client.signalWarning='Знайдено лише локальні адреси. Спробуйте спільний Wi-Fi; між різними мережами може знадобитися ігровий сервер.';
+    else if(peer.pc.iceGatheringState!=='complete')client.signalWarning='Пошук адрес ще триває. Код містить уже знайдені адреси; якщо з’єднання не вдасться, створи нове запрошення.';
+    return sdp;
   }
   const client={
-    kind:'peer',connected:false,myId:null,
+    kind:'peer',connected:false,myId:null,signalWarning:'',
     host(options,nick){
       if(closed||host||peers.size)throw new Error('Кімнату вже створено');
       host=createPeerHost(options,nick,(id,msg)=>id==='host'?dispatch(msg):sendChannel(peers.get(id),msg));
@@ -1391,16 +1436,16 @@ function createPeerClient(handlers, dependencies={}){
       let last=Date.now();timer=setInterval(()=>{const current=Date.now();host.tick(Math.min(2,(current-last)/1000));last=current;},1000/MP.TICK_HZ);
       return snapshotRoom(host.room);
     },
-    async invite(){
+    async invite({parallel=false}={}){
       if(closed||!host||host.room.phase!=='lobby')throw new Error('Запрошувати друзів можна в лобі кімнати');
       if(Object.keys(host.room.players).length>=host.room.maxPlayers)throw new Error('Кімната заповнена');
-      if(pending)removePeer(pending);
+      if(pending&&!parallel)removePeer(pending);
       const id='p'+(globalThis.crypto?.randomUUID?.()||makeCode()+Date.now().toString(36));
       const peer=newPeer(id);pending=id;wire(peer,peer.pc.createDataChannel('sector'));
       try{
-        await gather(peer,await peer.pc.createOffer());
+        const sdp=await gather(peer,await peer.pc.createOffer());
         if(closed||!peers.has(id))throw new Error('Запрошення скасовано');
-        return encodePeerSignal({type:'offer',id,sdp:peer.pc.localDescription.sdp});
+        return encodePeerSignal({type:'offer',id,sdp});
       }catch(error){removePeer(id);throw error;}
     },
     async answer(text,nick){
@@ -1409,10 +1454,10 @@ function createPeerClient(handlers, dependencies={}){
       const peer=newPeer(signal.id);peer.pc.ondatachannel=event=>wire(peer,event.channel);
       try{
         await peer.pc.setRemoteDescription({type:'offer',sdp:signal.sdp});
-        await gather(peer,await peer.pc.createAnswer());
+        const sdp=await gather(peer,await peer.pc.createAnswer());
         if(closed||!peers.has(signal.id))throw new Error('Приєднання скасовано');
         if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Відповідь не прийнято або мережа блокує з’єднання. Спробуй нове запрошення');removePeer(signal.id);},180000);
-        return encodePeerSignal({type:'answer',id:signal.id,sdp:peer.pc.localDescription.sdp});
+        return encodePeerSignal({type:'answer',id:signal.id,sdp});
       // Setup errors belong to the pending answer operation. A disconnect
       // callback here would tear down the UI before it can display that error.
       }catch(error){removePeer(signal.id,false);throw error;}
@@ -1420,16 +1465,108 @@ function createPeerClient(handlers, dependencies={}){
     async accept(text){
       const signal=decodePeerSignal(text,'answer');
       const peer=peers.get(signal.id);
-      if(closed||!host||!peer||signal.id!==pending)throw new Error('Ця відповідь не відповідає поточному запрошенню');
+      if(closed||!host||!peer)throw new Error('Ця відповідь не відповідає поточному запрошенню');
       if(peer.pc.remoteDescription)throw new Error('Цю відповідь уже прийнято');
       await peer.pc.setRemoteDescription({type:'answer',sdp:signal.sdp});
       if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Мережа блокує пряме з’єднання. Спробуйте іншу мережу або режим із сервером');removePeer(signal.id);},30000);
     },
+    cancelInvite(id){const peer=peers.get(id);if(host&&peer?.channel?.readyState!=='open')removePeer(id);},
     send(msg){if(closed)return;if(host)host.receive('host',msg);else sendChannel([...peers.values()][0],msg);},
     close(){
       if(closed)return;closed=true;client.connected=false;clearInterval(timer);
       for(const id of [...peers.keys()])removePeer(id);
     }
+  };
+  return client;
+}
+
+// Accept lowercase codes and visually identical Ukrainian letters when pasted.
+function normalizeRoomCode(value){
+  const similar={'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','І':'I'};
+  return String(value||'').trim().toUpperCase().replace(/[АВСЕНКМОРТХІ]/g,c=>similar[c]);
+}
+function validRoomCode(value){return /^[A-Z0-9]{4}$/.test(normalizeRoomCode(value));}
+
+
+
+function createPeerCodeClient(url,handlers,dependencies={}){
+  const WS=dependencies.WS||globalThis.WebSocket;
+  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null;
+  const jobs=new Map();
+  const sendSignal=msg=>{if(!closed&&socket?.readyState===1)socket.send(JSON.stringify(msg));};
+  const status=message=>{if(!closed)handlers.onStatus?.(message);};
+  const finish=message=>{if(closed)return;client.close();handlers.onClose?.(message);};
+  const phase=room=>{if(mode==='host')sendSignal({t:'peer:phase',phase:room.phase});};
+  const peer=createPeerClient({...handlers,
+    onJoined(room){clearTimeout(timer);if(mode==='guest')sendSignal({t:'peer:connected',id:linkId});phase(room);handlers.onJoined?.(room);},
+    onRoom(room){phase(room);handlers.onRoom?.(room);},
+    onMatchStart(room){phase(room);handlers.onMatchStart?.(room);},
+    onMatchEnd(room){phase(room);handlers.onMatchEnd?.(room);},
+    onClose:finish
+  },dependencies);
+  async function receive(msg){
+    if(closed)return;
+    if(msg.t==='peer:created'&&mode==='host'&&!peer.connected){
+      clearTimeout(timer);client.shortCode=msg.code;handlers.onCode?.(msg.code);peer.host(options,nick);
+    }else if(msg.t==='peer:waiting'&&mode==='guest'){
+      clearTimeout(timer);status('КІМНАТУ ЗНАЙДЕНО · З’ЄДНУЄМО З ДРУГОМ…');
+      timer=setTimeout(()=>finish('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером.'),90000);
+    }else if(msg.t==='peer:request'&&mode==='host'){
+      jobs.set(msg.id,null);
+      try{
+        const signal=await peer.invite({parallel:true}),id=decodePeerSignal(signal,'offer').id;
+        if(closed||!jobs.has(msg.id)){peer.cancelInvite(id);return;}
+        jobs.set(msg.id,id);sendSignal({t:'peer:offer',id:msg.id,signal});
+      }catch(error){if(!closed){jobs.delete(msg.id);handlers.onError?.(error.message);sendSignal({t:'peer:reject',id:msg.id});}}
+    }else if(msg.t==='peer:offer'&&mode==='guest'&&!linkId){
+      linkId=msg.id;
+      try{const signal=await peer.answer(msg.signal,nick);sendSignal({t:'peer:answer',id:msg.id,signal});}
+      catch(error){sendSignal({t:'peer:reject',id:msg.id});finish(error.message);}
+    }else if(msg.t==='peer:answer'&&mode==='host'&&jobs.has(msg.id)){
+      try{
+        if(decodePeerSignal(msg.signal,'answer').id!==jobs.get(msg.id))throw new Error('Відповідь не відповідає запрошенню');
+        await peer.accept(msg.signal);
+      }catch(error){handlers.onError?.(error.message);sendSignal({t:'peer:reject',id:msg.id});}
+    }else if(msg.t==='peer:cancel'&&mode==='host'){
+      const id=jobs.get(msg.id);jobs.delete(msg.id);if(id)peer.cancelInvite(id);
+    }else if(msg.t==='peer:error'){
+      if(!peer.connected)finish(msg.message);
+      else handlers.onError?.(msg.message);
+    }
+  }
+  function begin(action){
+    if(closed||socket)throw new Error('Спершу вийди з поточної кімнати');
+    if(!url)throw new Error('Сервіс кодів не налаштований. Відкрий гру за адресою запущеного сервера.');
+    if(!WS)throw new Error('Браузер не підтримує підключення за кодом');
+    // Сюди можна передати вже відкрите з'єднання (див. mpWarmUp у game.js):
+    // тоді діємо одразу, без очікування onopen. З'єднання в стані підключення
+    // теж підходить — дію надішлемо, щойно воно відкриється.
+    if(dependencies.socket&&(dependencies.socket.readyState===1||dependencies.socket.readyState===0))socket=dependencies.socket;
+    else socket=new WS(url);
+    status('ПІДКЛЮЧЕННЯ ДО СЕРВІСУ КОДІВ…');
+    timer=setTimeout(()=>finish('Сервіс кодів не відповідає. Перевір адресу сервера.'),10000);
+    if(socket.readyState===1)sendSignal(action);
+    else socket.onopen=()=>sendSignal(action);
+    socket.onmessage=event=>{
+      if(typeof event.data!=='string'||event.data.length>131072)return;
+      let msg;try{msg=JSON.parse(event.data);}catch{return;}
+      if(msg&&typeof msg.t==='string')receive(msg).catch(error=>finish(error.message));
+    };
+    const unavailable=()=>{
+      if(closed)return;
+      if(!peer.connected){finish('Сервіс кодів недоступний. Перевір адресу сервера.');return;}
+      client.shortCode='';handlers.onCode?.('');
+      status('Сервіс кодів відключився. Поточний прямий зв’язок залишається; для нових друзів створи кімнату знову.');
+    };
+    socket.onclose=unavailable;socket.onerror=unavailable;
+  }
+  const client={
+    kind:'peer',codeMode:true,shortCode:'',
+    get connected(){return peer.connected;},get myId(){return peer.myId;},
+    host(roomOptions,hostNick){mode='host';options=roomOptions;nick=hostNick;begin({t:'peer:create',maxPlayers:roomOptions.maxPlayers});},
+    join(code,guestNick){if(!validRoomCode(code))throw new Error('Код має 4 літери або цифри, наприклад 938A');mode='guest';nick=guestNick;begin({t:'peer:join',code:normalizeRoomCode(code)});},
+    send:msg=>peer.send(msg),
+    close(){if(closed)return;closed=true;clearTimeout(timer);jobs.clear();peer.close();if(socket){socket.onclose=null;socket.onerror=null;socket.onmessage=null;socket.onopen=null;socket.close();}}
   };
   return client;
 }
@@ -1443,9 +1580,11 @@ function createPeerClient(handlers, dependencies={}){
 
 
 
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
+const minimapBackgrounds=new WeakMap();
 const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mapKey:'mirage',mpNick:'',mpServer:''};
 try{
   const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');
@@ -1462,11 +1601,23 @@ let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,sco
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
-let mpEpoch=0,mpPeerBusy=false;
+let mpEpoch=0;
+let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
+let mpManualOff=false,mpEnsureTimer=0,mpSharedAt=0;
+let mpWarmSocket=null,mpWarmUrl='';
 let audio;
 let gunMotion=createWeaponMotion(),gunSample=null;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
+// Будь-яка необроблена помилка одразу показується гравцю, а не губиться в консолі.
+function showJsError(reason){
+  let msg='';
+  try{msg=String(reason?.message||reason||'невідома помилка');}catch{msg='невідома помилка';}
+  try{toast('Помилка: '+msg.slice(0,200));}catch{}
+  try{const s=$('#mp-code-status');if(s)s.textContent='Помилка: '+msg.slice(0,200);}catch{}
+}
+window.addEventListener('error',e=>showJsError(e.error||e.message));
+window.addEventListener('unhandledrejection',e=>showJsError(e.reason));
 function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
 function sound(kind='shot',weapon='pistol'){
   if(!audio||settings.volume===0)return;
@@ -1817,12 +1968,19 @@ function drawGun(w,h){
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
-  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/map.size;
-  for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
-    if(map.grid[y][x]){mc.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s,s);}
+  const s=160/map.size;
+  let background=minimapBackgrounds.get(map);
+  if(!background){
+    background=document.createElement('canvas');background.width=160;background.height=160;
+    const c=background.getContext('2d');c.fillStyle='#102019';c.fillRect(0,0,160,160);
+    for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
+      if(map.grid[y][x]){c.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';c.fillRect(x*s,y*s,s,s);}
+    }
+    const tacticalMark=(label,[x,y],color)=>{c.fillStyle='#07110ee0';c.fillRect(x*s-5,y*s-5,10,10);c.fillStyle=color;c.fillRect(x*s-4,y*s-4,8,8);c.fillStyle='#07110e';c.font='bold 7px monospace';c.textAlign='center';c.textBaseline='middle';c.fillText(label,x*s,y*s+.5);};
+    tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');
+    minimapBackgrounds.set(map,background);
   }
-  const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
-  tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
+  mc.drawImage(background,0,0);mc.textAlign='left';mc.textBaseline='alphabetic';
   for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y,actorHeight(map,view)+.5,actorHeight(map,a)+.5))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
   mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
 }
@@ -1874,28 +2032,54 @@ function mpSetup(){
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
     $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
     if(!$('#mp-transport').value)$('#mp-transport').value='server';
+    // Усі кімнати — приватні за кодом, як у balloon-catcher. Публічний список
+    // лишається лише для тих, хто явно обере «Публічна».
+    if($('#mp-room-visibility')&&!$('#mp-room-visibility').value)$('#mp-room-visibility').value='private';
     $('#mp-connect').onclick=()=>mpConnect();
-    $('#mp-transport').onchange=()=>{mpDisconnect(true);mpTransportChanged();};
-    mpWirePeer();$('#mp-disconnect').onclick=()=>mpDisconnect();
+    $('#mp-transport').onchange=()=>{mpManualOff=false;mpDisconnect(true);mpTransportChanged();};
+    $('#mp-disconnect').onclick=()=>{mpManualOff=true;mpDisconnect();};
     $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
     $('#mp-create').onclick=()=>{
       settings.mpNick=$('#mp-nick').value;save();
       const options={t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)};
-      if(mpUsesPeer()){
-        mpDisconnect(true);mpClient=createPeerClient(mpHandlers(mpEpoch));mpClient.host(options,settings.mpNick);
-      }else mpServerAction(options);
+      if(mpUsesCode())mpCodeAction(null,options);
+      else mpServerAction(options);
     };
     $('#mp-join-btn').onclick=()=>{
-      const code=$('#mp-join-code').value.trim().toUpperCase();
-      if(code.length!==6)return toast('Код має 6 символів');
+      if(mpUsesCode()){
+        const code=normalizeRoomCode($('#mp-join-code').value);
+        if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
+        mpCodeAction(code);return;
+      }
+      // Код кімнати як у balloon-catcher: 4 символи, малі літери й схожі українські приймаємо.
+      const code=normalizeRoomCode($('#mp-join-code').value);
+      if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
       mpServerAction({t:C2S.JOIN_CODE,code});
     };
+    $('#mp-join-code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#mp-join-btn').onclick();});
+    $('#mp-copy-code').onclick=()=>mpCopy('mp-short-code');
+    $('#mp-copy-link').onclick=()=>mpCopyInvite();
     $('#mp-ready').onclick=()=>{if(mpClient&&mpRoom){const me=mpMe();mpClient.send({t:C2S.READY,ready:!(me&&me.ready)});}};
     $('#mp-start').onclick=()=>{if(mpClient&&mpRoom)mpClient.send({t:C2S.START});};
     $('#mp-leave').onclick=()=>{if(mpClient?.kind==='peer'){mpDisconnect();return;}if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
     const sendChat=()=>{const inp=$('#mp-chat-input'),text=inp.value.trim();if(text&&mpClient&&mpRoom){mpClient.send({t:C2S.CHAT,text});inp.value='';}};
     $('#mp-chat-send').onclick=sendChat;
     $('#mp-chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();e.stopPropagation();});
+    // Тримаємо підключення до сервера постійно: якщо зв'язку нема і гравець його
+    // не вимикав вручну — мовчки пробуємо знову кожні 5 секунд.
+    if(!mpEnsureTimer)mpEnsureTimer=setInterval(()=>{
+      if(mpManualOff||mpUsesPeer()||mpRoom||mpMode)return;
+      if(mpClient&&(mpClient.connected||mpClient.connecting))return;
+      // Адреси нема (статичний хостинг без сервера) — раз на 30 с перевіряємо
+      // ws.json: господар міг підняти сервер уже після відкриття сторінки.
+      if(!defaultMpUrl($('#mp-server').value)){
+        const now=Date.now();
+        if(now-mpSharedAt>30000){mpSharedAt=now;findSharedServer().then(url=>{if(url&&!mpClient?.connected&&!mpManualOff){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});}
+        return;
+      }
+      mpConnect(null,true);
+    },5000);
+    mpWarmUp();
   }
 }
 function mpTabOpened(){
@@ -1903,14 +2087,53 @@ function mpTabOpened(){
   mpTransportChanged();
   if(mpRoom)mpShowRoom();else mpShowHome();
   if(mpClient&&mpClient.connected&&!mpRoom&&mpClient.kind!=='peer')mpClient.send({t:C2S.LIST});
+  else if(!mpUsesPeer()&&!mpManualOff&&!mpRoom&&!mpMode&&(!mpClient||!mpClient.connecting))mpConnect(null,true);
 }
 function mpUsesPeer(){return $('#mp-transport').value!=='server';}
+function mpUsesCode(){return $('#mp-transport').value==='code';}
 function mpTransportChanged(){
-  const peer=mpUsesPeer();
-  $('#mp-server-options').hidden=peer;$('#mp-peer-help').hidden=!peer;
-  $('#mp-peer-join').hidden=!peer;$('#mp-room-visibility').hidden=peer;
-  $('#mp-code-join').hidden=peer;$('#mp-public').hidden=peer;
-  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  const peer=mpUsesPeer(),code=mpUsesCode();
+  // Адреса завжди видима: вона потрібна і онлайн-режиму, і сервісу коротких кодів.
+  $('#mp-server-options').hidden=false;
+  $('#mp-server-actions').hidden=code;
+  $('#mp-room-visibility').hidden=peer;
+  $('#mp-code-join').hidden=false;$('#mp-public').hidden=peer;
+  $('#mp-join-code').maxLength=4;$('#mp-join-code').placeholder='КОД';
+  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й НАДІШЛИ ДРУГУ КОД':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  mpWarmUp();
+}
+// Сервіс кодів підключаємо заздалегідь — одразу при відкритті вкладки, виборі
+// режиму чи виході з кімнати. Тоді «Створити» і «Приєднатись» спрацьовують
+// миттєво: з'єднання вже відкрите, чекати нема чого.
+function mpWarmUp(){
+  try{
+    if(!mpUsesCode()||mpClient||mpRoom||mpMode)return;
+    const WS=globalThis.WebSocket;
+    if(!WS)return;
+    const url=defaultMpUrl($('#mp-server').value);
+    if(!url)return;
+    if(mpWarmSocket&&(mpWarmSocket.readyState===1||mpWarmSocket.readyState===0)&&mpWarmUrl===url)return;
+    try{mpWarmSocket?.close?.();}catch{}
+    mpWarmUrl=url;
+    const s=new WS(url);
+    mpWarmSocket=s;
+    s.onclose=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+  }catch{}
+}
+function mpTakeWarm(url){
+  const s=mpWarmSocket;mpWarmSocket=null;
+  if(s&&mpWarmUrl===url&&(s.readyState===1||s.readyState===0))return s;
+  try{s?.close?.();}catch{}
+  return null;
+}
+function mpCodeAction(code,options){
+  mpDisconnect(true);settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  const url=defaultMpUrl(settings.mpServer);
+  if(!url){const message='Для коротких кодів потрібен сервіс кімнат. Відкрий гру за адресою запущеного сервера або вкажи його адресу.';$('#mp-code-status').textContent=message;toast(message);return;}
+  mpClient=createPeerCodeClient(url,mpHandlers(mpEpoch),{socket:mpTakeWarm(url)});
+  try{if(code)mpClient.join(code,settings.mpNick);else mpClient.host(options,settings.mpNick);}
+  catch(error){mpDisconnect(true);$('#mp-code-status').textContent=error.message;toast(error.message);}
 }
 function mpServerAction(action){
   if(mpClient?.connected&&mpMyId&&mpClient.kind!=='peer')mpClient.send(action);
@@ -1919,6 +2142,8 @@ function mpServerAction(action){
 function mpHandlers(epoch,action=null,automatic=false){
   const active=fn=>(...args)=>{if(epoch===mpEpoch)fn(...args);};
   return {
+    onStatus:active(message=>{$('#mp-code-status').textContent=message;mpSetStatus(message);}),
+    onCode:active(code=>{$('#mp-short-code').value=code;$('#mp-short-code-panel').hidden=!code;if(code)$('#mp-code-status').textContent='Код готовий. Скопіюй і надішли другу.';}),
     onOpen:active(()=>mpClient.send({t:C2S.HELLO,nick:settings.mpNick})),
     onWelcome:active(msg=>{
       mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();
@@ -1931,7 +2156,7 @@ function mpHandlers(epoch,action=null,automatic=false){
       }
     }),
     onRooms:active(rooms=>{mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}}),
-    onJoined:active(room=>{mpRoom=room;mpChat=[];mpShowRoom();}),
+    onJoined:active(room=>{mpRoom=room;mpChat=[];mpLastJoin={code:room.code};mpReconnectTries=0;mpShowRoom();}),
     onRoom:active(room=>{mpRoom=room;if(!mpMode)mpShowRoom();}),
     onMatchStart:active(room=>mpStartMatch(room)),
     onSnapshot:active(snap=>{if(mpMode)mpApplySnapshot(snap);}),
@@ -1939,16 +2164,84 @@ function mpHandlers(epoch,action=null,automatic=false){
     onMatchEnd:active(room=>{mpRoom=room;mpShowResult({winner:room.winner,score:room.score});}),
     onError:active(message=>{
       if(!automatic)toast(message);
-      if(mpClient?.kind==='peer'){
-        $('#mp-peer-host-status').textContent=message;$('#mp-peer-join-status').textContent=message;
-      }else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
+      if(mpUsesCode()||mpClient?.kind==='peer')$('#mp-code-status').textContent=message;
+      if(mpClient?.kind==='peer'){mpSetStatus(message);}
+      else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
     }),
-    onClose:active(message=>{const peer=mpClient?.kind==='peer';mpDisconnect();const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');if(!automatic)toast(reason);if(peer)$('#mp-peer-join-status').textContent=reason;})
+    onClose:active(message=>{
+      const peer=mpClient?.kind==='peer';
+      const join=mpLastJoin;
+      mpDisconnect();
+      const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');
+      mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');
+      if(!automatic)toast(reason);
+      if(peer)$('#mp-code-status').textContent=reason;
+      // Обрив як у balloon-catcher: кімната на сервері живе, поки в ній є хоч хтось,
+      // тож повертаємось у ту саму гру кілька разів, перш ніж відпустити в меню.
+      if(!peer&&join?.code&&epoch===mpEpoch)mpReconnect(join.code);
+    })
   };
 }
+// Повернення в кімнату після обриву: до 10 спроб із ростом паузи (~40 с разом).
+// Сервер ще трохи тримає старе місце, тож перші спроби можуть бачити «кімната повна».
+async function mpReconnect(code){
+  for(let i=1;i<=10;i++){
+    mpSetStatus(`Зв'язок обірвався. Повертаємось у кімнату ${code}… (${i}/10)`);
+    await new Promise(r=>setTimeout(r,Math.min(1200*i,5000)));
+    if(mpRoom||mpMode||!mpLastJoin||mpLastJoin.code!==code)return;
+    if(state!=='lobby'&&!mpMode)return;
+    mpReconnectTries=i;
+    mpConnect({t:C2S.JOIN_CODE,code},true);
+    await new Promise(r=>setTimeout(r,1500));
+    if(mpRoom&&mpRoom.code===code)return;
+  }
+  mpLastJoin=null;
+  mpSetStatus('Кімната '+code+' не відповідає');
+}
+async function mpCopyInvite(){
+  const code=mpRoom?.code||normalizeRoomCode($('#mp-join-code').value);
+  if(!validRoomCode(code||''))return toast('Введи код кімнати з 4 символів');
+  const link=inviteLink(code,mpClient?.url||$('#mp-server').value);
+  try{
+    await navigator.clipboard.writeText(link);
+    const btn=$('#mp-copy-link');
+    if(btn){btn.textContent='Скопійовано ✓';setTimeout(()=>{btn.textContent='КОПІЮВАТИ ПОСИЛАННЯ';},1600);}
+    toast('Посилання скопійовано — надішли другу');
+  }catch{
+    toast(link);
+  }
+}
+// Запрошення ?room=КОД (&ws=адреса) як у balloon-catcher: відкриває вкладку
+// мультиплеєра і заходить само. Викликається один раз при старті.
+async function mpCheckInvite(){
+  if(mpInviteChecked)return;mpInviteChecked=true;
+  let q;
+  try{q=new URLSearchParams(location.search);}catch{return;}
+  const fromQuery=serverUrlFromQuery();
+  if(fromQuery){setSharedServerUrl(fromQuery);settings.mpServer=fromQuery;save();const inp=$('#mp-server');if(inp)inp.value=fromQuery;}
+  else{
+    // Статична збірка без сервера ховає онлайн (клас no-online), ws.json його повертає.
+    try{
+      if(location.hostname?.endsWith('.github.io')&&!String(SERVER_URL||'').trim()&&!q.get('ws'))document.body?.classList?.add('no-online');
+    }catch{}
+    await findSharedServer();
+    const sharedNow=defaultMpUrl($('#mp-server')?.value);
+    if(sharedNow&&$('#mp-server')&&!$('#mp-server').value){$('#mp-server').value=sharedNow;settings.mpServer=sharedNow;save();}
+  }
+  try{document.body?.classList?.toggle('no-online',!defaultMpUrl($('#mp-server')?.value));}catch{}
+  const invite=normalizeRoomCode(q.get('room'));
+  if(!invite||!validRoomCode(invite))return;
+  if(mpUsesPeer()){const t=$('#mp-transport');if(t){t.value='server';mpTransportChanged();}}
+  tab('mp');
+  const inp=$('#mp-join-code');if(inp)inp.value=invite;
+  mpLastJoin={code:invite};
+  mpConnect({t:C2S.JOIN_CODE,code:invite});
+}
 function mpConnect(action=null,automatic=false){
+  mpManualOff=false;
   mpDisconnect(true);
   settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  if(action?.t===C2S.JOIN_CODE&&validRoomCode(action.code||''))mpLastJoin={code:normalizeRoomCode(action.code)};
   const url=defaultMpUrl(settings.mpServer);
   if(!url){mpSetStatus('ВКАЖИ АДРЕСУ ІГРОВОГО СЕРВЕРА');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');if(!automatic)toast('Для гри без ігрового сервера вибери «Напряму з друзями»');return;}
   mpSetStatus('ПІДКЛЮЧЕННЯ…');mpSetConnectionStatus('ПІДКЛЮЧЕННЯ ДО СЕРВЕРА…');
@@ -1961,21 +2254,25 @@ function mpAutoConnect(){
   const shared=String(SERVER_URL||'').trim();
   if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
   if(!defaultMpUrl($('#mp-server').value)){
-    mpSetStatus('СЕРВЕР НЕ НАЛАШТОВАНО');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    mpSetStatus('СЕРВЕР КІМНАТ ЗАРАЗ НЕ ПІДКЛЮЧЕНИЙ. З БОТАМИ МОЖНА ГРАТИ ОДРАЗУ.');
+    mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    try{document.body?.classList?.add('no-online');}catch{}
+    // Статичний сайт може знайти сервер пізніше через ws.json — тоді кімнати з'являться самі.
+    findSharedServer().then(url=>{if(url){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});
     return;
   }
   mpConnect(null,true);
 }
 function mpDisconnect(silent=false){
-  mpEpoch++;mpPeerBusy=false;
+  mpEpoch++;
+  clearTimeout(mpReconnectTimer);mpReconnectTimer=0;
+  if(!silent)mpLastJoin=null;
   clearInterval(mpListTimer);mpListTimer=0;
   const old=mpClient;mpClient=null;if(old){try{old.close();}catch{}}
   mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;mpRooms=[];
   $('#mp-disconnect').hidden=true;
-  for(const id of ['mp-peer-invite-panel','mp-peer-reply-panel','mp-peer-cancel','mp-peer-host'])$('#'+id).hidden=true;
-  for(const id of ['mp-peer-invite-text','mp-peer-accept-text','mp-peer-reply'])$('#'+id).value='';
-  for(const id of ['mp-peer-invite','mp-peer-answer','mp-peer-accept'])$('#'+id).disabled=false;
-  $('#mp-peer-host-status').textContent='';$('#mp-peer-join-status').textContent='';
+  $('#mp-short-code-panel').hidden=true;
+  $('#mp-short-code').value='';$('#mp-code-status').textContent='';
   if(!silent){
     state='lobby';paused=false;modal='';release();
     $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
@@ -1984,43 +2281,10 @@ function mpDisconnect(silent=false){
   if(state==='lobby')mpShowHome();
   mpTransportChanged();
 }
-async function mpPeerTask(button,status,work){
-  if(mpPeerBusy)return;mpPeerBusy=true;
-  const client=mpClient;$('#'+button).disabled=true;$('#'+status).textContent='ГОТУЄМО З’ЄДНАННЯ…';
-  try{await work(client);}catch(error){if(client===mpClient){$('#'+status).textContent=error.message;toast(error.message);}}
-  finally{if(client===mpClient){mpPeerBusy=false;$('#'+button).disabled=false;}}
-}
 async function mpCopy(id){
   const field=$('#'+id);if(!field.value)return;
   try{await navigator.clipboard.writeText(field.value);toast('Скопійовано — надішли другу');}
   catch{field.focus();field.select();toast('Текст виділено. Натисни Ctrl+C та надішли другу');}
-}
-function mpWirePeer(){
-  $('#mp-peer-invite').onclick=()=>mpPeerTask('mp-peer-invite','mp-peer-host-status',async client=>{
-    $('#mp-peer-invite-panel').hidden=true;
-    $('#mp-peer-invite-text').value='';$('#mp-peer-accept-text').value='';
-    const text=await client.invite();if(client!==mpClient)return;
-    $('#mp-peer-invite-text').value=text;$('#mp-peer-accept-text').value='';$('#mp-peer-invite-panel').hidden=false;
-    $('#mp-peer-host-status').textContent='Надішли запрошення другу й встав його відповідь нижче.';
-  });
-  $('#mp-peer-accept').onclick=()=>mpPeerTask('mp-peer-accept','mp-peer-host-status',async client=>{
-    await client.accept($('#mp-peer-accept-text').value);if(client!==mpClient)return;
-    $('#mp-peer-host-status').textContent='Відповідь прийнято. Чекаємо на друга…';
-  });
-  $('#mp-peer-answer').onclick=()=>{
-    if(mpPeerBusy)return;
-    const text=$('#mp-peer-offer').value;
-    mpDisconnect(true);settings.mpNick=$('#mp-nick').value;save();
-    mpClient=createPeerClient(mpHandlers(mpEpoch));$('#mp-peer-cancel').hidden=false;
-    return mpPeerTask('mp-peer-answer','mp-peer-join-status',async client=>{
-      const answer=await client.answer(text,settings.mpNick);if(client!==mpClient)return;
-      $('#mp-peer-reply').value=answer;$('#mp-peer-reply-panel').hidden=false;
-      $('#mp-peer-join-status').textContent='Передай відповідь власнику та залишай цю вкладку відкритою.';
-    });
-  };
-  $('#mp-peer-cancel').onclick=()=>mpDisconnect();
-  $('#mp-peer-copy-invite').onclick=()=>mpCopy('mp-peer-invite-text');
-  $('#mp-peer-copy-reply').onclick=()=>mpCopy('mp-peer-reply');
 }
 function mpShowHome(){
   $('#mp-home').hidden=false;$('#mp-room').hidden=true;
@@ -2046,11 +2310,11 @@ function mpRenderRoom(){
   const m=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   const me=room.players.find(p=>p.id===mpMyId);
   $('#mp-room-title').textContent=`КІМНАТА · ${room.name}`;
-  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі 7 стволів доступні`;
-  $('#mp-peer-host').hidden=mpClient?.kind!=='peer'||room.hostId!==mpMyId;
-  $('#mp-peer-invite').disabled=room.phase!=='lobby'||room.players.length>=room.maxPlayers||mpPeerBusy;
-  if(mpClient?.kind==='peer'&&room.players.length>1)$('#mp-peer-host-status').textContent=`У кімнаті ${room.players.length} гравців. Позначте готовність для початку.`;
-  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА ЗАПРОШЕННЯМ':room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  // Підпис як у balloon-catcher: скільки гравців і чи чекаємо ще.
+  const waiting=room.phase==='lobby'&&room.players.length<2?` · Чекаємо на друзів… Дай їм код ${room.code}`:'';
+  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв${waiting}`;
+  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА КОРОТКИМ КОДОМ':room.isPublic?`ПУБЛІЧНА · КОД ДЛЯ ДРУЗІВ: ${room.code}`:`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  const copyLink=$('#mp-copy-link');if(copyLink)copyLink.hidden=mpClient?.kind==='peer';
   $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${escapeText(p.nick)}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
   $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
   const startBtn=$('#mp-start');
@@ -2164,30 +2428,108 @@ function mpShowLobby(){
 }
 
 mpAutoConnect();
+mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
 if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
 
 // Клієнт мультиплеєра: з'єднання, лобі, кімнати. Без прямого доступу до DOM гри:
 // вся інтеграція — через handlers, які передає game.js.
+//
+// Адреса сервера — як у balloon-catcher:
+//   ?ws=  → пряме посилання-запрошення від друга (найвищий пріоритет),
+//   ws.json → файл поруч зі сторінкою, який лишає `share` на комп'ютері господаря,
+//   поле «Адреса сервера» / SERVER_URL → ручне налаштування,
+//   інакше — той самий хост, що віддав сторінку (на github.io без цього — null).
+
+const SHARE_TTL = 12 * 3600 * 1000;
+
+// `var`, а не `let`: тестовий стенд клеїть модулі в один файл (mp.js останнім),
+// тож код game.js виконується раніше за цю декларацію — звернення мусить не падати в TDZ.
+var shared = '';
+
+function setSharedServerUrl(url) { shared = String(url || ''); }
+function getSharedServerUrl() { return shared; }
+
+function normalizeMpUrl(value) {
+  const c = String(value || '').trim();
+  if (!c) return null;
+  try {
+    const url = new URL(c.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:'));
+    if (!['ws:', 'wss:'].includes(url.protocol)) return null;
+    const path = url.pathname.replace(/\/$/, '');
+    url.pathname = path.endsWith(MP.PATH) ? path : path + MP.PATH;
+    return url.toString();
+  } catch { return null; }
+}
+
+function serverUrlFromQuery(search) {
+  try {
+    const q = new URLSearchParams(search ?? (typeof location !== 'undefined' ? location.search : ''));
+    return normalizeMpUrl(q.get('ws'));
+  } catch { return null; }
+}
 
 function defaultMpUrl(custom) {
-  const c = String(custom || '').trim();
-  if (c) {
-    try {
-      const url=new URL(c.replace(/^http:/,'ws:').replace(/^https:/,'wss:'));
-      if(!['ws:','wss:'].includes(url.protocol))return null;
-      const path=url.pathname.replace(/\/$/,'');
-      url.pathname=path.endsWith(MP.PATH)?path:path+MP.PATH;
-      return url.toString();
-    } catch { return null; }
-  }
+  // 1. Запрошення від друга: ?ws=wss://…
+  const fromQuery = serverUrlFromQuery();
+  if (fromQuery) return fromQuery;
+  // 2. Адреса, знайдена у ws.json під час роботи (див. findSharedServer).
+  const fromShared = normalizeMpUrl(shared);
+  if (fromShared) return fromShared;
+  // 3. Ручне поле або вбудований SERVER_URL.
+  const fromCustom = normalizeMpUrl(custom);
+  if (fromCustom) return fromCustom;
   if (typeof location !== 'undefined' && location.host) {
-    if(location.hostname?.endsWith('.github.io'))return null;
+    if (location.hostname?.endsWith('.github.io')) return null;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${proto}//${location.host}${MP.PATH}`;
   }
   return null;
+}
+
+// Посилання-запрошення як у balloon-catcher: везе і код, і адресу з'єднання,
+// щоб друг потрапив саме в цю кімнату, навіть якщо ws.json уже змінився.
+function inviteLink(code, wsUrl) {
+  if (typeof location === 'undefined') return String(code || '');
+  const url = new URL(location.pathname, location.origin);
+  if (code) url.searchParams.set('room', String(code).toUpperCase());
+  const ws = normalizeMpUrl(wsUrl) || defaultMpUrl();
+  if (ws) {
+    try {
+      const raw = new URL(ws);
+      const httpProto = raw.protocol === 'wss:' ? 'https:' : 'http:';
+      url.searchParams.set('ws', `${httpProto}//${raw.host}`);
+    } catch { /* код без адреси — теж запрошення */ }
+  }
+  return url.href;
+}
+
+function isTunnelUrl(value) {
+  try { return new URL(value).hostname.endsWith('.trycloudflare.com'); } catch { return false; }
+}
+
+// Статичний сайт сам сервера не має, але `share` кладе поруч `ws.json`
+// з адресою тунелю. Поки запис свіжий (12 год) — кімнати вмикаються.
+async function findSharedServer() {
+  try {
+    if (typeof fetch === 'undefined' || typeof location === 'undefined') return null;
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 5000) : 0;
+    let res;
+    try {
+      res = await fetch('./ws.json', { cache: 'no-store', signal: ctrl?.signal });
+    } finally { if (timer) clearTimeout(timer); }
+    if (!res || !res.ok) return null;
+    const data = await res.json();
+    if (!data?.url || Date.now() - (data.ts ?? 0) > SHARE_TTL) return null;
+    const url = normalizeMpUrl(data.url);
+    if (!url) return null;
+    if (location.protocol === 'https:' && !url.startsWith('wss:')) return null;
+    setSharedServerUrl(url);
+    if (typeof document !== 'undefined') document.body?.classList?.remove('no-online');
+    return url;
+  } catch { return null; }
 }
 
 function createMpClient(url, handlers) {
@@ -2205,7 +2547,7 @@ function createMpClient(url, handlers) {
   const finish=()=>{if(finished)return;finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;handlers.onClose?.();};
   const timeout=setTimeout(()=>{if(!client.myId){handlers.onError?.('Сервер не відповів. Повтори спробу або перевір адресу');finish();try{ws.close();}catch{}}},10000);
   const client = {
-    connected: false, connecting:true, myId: null,
+    connected: false, connecting:true, myId: null, url,
     send(o) { try { if (ws.readyState === 1) ws.send(JSON.stringify(o)); } catch {} },
     close() { finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;try { ws.close(); } catch {} },
   };
