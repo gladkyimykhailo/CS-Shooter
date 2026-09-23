@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta name="theme-color" content="#101615">
-  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Mirage, Dust II, Overpass, Ancient та Inferno, снайперські гвинтівки та тактична закупівля.">
+  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke, снайперські гвинтівки та тактична закупівля.">
   <title>СЕКТОР / Піксельний тактичний шутер</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23c3f66b%22%2F%3E%3Cpath%20d%3D%22M45%2016H24l-9%2016h24l-5%208H17v8h22l10-24H27l3-2h15z%22%20fill%3D%22%23121b17%22%2F%3E%3C%2Fsvg%3E%0A" type="image/svg+xml">
   <style>
@@ -33,9 +33,9 @@
       <section id="tab-play" class="tab">
         <div class="hero">
           <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ПІКСЕЛЬНИЙ ТАКТИЧНИЙ ШУТЕР <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Піксельні мапи, снайперська оптика й короткі бої.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
-          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—05</b></div><div class="art-cross">+</div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—09</b></div><div class="art-cross">+</div></div>
         </div>
-        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">05</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
         <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="map-plan-open" class="text-button">СХЕМА МАПИ · M ↗</button><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
@@ -372,9 +372,57 @@ const specs = [
       [35,29,1,1,2],[34,38,1,1,3], // apartments and alt mid
       [13,40,1,2,2],[22,42,2,1,2],[15,37,1,1,2] // T street
     ]
+  },
+  {
+    id:'vertigo',name:'VERTIGO · PIXEL',desc:'За твоїм фото: бетонні майданчики A/B, рампа A, сходи B, MID, ліфти й риштування. Перепади висоти та відкриті двори будівництва.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'РАМПА A · MID · СХОДИ B',size:44,
+    wall:'#999e9d',light:'#d9d9cf',sky:'#bdcfdd',floor:'#858d8e',accent:'#ba9c52',
+    rooms:[[3,3,12,10],[17,3,10,7],[13,6,7,4],[25,6,14,4],[17,9,7,14],[10,18,12,5],[7,11,4,10],[3,29,13,11],[3,20,5,12],[6,24,12,5],[29,24,12,16],[17,34,15,6],[23,23,8,5],[20,22,7,7],[35,9,5,19],[13,34,8,5]],
+    callouts:[{name:'РАМПА A',point:[25.5,36.5]},{name:'СХОДИ B',point:[8.5,16.5]},{name:'ЛІФТИ',point:[20.5,10.5]},{name:'РИШТУВАННЯ',point:[37.5,18.5]},{name:'SHORT A',point:[25.5,25.5]},{name:'НИЖНІЙ МАЙДАНЧИК',point:[6.5,26.5]},{name:'CT',point:[21.5,6.5]},{name:'T',point:[7.5,35.5]}],
+    blue:[[21.5,6.5],[19.5,4.5],[24.5,8.5]],red:[[7.5,35.5],[5.5,37.5],[10.5,38.5]],
+    platforms:[{x:3,y:3,w:37,h:10,z:.6},{x:29,y:23,w:12,h:17,z:.9}],
+    stairs:[{x:17,y:13,w:7,h:6,axis:'y',dir:-1,rise:.6},{x:7,y:13,w:4,h:6,axis:'y',dir:-1,rise:.6},{x:23,y:34,w:6,h:6,axis:'x',dir:1,rise:.9},{x:23,y:23,w:6,h:5,axis:'x',dir:1,rise:.9},{x:35,y:13,w:5,h:10,axis:'y',dir:1,base:.6,rise:.3}],
+    blocks:[[5,5,2,2,2],[11,8,2,1,2],[3,10,1,1,3],[25,4,1,1,3],[18,20,1,2,2],[4,24,1,2,3],[11,31,2,2,2],[4,38,1,1,3],[31,28,2,2,2],[37,32,2,1,2],[39,37,1,2,3],[30,37,1,1,2]]
+  },
+  {
+    id:'office',name:'OFFICE · PIXEL',desc:'За твоїм фото: кабінети, переговорна, довгі коридори, склад паперу та гараж. Офісні перегородки, столи й кілька обходів.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'КАБІНЕТИ · КОРИДОРИ · ГАРАЖ',size:44,
+    wall:'#a2aab2',light:'#e1e6e5',sky:'#b9c9d5',floor:'#69777e',accent:'#7b8f9d',
+    rooms:[[4,3,10,8],[28,3,12,9],[18,4,7,10],[12,7,8,3],[23,7,8,3],[18,12,7,20],[4,15,11,10],[12,17,8,4],[9,10,4,8],[29,16,11,10],[23,18,8,4],[35,10,4,10],[3,30,13,10],[13,29,12,5],[26,30,14,11],[23,34,6,4],[13,37,16,4],[4,23,4,10],[35,24,5,9]],
+    callouts:[{name:'ПЕРЕГОВОРНА',point:[9.5,6.5]},{name:'ПАПІР',point:[6.5,20.5]},{name:'ДОВГИЙ КОРИДОР',point:[21.5,15.5]},{name:'ПРОЄКТОР',point:[33.5,20.5]},{name:'РЕСЕПШН',point:[20.5,30.5]},{name:'ЗАДНІЙ ДВІР',point:[33.5,36.5]},{name:'ГАРАЖ',point:[11.5,35.5]},{name:'CT',point:[7.5,35.5]},{name:'T',point:[34.5,6.5]}],
+    blue:[[7.5,35.5],[5.5,37.5],[9.5,38.5]],red:[[34.5,6.5],[31.5,4.5],[37.5,8.5]],
+    platforms:[{x:3,y:3,w:38,h:23,z:.3}],
+    stairs:[{x:18,y:26,w:7,h:6,axis:'y',dir:-1,rise:.3},{x:4,y:25,w:4,h:6,axis:'y',dir:-1,rise:.3},{x:35,y:26,w:5,h:5,axis:'y',dir:-1,rise:.3}],
+    blocks:[[6,5,2,1,2],[11,4,1,3,3],[29,5,1,2,3],[36,9,2,1,2],[5,17,2,1,2],[10,21,2,2,2],[13,23,1,1,3],[19,23,1,2,3],[30,18,2,1,2],[36,22,2,1,2],[38,17,1,2,3],[4,32,2,1,2],[12,37,2,1,2],[29,33,2,2,2],[37,38,2,1,2]]
+  },
+  {
+    id:'cache',name:'CACHE · PIXEL',desc:'За твоїм фото: промислові двори A/B, A Main, Squeaky, MID, вентиляція, Checkers і Heaven. Кам’яні та металеві укриття.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'A MAIN · MID · CHECKERS',size:44,
+    wall:'#b4b39a',light:'#e5dfbf',sky:'#bac9c5',floor:'#94977c',accent:'#668878',
+    rooms:[[3,3,12,12],[29,3,12,12],[18,3,8,8],[13,6,7,4],[24,6,7,4],[18,13,8,14],[20,9,4,7],[5,13,5,18],[3,29,12,11],[33,13,5,20],[29,30,12,10],[12,34,20,6],[19,25,6,12],[12,18,8,4],[24,18,11,4],[12,12,4,8],[27,12,8,5],[27,15,4,7]],
+    callouts:[{name:'A MAIN',point:[7.5,24.5]},{name:'SQUEAKY',point:[13.5,14.5]},{name:'ВЕНТИЛЯЦІЯ',point:[16.5,19.5]},{name:'CHECKERS',point:[29.5,14.5]},{name:'HEAVEN',point:[34.5,16.5]},{name:'B MAIN',point:[35.5,26.5]},{name:'ГАРАЖ T',point:[8.5,34.5]},{name:'СКЛАД',point:[35.5,35.5]},{name:'CT',point:[21.5,5.5]},{name:'T',point:[21.5,37.5]}],
+    blue:[[21.5,5.5],[19.5,4.5],[23.5,7.5]],red:[[21.5,37.5],[17.5,36.5],[25.5,38.5]],
+    platforms:[{x:3,y:3,w:13,h:12,z:.3},{x:27,y:3,w:14,h:14,z:.3},{x:13,y:3,w:18,h:8,z:.3}],
+    stairs:[{x:5,y:15,w:5,h:6,axis:'y',dir:-1,rise:.3},{x:12,y:15,w:4,h:5,axis:'y',dir:-1,rise:.3},{x:33,y:17,w:5,h:5,axis:'y',dir:-1,rise:.3},{x:27,y:17,w:4,h:5,axis:'y',dir:-1,rise:.3},{x:20,y:11,w:4,h:5,axis:'y',dir:-1,rise:.3}],
+    blocks:[[5,5,2,2,2],[10,9,2,1,2],[3,12,1,2,3],[31,6,2,2,2],[37,10,2,1,2],[39,4,1,2,3],[20,19,2,1,2],[23,23,1,2,3],[6,31,2,2,2],[12,36,1,2,3],[32,35,2,2,2],[38,31,1,2,3],[28,37,1,2,2]]
+  },
+  {
+    id:'nuke',name:'NUKE · PIXEL',desc:'За твоїм фото: реакторний зал A, нижній сектор B, двір із силосом, Lobby, Hut, Ramp і Secret. Металеві стіни та сходові переходи.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'OUTSIDE · RAMP · SECRET',size:48,
+    wall:'#8e9fa7',light:'#d9e1df',sky:'#b9cddd',floor:'#7a878d',accent:'#d0b85f',
+    rooms:[[3,3,8,10],[5,10,5,11],[8,16,6,4],[11,16,9,10],[20,15,12,13],[35,15,10,13],[29,9,11,9],[18,10,14,8],[16,21,6,7],[17,27,7,5],[3,20,10,17],[10,30,28,9],[3,35,12,8],[35,35,7,10],[36,26,6,12],[28,26,6,9],[31,24,6,5],[24,26,4,7]],
+    callouts:[{name:'СИЛОС',point:[8.5,25.5]},{name:'OUTSIDE',point:[16.5,34.5]},{name:'LOBBY',point:[15.5,18.5]},{name:'HUT',point:[18.5,23.5]},{name:'SQUEAKY',point:[18.5,29.5]},{name:'RAMP',point:[36.5,13.5]},{name:'SECRET',point:[30.5,30.5]},{name:'ВЕНТИЛЯЦІЯ',point:[25.5,29.5]},{name:'ГАРАЖ',point:[9.5,38.5]},{name:'CT',point:[7.5,6.5]},{name:'T',point:[38.5,41.5]}],
+    blue:[[7.5,6.5],[5.5,4.5],[8.5,9.5]],red:[[38.5,41.5],[36.5,39.5],[40.5,43.5]],
+    platforms:[{x:3,y:3,w:29,h:15,z:.3},{x:11,y:16,w:9,h:10,z:.3},{x:20,y:15,w:12,h:13,z:.9},{x:29,y:9,w:11,h:3,z:.3}],
+    stairs:[{x:5,y:14,w:5,h:6,axis:'y',dir:-1,rise:.3},{x:11,y:20,w:5,h:4,axis:'x',dir:1,rise:.3},{x:20,y:12,w:6,h:6,axis:'y',dir:1,base:.3,rise:.6},{x:16,y:21,w:6,h:5,axis:'x',dir:1,base:.3,rise:.6},{x:20,y:28,w:4,h:4,axis:'y',dir:-1,rise:.9},{x:24,y:28,w:4,h:5,axis:'y',dir:-1,rise:.9},{x:35,y:12,w:5,h:6,axis:'y',dir:-1,rise:.3}],
+    blocks:[[4,10,1,2,3],[12,17,1,2,2],[5,23,2,2,2],[10,27,2,1,3],[23,20,2,2,2],[28,24,2,2,2],[36,20,2,2,2],[41,24,2,1,2],[30,10,1,1,3],[13,34,2,1,2],[5,38,2,2,2],[29,36,2,1,2],[38,37,2,1,2]]
   }
 ];
 const TACTICAL_LAYOUTS = {
+  vertigo:{a:{name:'A SITE',point:[35.5,29.5]},mid:{name:'MID',point:[20.5,20.5]},b:{name:'B SITE',point:[8.5,7.5]}},
+  office:{a:{name:'ПЕРЕГОВОРНА',point:[9.5,8.5]},mid:{name:'КОРИДОР',point:[21.5,21.5]},b:{name:'КАБІНЕТИ',point:[33.5,9.5]}},
+  cache:{a:{name:'A SITE',point:[9.5,7.5]},mid:{name:'MID',point:[22.5,22.5]},b:{name:'B SITE',point:[35.5,8.5]}},
+  nuke:{a:{name:'РЕАКТОР A',point:[27.5,20.5]},mid:{name:'LOBBY',point:[16.5,19.5]},b:{name:'СЕКТОР B',point:[40.5,21.5]}},
   inferno:{a:{name:'A SITE',point:[38.5,15.5]},mid:{name:'MID',point:[23.5,26.5]},b:{name:'B SITE',point:[9.5,7.5]}},
   dust2:{a:{name:'A SITE',point:[32.5,6.5]},mid:{name:'MID',point:[20.5,19.5]},b:{name:'B SITE',point:[7.5,9.5]}},
   mirage:{a:{name:'A SITE',point:[13.5,31.5]},mid:{name:'MID',point:[20.5,19.5]},b:{name:'B SITE',point:[7.5,9.5]}},
@@ -584,7 +632,7 @@ function architecturalMapArt(canvas,map,hero){
     poly(c,[p(x,y,z),p(x+step,y,z),p(x+step,y+step,z),p(x,y+step,z)],top);
   }
   const labels=[{name:'A',point:map.sites.a.point},{name:'B',point:map.sites.b.point},{name:'MID',point:map.mid.point}];
-  if(hero)labels.push(...map.callouts.filter(a=>['ПАЛАЦ','АПАРТАМЕНТИ','РИНОК','LONG A','SHORT A','ВЕРХНІ ТУНЕЛІ','ФОНТАН','ТУАЛЕТИ','MONSTER','HEAVEN','КАНАЛ','ХРАМ','DONUT','ПЕЧЕРА','РУЇНИ','LONG B','BANANA','АРКА','ALT MID','CT','T'].includes(a.name)));
+  if(hero)labels.push(...map.callouts.filter(a=>['ПАЛАЦ','АПАРТАМЕНТИ','РИНОК','LONG A','SHORT A','ВЕРХНІ ТУНЕЛІ','ФОНТАН','ТУАЛЕТИ','MONSTER','HEAVEN','КАНАЛ','ХРАМ','DONUT','ПЕЧЕРА','РУЇНИ','LONG B','BANANA','АРКА','ALT MID','ЛІФТИ','РИШТУВАННЯ','СХОДИ B','ГАРАЖ','ПАПІР','ПРОЄКТОР','A MAIN','B MAIN','CHECKERS','OUTSIDE','RAMP','SECRET','CT','T'].includes(a.name)));
   c.textAlign='center';c.textBaseline='middle';c.font=`bold ${hero?11:10}px monospace`;
   for(const label of labels){const [x,y]=p(...label.point,floorHeight(map,...label.point)),width=label.name.length*(hero?7:6)+10;c.fillStyle='#172623e8';c.fillRect(x-width/2,y-8,width,16);c.fillStyle='#f3dfb3';c.fillText(label.name,x,y);}
   c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle='#f3dfb3';c.font='bold 12px monospace';c.fillText(map.name.replace(' · ',' / '),16,h-13);
@@ -615,6 +663,15 @@ function paintMapTexture(c,map,type){
     }
     return;
   }
+  if(map.id==='office'&&type===3){
+    c.fillStyle='#596b78';c.fillRect(0,0,64,64);
+    c.fillStyle='#a9b6ba';c.fillRect(5,3,54,61);
+    c.fillStyle='#6c574b';c.fillRect(9,7,46,57);
+    c.fillStyle='#8e7660';c.fillRect(12,10,40,54);
+    c.fillStyle='#394e5b';c.fillRect(17,16,30,19);
+    c.fillStyle='#bec8c6';c.fillRect(43,42,8,2);
+    return;
+  }
   if(type!==1)return;
   const light=tint(map.light,.62),shadow=tint(map.wall,.42),r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
   switch(map.id){
@@ -634,6 +691,26 @@ function paintMapTexture(c,map,type){
       for(const x of [5,55])for(const y of [7,24,39,56]){r(x,y,3,3,'#656f69');r(x,y,2,1,'#d2d0b9');}
       r(0,48,64,9,'#668d85');r(0,57,64,7,'#757d70');
       for(let x=3;x<64;x+=11)r(x,59,2,5,'#666d61');break;
+    case 'vertigo':
+      r(0,0,64,64,'#a4aaa8');r(0,30,64,2,'#737e7c');
+      for(const x of [5,54])for(const y of [7,22,39,54]){r(x,y,3,3,'#677371');r(x,y,2,1,'#d3d6cc');}
+      for(let x=0;x<64;x+=8){r(x,46,8,8,x%16?'#414a49':'#d5b756');}
+      r(0,55,64,9,'#7e8986');break;
+    case 'office':
+      r(0,0,64,64,'#d7dedd');r(0,0,64,3,'#f0f1e9');
+      for(let x=0;x<64;x+=32){r(x,3,1,45,'#bac7c9');r(x+1,3,1,45,'#e8ede7');}
+      r(0,43,64,3,'#627785');r(0,46,64,15,'#80949e');r(0,61,64,3,'#465964');break;
+    case 'cache':
+      r(0,0,64,64,'#d5d2b9');
+      for(let y=0;y<64;y+=10){r(0,y,64,1,'#92977f');for(let x=(y/10%2)*12;x<64;x+=24)r(x,y,1,10,'#92977f');}
+      r(0,41,64,12,'#608574');r(0,53,64,2,'#405e52');
+      for(let x=2;x<64;x+=9){r(x,55,3,9,'#929a77');r(x+2,59,2,5,'#687a59');}break;
+    case 'nuke':
+      r(0,0,64,64,'#b7c4c8');
+      for(let x=0;x<64;x+=8){r(x,0,2,64,'#788f99');r(x+2,0,1,64,'#dce4df');}
+      r(0,36,64,15,'#517789');r(0,51,64,3,'#324f60');
+      for(let x=0;x<64;x+=8)r(x,56,8,6,x%16?'#424b48':'#dcc266');
+      for(const x of [4,58])for(const y of [5,29])r(x,y,2,2,'#526a73');break;
     case 'inferno':
       // Warm village plaster, exposed terracotta brick and a stone cornice.
       r(0,0,64,64,'#d6b78c');r(0,0,64,4,'#f3dfb9');r(0,4,64,2,'#9d7658');
@@ -1248,14 +1325,14 @@ function createPeerClient(handlers, dependencies={}){
     try{peer.channel.send(JSON.stringify(msg));}catch{}
   };
   const fail=message=>{lastError=message;handlers.onError?.(message);};
-  function removePeer(id){
+  function removePeer(id,notifyClose=true){
     const peer=peers.get(id);if(!peer)return;
     peers.delete(id);clearTimeout(peer.timeout);clearTimeout(peer.disconnectTimer);
     peer.cancelGather?.();peer.pc.onconnectionstatechange=null;peer.pc.ondatachannel=null;
     if(peer.channel){peer.channel.onclose=null;peer.channel.onmessage=null;peer.channel.onopen=null;peer.channel.onerror=null;}
     peer.pc.close();if(pending===id)pending=null;
     if(host)host.leave(id);
-    else if(!closed){client.connected=false;handlers.onClose?.(lastError);}
+    else if(!closed){client.connected=false;if(notifyClose)handlers.onClose?.(lastError);}
   }
   function newPeer(id){
     if(!RTC)throw new Error('Цей браузер не підтримує гру напряму. Відкрий гру в сучасному Chrome або Firefox');
@@ -1336,7 +1413,9 @@ function createPeerClient(handlers, dependencies={}){
         if(closed||!peers.has(signal.id))throw new Error('Приєднання скасовано');
         if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Відповідь не прийнято або мережа блокує з’єднання. Спробуй нове запрошення');removePeer(signal.id);},180000);
         return encodePeerSignal({type:'answer',id:signal.id,sdp:peer.pc.localDescription.sdp});
-      }catch(error){removePeer(signal.id);throw error;}
+      // Setup errors belong to the pending answer operation. A disconnect
+      // callback here would tear down the UI before it can display that error.
+      }catch(error){removePeer(signal.id,false);throw error;}
     },
     async accept(text){
       const signal=decodePeerSignal(text,'answer');
@@ -1430,7 +1509,7 @@ function showMapPlan(){
 }
 $('#map-plan-open').onclick=showMapPlan;
 function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, стрибка ↑ та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
-function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: п’ять піксельних мап — Mirage, Dust II, Overpass, Ancient та Inferno за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
@@ -1918,6 +1997,8 @@ async function mpCopy(id){
 }
 function mpWirePeer(){
   $('#mp-peer-invite').onclick=()=>mpPeerTask('mp-peer-invite','mp-peer-host-status',async client=>{
+    $('#mp-peer-invite-panel').hidden=true;
+    $('#mp-peer-invite-text').value='';$('#mp-peer-accept-text').value='';
     const text=await client.invite();if(client!==mpClient)return;
     $('#mp-peer-invite-text').value=text;$('#mp-peer-accept-text').value='';$('#mp-peer-invite-panel').hidden=false;
     $('#mp-peer-host-status').textContent='Надішли запрошення другу й встав його відповідь нижче.';
