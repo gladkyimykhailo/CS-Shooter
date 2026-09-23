@@ -4,10 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta name="theme-color" content="#101615">
-  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Вісім оригінальних мап, снайперські гвинтівки та тактична закупівля.">
+  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke, снайперські гвинтівки та тактична закупівля.">
   <title>СЕКТОР / Піксельний тактичний шутер</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <style>
+    body.no-online .online-block { display: none !important; }
+    .mp-offline-note { display: none; }
+    body.no-online .mp-offline-note { display: block; }
+  </style>
 </head>
 <body>
   <canvas id="game" aria-label="Ігровий світ" hidden></canvas>
@@ -21,59 +26,49 @@
       <section id="tab-play" class="tab">
         <div class="hero">
           <div class="hero-copy"><div class="eyebrow"><span class="tiny-cross">+</span> ПІКСЕЛЬНИЙ ТАКТИЧНИЙ ШУТЕР <span class="version">V.01</span></div><h1>ТВІЙ СЕКТОР.<br><span>ТВОЇ ПРАВИЛА.</span></h1><p>Обери позицію. Спорядись. Тримай сектор.<br>Піксельні мапи, снайперська оптика й короткі бої.</p><button id="quick-play" class="primary">У БІЙ <span>↗</span></button><div class="hero-meta"><span><i></i> ГОТОВО ДО ЗАПУСКУ</span><span>3 НА 3 · ПРОТИ БОТІВ</span></div></div>
-          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—10</b></div><div class="art-cross">+</div></div>
+          <div class="hero-art"><canvas id="hero-canvas" width="760" height="520" aria-label="Ілюстрація змагальної мапи"></canvas><div class="art-coordinates">SECTOR_07<br>50°27′ N / 30°31′ E</div><div class="art-label"><span class="pulse-dot"></span> ЗМАГАЛЬНА РОТАЦІЯ <b id="hero-map-count">01—09</b></div><div class="art-cross">+</div></div>
         </div>
-        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">10</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
+        <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>КОМАНДНИЙ БІЙ</b><span>Ти + 2 союзники проти 3 ботів · до 5 перемог</span></div><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
         <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="map-plan-open" class="text-button">СХЕМА МАПИ · M ↗</button><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
       </section>
       <section id="tab-mp" class="tab" hidden>
         <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ</span></div>
+        <p id="mp-code-status" role="status" aria-live="polite"></p>
+        <p class="mp-offline-note" style="color:var(--muted)">Сервер кімнат зараз не підключений. З ботами можна грати одразу.</p>
         <div id="mp-home">
           <div class="settings-panel" style="margin:0 0 18px;max-width:none">
             <label>Позивний <input id="mp-nick" type="text" maxlength="16" placeholder="БОЄЦЬ" style="width:180px"></label>
-            <label>Спосіб гри <select id="mp-transport"><option value="server" selected>Онлайн · автоматичне підключення</option><option value="peer">Напряму з друзями</option></select></label>
-            <p id="mp-peer-help">Створи кімнату однією кнопкою. Передай другу запрошення, отримай його відповідь і прийми її тут. Власник має тримати вкладку гри відкритою.</p>
+            <label>Спосіб гри <select id="mp-transport"><option value="code">Напряму з друзями · за кодом</option><option value="server" selected>Онлайн · автоматичне підключення</option></select></label>
+            <p id="mp-code-help">Створи кімнату, скопіюй короткий код і надішли другу. Друг вводить код і приєднується автоматично. Тримай цю вкладку відкритою.</p>
             <div id="mp-server-options" hidden>
             <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
-            <p>Гра під’єднується до сервера одразу після запуску. Для GitHub Pages задай спільну адресу в <code>public/config.js</code> (wss://…).</p>
-            <div class="dialog-actions" style="margin-top:0">
+            <p>Обидва гравці мають використовувати одну адресу сервера. Якщо гру відкрито із сервера, адреса визначається автоматично.</p>
+            <div id="mp-server-actions" class="dialog-actions" style="margin-top:0">
               <button id="mp-connect" class="primary">ПОВТОРИТИ ПІДКЛЮЧЕННЯ <span>↻</span></button>
               <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
               <button id="mp-refresh" class="secondary">ОНОВИТИ СПИСОК</button>
             </div>
             </div>
           </div>
-          <div class="launch-bar" style="flex-wrap:wrap">
-            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b>
+          <div class="launch-bar online-block" style="flex-wrap:wrap">
+            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b><span>Вхід лише за кодом — друг введе 4 символи або відкриє посилання</span>
               <span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
                 <input id="mp-room-name" type="text" maxlength="24" placeholder="Назва кімнати" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
                 <select id="mp-room-map" title="Мапа"></select>
                 <select id="mp-room-max" title="Гравців"><option value="2">2 гравці</option><option value="4">4 гравці</option><option value="6" selected>6 гравців</option></select>
-                <select id="mp-room-visibility" title="Доступ" hidden><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
+                <select id="mp-room-visibility" title="Доступ"><option value="private" selected>Приватна (код)</option><option value="public">Публічна</option></select>
               </span>
             </div>
-            <button id="mp-create" class="primary">СТВОРИТИ <span>+</span></button>
+            <button id="mp-create" class="primary">СТВОРИТИ КІМНАТУ <span>+</span></button>
           </div>
-          <div id="mp-peer-join" class="settings-panel peer-panel">
-            <h3>УВІЙТИ ДО ДРУГА</h3>
-            <label for="mp-peer-offer">Запрошення від власника</label>
-            <textarea id="mp-peer-offer" rows="3" maxlength="100000" spellcheck="false" placeholder="Встав запрошення SECTOR1.…"></textarea>
-            <div class="dialog-actions"><button id="mp-peer-answer" class="primary">ПРИЄДНАТИСЯ</button><button id="mp-peer-cancel" class="secondary" hidden>СКАСУВАТИ</button></div>
-            <div id="mp-peer-reply-panel" hidden>
-              <p>Надішли відповідь власнику. Кімната відкриється, коли він її прийме.</p>
-              <label for="mp-peer-reply">Твоя відповідь</label><textarea id="mp-peer-reply" rows="3" readonly spellcheck="false"></textarea>
-              <button id="mp-peer-copy-reply" class="secondary">КОПІЮВАТИ ВІДПОВІДЬ</button>
-            </div>
-            <p id="mp-peer-join-status" role="status" aria-live="polite"></p>
-          </div>
-          <div id="mp-code-join" class="launch-bar" style="flex-wrap:wrap" hidden>
+          <div id="mp-code-join" class="launch-bar online-block" style="flex-wrap:wrap">
             <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
-            <input id="mp-join-code" type="text" maxlength="6" placeholder="КОД" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
-            <button id="mp-join-btn" class="secondary">УВІЙТИ ЗА КОДОМ</button>
+            <input id="mp-join-code" type="text" maxlength="4" placeholder="КОД" autocomplete="off" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
+            <button id="mp-join-btn" class="secondary">ПРИЄДНАТИСЬ</button>
           </div>
-          <div id="mp-public" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
+          <div id="mp-public" class="online-block" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
           <div id="mp-rooms" class="map-cards"></div>
           </div>
         </div>
@@ -82,16 +77,15 @@
             <h3 id="mp-room-title" style="margin-top:0">КІМНАТА</h3>
             <p id="mp-room-info"></p>
             <div id="mp-room-code" class="shop-balance" style="margin-bottom:12px"></div>
-            <div id="mp-peer-host" class="peer-panel" hidden>
-              <p>Для кожного друга створи окреме запрошення. Не закривай цю вкладку під час матчу.</p>
-              <button id="mp-peer-invite" class="secondary">ЗАПРОСИТИ ДРУГА</button>
-              <div id="mp-peer-invite-panel" hidden>
-                <label for="mp-peer-invite-text">1. Надішли це запрошення другу</label><textarea id="mp-peer-invite-text" rows="3" readonly spellcheck="false"></textarea>
-                <button id="mp-peer-copy-invite" class="secondary">КОПІЮВАТИ ЗАПРОШЕННЯ</button>
-                <label for="mp-peer-accept-text">2. Встав його відповідь</label><textarea id="mp-peer-accept-text" rows="3" maxlength="100000" spellcheck="false" placeholder="Відповідь SECTOR1.…"></textarea>
-                <button id="mp-peer-accept" class="primary">ПРИЙНЯТИ ДРУГА</button>
-              </div>
-              <p id="mp-peer-host-status" role="status" aria-live="polite"></p>
+            <div class="dialog-actions online-block" style="margin-top:0;margin-bottom:12px">
+              <button id="mp-copy-link" class="secondary">КОПІЮВАТИ ПОСИЛАННЯ</button>
+              <span style="color:var(--muted);font-size:13px">Дай другу код або посилання — за посиланням він зайде сам.</span>
+            </div>
+            <div id="mp-short-code-panel" class="peer-panel" hidden>
+              <label for="mp-short-code">Код кімнати — надішли другу</label>
+              <input id="mp-short-code" type="text" readonly maxlength="4" style="font-size:28px;letter-spacing:8px;width:150px;text-align:center" aria-label="Код кімнати">
+              <button id="mp-copy-code" class="secondary">КОПІЮВАТИ КОД</button>
+              <p>Друг обирає «Напряму з друзями · за кодом», вводить код і приєднується. Тримай цю вкладку відкритою.</p>
             </div>
             <div id="mp-players" class="control-list"></div>
             <div class="dialog-actions">
@@ -120,7 +114,7 @@
     <div id="game-message" class="game-message"></div>
     <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПІДГОТОВКА ДО БОЮ</span></div>
     <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
-    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
   <div id="toast" class="toast" role="status" hidden></div>

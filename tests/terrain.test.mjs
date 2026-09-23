@@ -77,3 +77,31 @@ test('per-pixel terrain depth hides a target behind a riser but preserves sky',(
   assert.equal(depths[0*w+40],Infinity,'sky above the wall is clear');
   assert.ok([...depths].every(v=>!Number.isNaN(v)&&v>0));
 });
+
+test('terrain occlusion matches nearest ray intersections from stairs and jumping viewpoints',()=>{
+  const w=41,h=35,fov=.78,projection=w/(2*fov),ctx={fillRect(){},drawImage(){}};
+  for(const map of MAPS)for(const jump of [0,.735])for(const colStep of [1,2]){
+    const stair=map.stairs[0],view={x:stair.x+stair.w/2,y:stair.y+stair.h/2,angle:.73};
+    const eye=floorHeight(map,view.x,view.y)+.5+jump,horizon=h*.48;
+    const depths=new Float32Array(w*h),zbuffer=new Float32Array(w);
+    drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths,zbuffer,wallTextures:[null,{}, {}, {}]});
+    for(let x=0;x<w;x+=colStep){
+      const camera=2*x/w-1,ca=Math.cos(view.angle),sa=Math.sin(view.angle);
+      const surfaces=terrainColumn(map,view.x,view.y,ca-sa*fov*camera,sa+ca*fov*camera);
+      for(let y=0;y<h;y++){
+        let nearest=Infinity;
+        for(const surface of surfaces){
+          if(surface.kind==='floor'){
+            if(surface.z>=eye)continue;
+            const depth=projection*(eye-surface.z)/(y+.5-horizon);
+            if(depth>=surface.near&&depth<=surface.far)nearest=Math.min(nearest,depth);
+          }else{
+            const z=eye-(y+.5-horizon)*surface.near/projection;
+            if(z>surface.low&&z<=surface.high)nearest=Math.min(nearest,surface.near);
+          }
+        }
+        for(let k=x;k<Math.min(w,x+colStep);k++)assert.equal(depths[y*w+k],Math.fround(nearest),`${map.id}: ${k},${y}, jump ${jump}`);
+      }
+    }
+  }
+});

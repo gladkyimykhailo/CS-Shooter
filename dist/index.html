@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta name="theme-color" content="#101615">
-  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Вісім оригінальних мап, снайперські гвинтівки та тактична закупівля.">
+  <meta name="description" content="СЕКТОР — піксельний браузерний шутер. Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke, снайперські гвинтівки та тактична закупівля.">
   <title>СЕКТОР / Піксельний тактичний шутер</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23c3f66b%22%2F%3E%3Cpath%20d%3D%22M45%2016H24l-9%2016h24l-5%208H17v8h22l10-24H27l3-2h15z%22%20fill%3D%22%23121b17%22%2F%3E%3C%2Fsvg%3E%0A" type="image/svg+xml">
   <style>
-:root{--bg:#101615;--panel:#19211f;--line:#303b34;--muted:#929e94;--text:#eef1e8;--lime:#c3f66b;--orange:#e49a62;--mono:'Courier New',monospace}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:5px}button{color:inherit;border:0}button:disabled{opacity:.38;cursor:not-allowed}[hidden]{display:none!important}.lobby{max-width:1480px;margin:auto;padding:0 60px;background:radial-gradient(ellipse at 75% 20%,#28332633,transparent 50%)}.header{height:102px;display:flex;align-items:center;border-bottom:1px solid var(--line);gap:64px}.brand{display:flex;align-items:center;gap:13px;color:var(--text);text-decoration:none;font-weight:900;font-size:25px;letter-spacing:3px}.brand-icon{background:var(--lime);color:var(--bg);font-size:29px;font-style:italic;letter-spacing:-5px;width:34px;height:34px;line-height:34px;padding-left:6px;transform:skew(-8deg)}.brand-slash{color:var(--lime)}nav{display:flex;gap:30px;height:100%;align-items:center}.nav{height:100%;background:transparent;color:var(--muted);font-size:11px;letter-spacing:1.6px;position:relative;font-weight:700}.nav.active{color:var(--text)}.nav.active:after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--lime)}.status{margin-left:auto;white-space:nowrap;font:10px var(--mono);color:var(--muted);letter-spacing:1px}.status i,.hero-meta i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--lime);margin-right:7px}.hero{display:grid;grid-template-columns:1fr 1.08fr;min-height:458px;align-items:center;padding:36px 0 28px;gap:28px}.eyebrow{font:10px var(--mono);letter-spacing:1.6px;color:var(--muted);display:flex;align-items:center;gap:12px}.tiny-cross{color:var(--lime);font-size:22px}.version{border:1px solid var(--line);padding:3px 6px;font-size:9px;letter-spacing:0}.hero h1{font-size:clamp(36px,4vw,60px);line-height:1.08;letter-spacing:-2px;font-weight:900;margin:21px 0 20px}.hero h1>span{color:var(--lime)}.hero p{color:#a2aca2;font-size:13px;line-height:1.85;margin:0 0 26px}.primary{background:var(--lime);color:#172115;padding:19px 26px;display:inline-flex;align-items:center;justify-content:space-between;gap:55px;font-weight:800;font-size:12px;letter-spacing:1.2px;transition:background .2s,transform .2s;min-height:52px}.primary:hover{background:#d6ff97;transform:translateY(-2px)}.primary span{font-size:22px;line-height:16px}.hero-meta{display:flex;gap:18px;margin-top:20px;font:9px var(--mono);letter-spacing:.4px;color:var(--muted)}.hero-art{position:relative;height:375px;overflow:hidden;background:#27332e;border:1px solid #39483c;clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px))}.hero-art canvas{width:100%;height:100%;object-fit:cover}.hero-art:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0c171bdd,transparent 45%);pointer-events:none}.art-coordinates{position:absolute;top:20px;left:22px;font:9px/1.7 var(--mono);letter-spacing:1px;color:#d1e2c3;z-index:1}.art-label{position:absolute;left:22px;right:22px;bottom:23px;z-index:1;display:flex;align-items:center;gap:10px;font:9px var(--mono);letter-spacing:1px}.art-label b{margin-left:auto;color:var(--lime)}.pulse-dot{display:inline-block;background:var(--lime);width:6px;height:6px;box-shadow:0 0 12px #b3f568}.art-cross{position:absolute;top:16px;right:22px;font:24px var(--mono);color:var(--lime)}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:24px 0 23px}.section-heading h2{font-size:23px;letter-spacing:-.3px;margin:10px 0 0;font-weight:800;display:flex;gap:13px;align-items:center}.section-heading h2 span{font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:4px 6px}.section-note{font:9px var(--mono);letter-spacing:1px;color:#7e8c80;margin-bottom:5px}.map-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.map-card{padding:0;text-align:left;background:var(--panel);border:1px solid var(--line);position:relative;transition:border-color .2s,transform .2s;overflow:hidden}.map-card:hover{transform:translateY(-3px);border-color:#738763}.map-card.selected{border-color:var(--lime)}.map-image{height:148px;position:relative;overflow:hidden}.map-image canvas{width:100%;height:100%;object-fit:cover;transition:transform .5s}.map-card:hover canvas{transform:scale(1.04)}.map-image:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14201977,transparent 60%)}.map-number{position:absolute;left:14px;top:13px;font:9px var(--mono);z-index:1;background:#15201baa;padding:5px 7px;color:#e0e6d5}.map-check{position:absolute;right:13px;top:13px;border:1px solid #cbd5bc77;width:21px;height:21px;display:grid;place-items:center;font-size:12px;z-index:1}.selected .map-check{background:var(--lime);color:#142016;border-color:var(--lime)}.map-detail{padding:17px 18px}.map-detail h3{margin:0 0 8px;font-size:18px;letter-spacing:.2px}.map-detail p{font-size:11px;color:var(--muted);margin:0 0 15px}.map-tags{border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;font:9px var(--mono);color:#adbaa9;letter-spacing:1px}.map-tags span:last-child{color:var(--lime)}.launch-bar{display:flex;align-items:center;gap:17px;padding:21px 22px;background:#1b241f;border:1px solid var(--line);margin-top:24px}.mode-badge{font-size:27px;color:var(--lime);width:43px;height:43px;border:1px solid #43523b;display:grid;place-items:center}.mode-info{display:flex;flex-direction:column;gap:8px}.mode-info b{font-size:11px;letter-spacing:1px}.mode-info>span{font-size:11px;color:var(--muted)}.difficulty-label{margin-left:auto;display:flex;flex-direction:column;gap:6px;font:8px var(--mono);letter-spacing:1px;color:var(--muted)}select{background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 28px 9px 11px;font-size:12px;border-radius:0}.launch-bar .primary{padding:16px 23px;gap:30px}.bottom-info{display:flex;align-items:center;justify-content:space-between;padding:20px 0 26px;color:var(--muted);font-size:10px}.bottom-info>span{display:flex;align-items:center;gap:10px}kbd{font:9px var(--mono);border:1px solid #53604b;min-width:21px;padding:4px 5px;color:#bec7b6;text-align:center;display:inline-block}.text-button{background:none;color:var(--muted);font:9px var(--mono);letter-spacing:1px;padding:6px 0}.text-button:hover{color:var(--lime)}footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:22px 0 28px;font:9px var(--mono);letter-spacing:1px;color:#778574}.tab:not(#tab-play){min-height:76vh;padding-top:22px}.operator-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:950px;margin:40px auto}.operator-preview{background:radial-gradient(#384735,#18221e);border:1px solid var(--line);position:relative;height:460px;text-align:center}.operator-preview canvas{height:90%;max-width:100%;object-fit:contain}.operator-preview>span{display:block;font:11px var(--mono);color:var(--lime);letter-spacing:2px}.operator-options{padding-top:25px}.operator-options h3{font-size:22px}.operator-options p,.settings-panel p{color:var(--muted);font-size:13px;line-height:1.8}.operator-options label{display:block;font:11px var(--mono);letter-spacing:1px;margin:30px 0 13px}.option-row{display:flex;gap:10px;flex-wrap:wrap}.option{padding:12px 13px;border:1px solid var(--line);background:var(--panel);font-size:11px;display:flex;align-items:center;gap:9px}.option i{width:14px;height:14px;display:block}.option.selected{border-color:var(--lime);color:var(--lime)}.saved-note{color:var(--muted);font-size:11px;margin:24px 0}.settings-panel{max-width:620px;margin:40px auto;background:var(--panel);padding:32px;border:1px solid var(--line)}.settings-panel>label{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:13px;gap:20px}input[type=range]{accent-color:var(--lime);width:180px}input[type=checkbox]{accent-color:var(--lime);width:18px;height:18px}.secondary{background:#273229;border:1px solid #4b5b45;color:var(--text);padding:15px 22px;font-size:11px;letter-spacing:1px}.secondary:hover{background:#3a4933}.overlay{position:fixed;inset:0;z-index:30;background:#07110bd9;backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:center;padding:25px;overflow:auto}.dialog{background:#18221d;border:1px solid #4d6043;width:min(820px,100%);padding:32px;box-shadow:0 25px 100px #0007;max-height:94dvh;overflow:auto}.dialog h2{font-size:28px;margin:12px 0 16px;letter-spacing:-.5px}.dialog p{font-size:13px;line-height:1.8;color:#acbaa4}.dialog-header{display:flex;justify-content:space-between;align-items:center}.dialog-close{background:transparent;font-size:26px;color:#c3ccb9;padding:0 5px}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.control-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.control-list div{display:flex;align-items:center;gap:15px;font-size:12px;color:#b7c4af}.credits-list{line-height:2;font-size:12px;color:var(--muted);padding-left:20px}.credits-list a{color:var(--lime)}.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.shop-item{border:1px solid #3a4c37;background:#202d23;padding:17px}.shop-item h3{font-size:16px;margin:8px 0}.shop-item .gun-icon{font-size:30px;color:#a8b59a;letter-spacing:-4px;line-height:25px;font-family:var(--mono)}.shop-item p{font-size:11px;margin:10px 0}.shop-item button{width:100%;padding:11px;background:var(--lime);color:#172115;font-weight:bold;font-size:11px;display:flex;justify-content:space-between}.shop-item small{color:var(--muted);font:9px var(--mono)}.shop-balance{font:18px var(--mono);color:var(--lime)}.shop-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}.shop-foot p{font-size:10px}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--lime);color:#12200e;padding:14px 23px;font-size:12px;font-weight:bold;z-index:50;max-width:90vw;text-align:center}#game{position:fixed;inset:0;width:100%;height:100%;object-fit:fill;background:#162321;image-rendering:auto}#hud{position:fixed;inset:0;pointer-events:none;z-index:10;font-family:var(--mono);user-select:none}.hud-top{display:flex;justify-content:space-between;align-items:flex-start;padding:25px 30px}.hud-map{display:flex;flex-direction:column;gap:7px;font-size:13px;letter-spacing:2px;text-shadow:0 1px 6px #000}.hud-map small{font-size:9px;color:#bdd096}.score{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:22px;background:#101c18cf;border:1px solid #899d6655;padding:10px 24px}.score>b{font-size:32px;color:var(--lime)}.score>b:last-child{color:var(--orange)}.score>div{display:flex;flex-direction:column;align-items:center;gap:4px}.score small{font-size:8px;letter-spacing:1px;color:#a5b696}.score strong{font-size:21px;font-weight:400}.hud-button{background:#13221dd9;border:1px solid #6d805755;font-size:16px;width:38px;height:36px;pointer-events:auto}#minimap{position:absolute;top:89px;left:28px;width:140px;height:140px;background:#091612cf;border:1px solid #788d4f66}.kill-feed{position:absolute;top:93px;right:30px;text-align:right;font:10px/1.8 var(--mono)}.kill-feed>div{background:#172219c9;margin-bottom:4px;padding:5px 10px}.kill-feed b{color:var(--lime)}.kill-feed em{color:var(--orange);font-style:normal}#crosshair{position:absolute;top:50%;left:50%;width:4px;height:4px;background:#e6ffbf;box-shadow:0 0 2px #000;transform:translate(-50%,-50%)}#crosshair i{position:absolute;background:#e6ffbf;box-shadow:0 0 2px #000}#crosshair i:nth-child(1){width:2px;height:7px;left:1px;top:-11px}#crosshair i:nth-child(2){width:2px;height:7px;left:1px;top:8px}#crosshair i:nth-child(3){width:7px;height:2px;left:-11px;top:1px}#crosshair i:nth-child(4){width:7px;height:2px;left:8px;top:1px}#hit-marker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:38px;color:#fff;opacity:0}#hurt{position:absolute;inset:0;box-shadow:inset 0 0 130px 45px #db5428;opacity:0;pointer-events:none}.game-message{position:absolute;left:50%;top:29%;transform:translateX(-50%);text-align:center;font:700 20px Arial,sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #000;white-space:nowrap}.buy-tip{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:11px;letter-spacing:1px;padding:10px 14px;background:#142418e8;color:var(--lime);white-space:nowrap}.buy-tip span{color:#bcc6ab;font-size:9px}.hud-bottom{position:absolute;bottom:25px;left:30px;right:30px;display:flex;align-items:flex-end;justify-content:space-between;filter:drop-shadow(0 2px 4px #000)}.vitals{display:flex;align-items:center;gap:15px}.health-icon{color:var(--lime);font-size:33px}.vitals>strong{font-size:38px;font-weight:400}.vitals>div{border-left:1px solid #9aa47b88;margin-left:4px;padding-left:16px;display:flex;flex-direction:column;gap:4px}.vitals small{font-size:8px;color:#b8c39e}.vitals b{font-size:19px;font-weight:400}.weapon-info{text-align:right}.weapon-info>small{font-size:10px;letter-spacing:2px}.weapon-info>div{margin:5px 0}.weapon-info strong{font-size:40px;font-weight:400}.weapon-info span{font-size:17px;color:#c4cfb7;margin-left:8px}.weapon-info> b{color:var(--lime);font-size:14px;font-weight:400}.hud-help{font-size:8px;color:#c0caaf;display:flex;align-items:center;gap:8px;padding-bottom:4px}.result-score{display:flex;gap:25px;align-items:center;justify-content:center;font:60px var(--mono);margin:28px 0}.result-score span:first-child{color:var(--lime)}.result-score span:last-child{color:var(--orange)}.result-stats{display:flex;justify-content:center;gap:35px;color:var(--muted);font:11px var(--mono)}#touch-controls{pointer-events:none}#joystick{position:absolute;bottom:140px;left:30px;width:100px;height:100px;border:2px solid #dcf4a455;border-radius:50%;pointer-events:auto;touch-action:none;background:#09161033}#joystick span{position:absolute;left:27px;top:27px;width:42px;height:42px;border-radius:50%;background:#d2ee9c66}#touch-fire,#touch-reload,#touch-shop{position:absolute;right:35px;bottom:143px;background:#bcdf7644;border:2px solid #e5ffc077;border-radius:50%;width:70px;height:70px;pointer-events:auto;touch-action:none;font-size:29px}#touch-reload{right:120px;bottom:135px;width:47px;height:47px;font-size:18px}#touch-shop{right:35px;bottom:226px;width:43px;height:43px;font-size:16px}@media(min-width:1600px){.lobby{padding:0 75px}.hero{min-height:505px}.hero-art{height:410px}.map-image{height:175px}}@media(max-width:1000px){.lobby{padding:0 28px}.header{gap:35px}.status{font-size:8px}.hero{gap:15px}.hero h1{font-size:40px}.hero-art{height:345px}.hero-meta{font-size:8px;gap:10px}.mode-info>span{font-size:9px}.launch-bar{gap:12px}.launch-bar .primary{gap:15px;padding:16px}.hud-help{display:none}}@media(max-width:720px){.lobby{padding:0 18px}.header{height:76px;gap:20px;flex-wrap:wrap}.brand{font-size:19px;gap:9px}.brand-icon{width:29px;height:29px;font-size:25px;line-height:29px}.status{display:none}nav{margin-left:auto;gap:15px}.nav{font-size:8px;letter-spacing:.5px}.hero{grid-template-columns:1fr;padding:26px 0 12px;gap:24px}.hero h1{font-size:45px}.hero-copy{padding-top:5px}.hero-art{height:240px;grid-row:2}.hero p{font-size:12px}.hero-meta{font-size:8px}.section-heading{margin-top:29px}.section-heading h2{font-size:20px}.section-note{display:none}.map-cards{gap:10px;grid-template-columns:1fr}.map-card{display:grid;grid-template-columns:40% 1fr}.map-image{height:100%}.map-detail{padding:15px}.map-detail h3{font-size:16px}.map-detail p{font-size:10px;margin-bottom:12px}.map-tags{font-size:8px}.launch-bar{flex-wrap:wrap;padding:16px}.mode-info{flex:1}.difficulty-label{margin-left:0;flex:1}.launch-bar .primary{flex:1;margin-top:8px;gap:20px}.mode-badge{width:38px}.bottom-info{font-size:8px}.bottom-info>span{gap:5px}.bottom-info kbd{font-size:7px}footer{font-size:8px}footer>span:nth-child(2){display:none}.operator-layout{grid-template-columns:1fr;gap:15px;margin:25px auto}.operator-preview{height:340px}.operator-options{padding:0 0 30px}.settings-panel{padding:22px;margin:24px auto}.settings-panel label{font-size:11px}.settings-panel input[type=range]{width:120px}.dialog{padding:22px}.dialog h2{font-size:24px}.control-list{grid-template-columns:1fr}.hud-top{padding:15px}.score{gap:14px;padding:8px 15px}.score>b{font-size:23px}.score strong{font-size:17px}.hud-map{font-size:10px;max-width:80px}.hud-map small{font-size:8px}#minimap{width:100px;height:100px;left:15px;top:70px}.hud-bottom{left:17px;right:17px;bottom:19px}.vitals{gap:8px}.vitals>strong{font-size:30px}.vitals>div{padding-left:9px}.weapon-info strong{font-size:32px}.buy-tip{font-size:9px;bottom:98px}.buy-tip span{display:none}.game-message{font-size:14px;top:33%}.kill-feed{right:15px;top:75px;font-size:8px;max-width:55%}.shop-grid{gap:9px}.shop-item{padding:12px}.shop-item h3{font-size:14px}.shop-foot{flex-wrap:wrap}.shop-foot .primary{width:100%}.overlay{padding:14px}.hud-help{display:none}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}.gun-sprite{width:120px;height:64px;object-fit:contain;image-rendering:pixelated;background:#141d18;border:1px solid #3a4c37}
+:root{--bg:#101615;--panel:#19211f;--line:#303b34;--muted:#929e94;--text:#eef1e8;--lime:#c3f66b;--orange:#e49a62;--mono:'Courier New',monospace}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:5px}button{color:inherit;border:0}button:disabled{opacity:.38;cursor:not-allowed}[hidden]{display:none!important}.lobby{max-width:1480px;margin:auto;padding:0 60px;background:radial-gradient(ellipse at 75% 20%,#28332633,transparent 50%)}.header{height:102px;display:flex;align-items:center;border-bottom:1px solid var(--line);gap:64px}.brand{display:flex;align-items:center;gap:13px;color:var(--text);text-decoration:none;font-weight:900;font-size:25px;letter-spacing:3px}.brand-icon{background:var(--lime);color:var(--bg);font-size:29px;font-style:italic;letter-spacing:-5px;width:34px;height:34px;line-height:34px;padding-left:6px;transform:skew(-8deg)}.brand-slash{color:var(--lime)}nav{display:flex;gap:30px;height:100%;align-items:center}.nav{height:100%;background:transparent;color:var(--muted);font-size:11px;letter-spacing:1.6px;position:relative;font-weight:700}.nav.active{color:var(--text)}.nav.active:after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--lime)}.status{margin-left:auto;white-space:nowrap;font:10px var(--mono);color:var(--muted);letter-spacing:1px}.status i,.hero-meta i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--lime);margin-right:7px}.hero{display:grid;grid-template-columns:1fr 1.08fr;min-height:458px;align-items:center;padding:36px 0 28px;gap:28px}.eyebrow{font:10px var(--mono);letter-spacing:1.6px;color:var(--muted);display:flex;align-items:center;gap:12px}.tiny-cross{color:var(--lime);font-size:22px}.version{border:1px solid var(--line);padding:3px 6px;font-size:9px;letter-spacing:0}.hero h1{font-size:clamp(36px,4vw,60px);line-height:1.08;letter-spacing:-2px;font-weight:900;margin:21px 0 20px}.hero h1>span{color:var(--lime)}.hero p{color:#a2aca2;font-size:13px;line-height:1.85;margin:0 0 26px}.primary{background:var(--lime);color:#172115;padding:19px 26px;display:inline-flex;align-items:center;justify-content:space-between;gap:55px;font-weight:800;font-size:12px;letter-spacing:1.2px;transition:background .2s,transform .2s;min-height:52px}.primary:hover{background:#d6ff97;transform:translateY(-2px)}.primary span{font-size:22px;line-height:16px}.hero-meta{display:flex;gap:18px;margin-top:20px;font:9px var(--mono);letter-spacing:.4px;color:var(--muted)}.hero-art{position:relative;height:375px;overflow:hidden;background:#27332e;border:1px solid #39483c;clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px))}.hero-art canvas{width:100%;height:100%;object-fit:cover}.hero-art:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0c171bdd,transparent 45%);pointer-events:none}.art-coordinates{position:absolute;top:20px;left:22px;font:9px/1.7 var(--mono);letter-spacing:1px;color:#d1e2c3;z-index:1}.art-label{position:absolute;left:22px;right:22px;bottom:23px;z-index:1;display:flex;align-items:center;gap:10px;font:9px var(--mono);letter-spacing:1px}.art-label b{margin-left:auto;color:var(--lime)}.pulse-dot{display:inline-block;background:var(--lime);width:6px;height:6px;box-shadow:0 0 12px #b3f568}.art-cross{position:absolute;top:16px;right:22px;font:24px var(--mono);color:var(--lime)}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:24px 0 23px}.section-heading h2{font-size:23px;letter-spacing:-.3px;margin:10px 0 0;font-weight:800;display:flex;gap:13px;align-items:center}.section-heading h2 span{font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:4px 6px}.section-note{font:9px var(--mono);letter-spacing:1px;color:#7e8c80;margin-bottom:5px}.map-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.map-card{padding:0;text-align:left;background:var(--panel);border:1px solid var(--line);position:relative;transition:border-color .2s,transform .2s;overflow:hidden}.map-card:hover{transform:translateY(-3px);border-color:#738763}.map-card.selected{border-color:var(--lime)}.map-image{height:148px;position:relative;overflow:hidden}.map-image canvas{width:100%;height:100%;object-fit:cover;transition:transform .5s}.map-card:hover canvas{transform:scale(1.04)}.map-image:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14201977,transparent 60%)}.map-number{position:absolute;left:14px;top:13px;font:9px var(--mono);z-index:1;background:#15201baa;padding:5px 7px;color:#e0e6d5}.map-check{position:absolute;right:13px;top:13px;border:1px solid #cbd5bc77;width:21px;height:21px;display:grid;place-items:center;font-size:12px;z-index:1}.selected .map-check{background:var(--lime);color:#142016;border-color:var(--lime)}.map-detail{padding:17px 18px}.map-detail h3{margin:0 0 8px;font-size:18px;letter-spacing:.2px}.map-detail p{font-size:11px;color:var(--muted);margin:0 0 15px}.map-tags{border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;font:9px var(--mono);color:#adbaa9;letter-spacing:1px}.map-tags span:last-child{color:var(--lime)}.launch-bar{display:flex;align-items:center;gap:17px;padding:21px 22px;background:#1b241f;border:1px solid var(--line);margin-top:24px}.mode-badge{font-size:27px;color:var(--lime);width:43px;height:43px;border:1px solid #43523b;display:grid;place-items:center}.mode-info{display:flex;flex-direction:column;gap:8px}.mode-info b{font-size:11px;letter-spacing:1px}.mode-info>span{font-size:11px;color:var(--muted)}.difficulty-label{margin-left:auto;display:flex;flex-direction:column;gap:6px;font:8px var(--mono);letter-spacing:1px;color:var(--muted)}select{background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 28px 9px 11px;font-size:12px;border-radius:0}.launch-bar .primary{padding:16px 23px;gap:30px}.bottom-info{display:flex;align-items:center;justify-content:space-between;padding:20px 0 26px;color:var(--muted);font-size:10px}.bottom-info>span{display:flex;align-items:center;gap:10px}kbd{font:9px var(--mono);border:1px solid #53604b;min-width:21px;padding:4px 5px;color:#bec7b6;text-align:center;display:inline-block}.text-button{background:none;color:var(--muted);font:9px var(--mono);letter-spacing:1px;padding:6px 0}.text-button:hover{color:var(--lime)}footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:22px 0 28px;font:9px var(--mono);letter-spacing:1px;color:#778574}.tab:not(#tab-play){min-height:76vh;padding-top:22px}.operator-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:950px;margin:40px auto}.operator-preview{background:radial-gradient(#384735,#18221e);border:1px solid var(--line);position:relative;height:460px;text-align:center}.operator-preview canvas{height:90%;max-width:100%;object-fit:contain}.operator-preview>span{display:block;font:11px var(--mono);color:var(--lime);letter-spacing:2px}.operator-options{padding-top:25px}.operator-options h3{font-size:22px}.operator-options p,.settings-panel p{color:var(--muted);font-size:13px;line-height:1.8}.operator-options label{display:block;font:11px var(--mono);letter-spacing:1px;margin:30px 0 13px}.option-row{display:flex;gap:10px;flex-wrap:wrap}.option{padding:12px 13px;border:1px solid var(--line);background:var(--panel);font-size:11px;display:flex;align-items:center;gap:9px}.option i{width:14px;height:14px;display:block}.option.selected{border-color:var(--lime);color:var(--lime)}.saved-note{color:var(--muted);font-size:11px;margin:24px 0}.settings-panel{max-width:620px;margin:40px auto;background:var(--panel);padding:32px;border:1px solid var(--line)}.settings-panel>label{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:13px;gap:20px}input[type=range]{accent-color:var(--lime);width:180px}input[type=checkbox]{accent-color:var(--lime);width:18px;height:18px}.secondary{background:#273229;border:1px solid #4b5b45;color:var(--text);padding:15px 22px;font-size:11px;letter-spacing:1px}.secondary:hover{background:#3a4933}.overlay{position:fixed;inset:0;z-index:30;background:#07110bd9;backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:center;padding:25px;overflow:auto}.dialog{background:#18221d;border:1px solid #4d6043;width:min(820px,100%);padding:32px;box-shadow:0 25px 100px #0007;max-height:94dvh;overflow:auto}.dialog h2{font-size:28px;margin:12px 0 16px;letter-spacing:-.5px}.dialog p{font-size:13px;line-height:1.8;color:#acbaa4}.dialog-header{display:flex;justify-content:space-between;align-items:center}.dialog-close{background:transparent;font-size:26px;color:#c3ccb9;padding:0 5px}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.control-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.control-list div{display:flex;align-items:center;gap:15px;font-size:12px;color:#b7c4af}.credits-list{line-height:2;font-size:12px;color:var(--muted);padding-left:20px}.credits-list a{color:var(--lime)}.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.shop-item{border:1px solid #3a4c37;background:#202d23;padding:17px}.shop-item h3{font-size:16px;margin:8px 0}.shop-item .gun-icon{font-size:30px;color:#a8b59a;letter-spacing:-4px;line-height:25px;font-family:var(--mono)}.shop-item p{font-size:11px;margin:10px 0}.shop-item button{width:100%;padding:11px;background:var(--lime);color:#172115;font-weight:bold;font-size:11px;display:flex;justify-content:space-between}.shop-item small{color:var(--muted);font:9px var(--mono)}.shop-balance{font:18px var(--mono);color:var(--lime)}.shop-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}.shop-foot p{font-size:10px}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--lime);color:#12200e;padding:14px 23px;font-size:12px;font-weight:bold;z-index:50;max-width:90vw;text-align:center}#game{position:fixed;inset:0;width:100%;height:100%;object-fit:fill;background:#162321;image-rendering:auto}#hud{position:fixed;inset:0;pointer-events:none;z-index:10;font-family:var(--mono);user-select:none}.hud-top{display:flex;justify-content:space-between;align-items:flex-start;padding:25px 30px}.hud-map{display:flex;flex-direction:column;gap:7px;font-size:13px;letter-spacing:2px;text-shadow:0 1px 6px #000}.hud-map small{font-size:9px;color:#bdd096}.score{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:22px;background:#101c18cf;border:1px solid #899d6655;padding:10px 24px}.score>b{font-size:32px;color:var(--lime)}.score>b:last-child{color:var(--orange)}.score>div{display:flex;flex-direction:column;align-items:center;gap:4px}.score small{font-size:8px;letter-spacing:1px;color:#a5b696}.score strong{font-size:21px;font-weight:400}.hud-button{background:#13221dd9;border:1px solid #6d805755;font-size:16px;width:38px;height:36px;pointer-events:auto}#minimap{position:absolute;top:89px;left:28px;width:140px;height:140px;background:#091612cf;border:1px solid #788d4f66}.kill-feed{position:absolute;top:93px;right:30px;text-align:right;font:10px/1.8 var(--mono)}.kill-feed>div{background:#172219c9;margin-bottom:4px;padding:5px 10px}.kill-feed b{color:var(--lime)}.kill-feed em{color:var(--orange);font-style:normal}#crosshair{position:absolute;top:50%;left:50%;width:4px;height:4px;background:#e6ffbf;box-shadow:0 0 2px #000;transform:translate(-50%,-50%)}#crosshair i{position:absolute;background:#e6ffbf;box-shadow:0 0 2px #000}#crosshair i:nth-child(1){width:2px;height:7px;left:1px;top:-11px}#crosshair i:nth-child(2){width:2px;height:7px;left:1px;top:8px}#crosshair i:nth-child(3){width:7px;height:2px;left:-11px;top:1px}#crosshair i:nth-child(4){width:7px;height:2px;left:8px;top:1px}#hit-marker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:38px;color:#fff;opacity:0}#hurt{position:absolute;inset:0;box-shadow:inset 0 0 130px 45px #db5428;opacity:0;pointer-events:none}.game-message{position:absolute;left:50%;top:29%;transform:translateX(-50%);text-align:center;font:700 20px Arial,sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #000;white-space:nowrap}.buy-tip{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:11px;letter-spacing:1px;padding:10px 14px;background:#142418e8;color:var(--lime);white-space:nowrap}.buy-tip span{color:#bcc6ab;font-size:9px}.hud-bottom{position:absolute;bottom:25px;left:30px;right:30px;display:flex;align-items:flex-end;justify-content:space-between;filter:drop-shadow(0 2px 4px #000)}.vitals{display:flex;align-items:center;gap:15px}.health-icon{color:var(--lime);font-size:33px}.vitals>strong{font-size:38px;font-weight:400}.vitals>div{border-left:1px solid #9aa47b88;margin-left:4px;padding-left:16px;display:flex;flex-direction:column;gap:4px}.vitals small{font-size:8px;color:#b8c39e}.vitals b{font-size:19px;font-weight:400}.weapon-info{text-align:right}.weapon-info>small{font-size:10px;letter-spacing:2px}.weapon-info>div{margin:5px 0}.weapon-info strong{font-size:40px;font-weight:400}.weapon-info span{font-size:17px;color:#c4cfb7;margin-left:8px}.weapon-info> b{color:var(--lime);font-size:14px;font-weight:400}.hud-help{font-size:8px;color:#c0caaf;display:flex;align-items:center;gap:8px;padding-bottom:4px}.result-score{display:flex;gap:25px;align-items:center;justify-content:center;font:60px var(--mono);margin:28px 0}.result-score span:first-child{color:var(--lime)}.result-score span:last-child{color:var(--orange)}.result-stats{display:flex;justify-content:center;gap:35px;color:var(--muted);font:11px var(--mono)}#touch-controls{pointer-events:none}#joystick{position:absolute;bottom:140px;left:30px;width:100px;height:100px;border:2px solid #dcf4a455;border-radius:50%;pointer-events:auto;touch-action:none;background:#09161033}#joystick span{position:absolute;left:27px;top:27px;width:42px;height:42px;border-radius:50%;background:#d2ee9c66}#touch-fire,#touch-reload,#touch-shop,#touch-jump{position:absolute;right:35px;bottom:143px;background:#bcdf7644;border:2px solid #e5ffc077;border-radius:50%;width:70px;height:70px;pointer-events:auto;touch-action:none;font-size:29px}#touch-jump{right:120px;bottom:205px;width:52px;height:52px;font-size:24px}#touch-reload{right:120px;bottom:135px;width:47px;height:47px;font-size:18px}#touch-shop{right:35px;bottom:226px;width:43px;height:43px;font-size:16px}@media(min-width:1600px){.lobby{padding:0 75px}.hero{min-height:505px}.hero-art{height:410px}.map-image{height:175px}}@media(max-width:1000px){.lobby{padding:0 28px}.header{gap:35px}.status{font-size:8px}.hero{gap:15px}.hero h1{font-size:40px}.hero-art{height:345px}.hero-meta{font-size:8px;gap:10px}.mode-info>span{font-size:9px}.launch-bar{gap:12px}.launch-bar .primary{gap:15px;padding:16px}.hud-help{display:none}}@media(max-width:720px){.lobby{padding:0 18px}.header{height:76px;gap:20px;flex-wrap:wrap}.brand{font-size:19px;gap:9px}.brand-icon{width:29px;height:29px;font-size:25px;line-height:29px}.status{display:none}nav{margin-left:auto;gap:15px}.nav{font-size:8px;letter-spacing:.5px}.hero{grid-template-columns:1fr;padding:26px 0 12px;gap:24px}.hero h1{font-size:45px}.hero-copy{padding-top:5px}.hero-art{height:240px;grid-row:2}.hero p{font-size:12px}.hero-meta{font-size:8px}.section-heading{margin-top:29px}.section-heading h2{font-size:20px}.section-note{display:none}.map-cards{gap:10px;grid-template-columns:1fr}.map-card{display:grid;grid-template-columns:40% 1fr}.map-image{height:100%}.map-detail{padding:15px}.map-detail h3{font-size:16px}.map-detail p{font-size:10px;margin-bottom:12px}.map-tags{font-size:8px}.launch-bar{flex-wrap:wrap;padding:16px}.mode-info{flex:1}.difficulty-label{margin-left:0;flex:1}.launch-bar .primary{flex:1;margin-top:8px;gap:20px}.mode-badge{width:38px}.bottom-info{font-size:8px}.bottom-info>span{gap:5px}.bottom-info kbd{font-size:7px}footer{font-size:8px}footer>span:nth-child(2){display:none}.operator-layout{grid-template-columns:1fr;gap:15px;margin:25px auto}.operator-preview{height:340px}.operator-options{padding:0 0 30px}.settings-panel{padding:22px;margin:24px auto}.settings-panel label{font-size:11px}.settings-panel input[type=range]{width:120px}.dialog{padding:22px}.dialog h2{font-size:24px}.control-list{grid-template-columns:1fr}.hud-top{padding:15px}.score{gap:14px;padding:8px 15px}.score>b{font-size:23px}.score strong{font-size:17px}.hud-map{font-size:10px;max-width:80px}.hud-map small{font-size:8px}#minimap{width:100px;height:100px;left:15px;top:70px}.hud-bottom{left:17px;right:17px;bottom:19px}.vitals{gap:8px}.vitals>strong{font-size:30px}.vitals>div{padding-left:9px}.weapon-info strong{font-size:32px}.buy-tip{font-size:9px;bottom:98px}.buy-tip span{display:none}.game-message{font-size:14px;top:33%}.kill-feed{right:15px;top:75px;font-size:8px;max-width:55%}.shop-grid{gap:9px}.shop-item{padding:12px}.shop-item h3{font-size:14px}.shop-foot{flex-wrap:wrap}.shop-foot .primary{width:100%}.overlay{padding:14px}.hud-help{display:none}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}.gun-sprite{width:120px;height:64px;object-fit:contain;image-rendering:pixelated;background:#141d18;border:1px solid #3a4c37}
 
 .peer-panel{max-width:none;margin:18px 0;padding:20px;border:1px solid #3d4b3e;background:#142019}.peer-panel label{display:block;margin:15px 0 8px;font-size:12px}.peer-panel textarea{display:block;width:100%;box-sizing:border-box;resize:vertical;background:#0d1712;border:1px solid #52624f;border-radius:4px;color:var(--text);padding:12px;font:12px var(--mono);overflow-wrap:anywhere}.peer-panel button{margin:10px 8px 0 0}.peer-panel p{line-height:1.6}.peer-panel [role=status]{color:var(--lime);min-height:1.6em}.peer-panel textarea:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
@@ -20,6 +20,11 @@
 @media(max-width:900px){.buy-layout{grid-template-columns:150px minmax(0,1fr)}.buy-loadout{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr) auto auto;align-items:center;gap:12px;border-left:0;border-top:1px solid var(--buy-line)}.buy-loadout>span{display:none}.buy-loadout>div{padding:0;border-bottom:0}.buy-loadout p{display:none}.buy-loadout .primary{width:auto}.buy-loadout .text-button{justify-self:start}}
 @media(max-width:720px){.dialog-shop{padding:0}.buy-topbar{min-height:84px;padding:17px;gap:12px}.buy-topbar h2{font-size:20px}.buy-status{gap:3px}.buy-status strong{font-size:17px}.buy-layout{display:block}.buy-categories{display:grid;grid-template-columns:repeat(3,1fr);padding:11px;border-right:0;border-bottom:1px solid var(--buy-line)}.buy-categories>span{grid-column:1/-1;padding:0 4px 4px}.buy-category{min-height:38px;padding:0 6px;grid-template-columns:20px 1fr}.buy-category i{display:none}.buy-content{padding:17px}.buy-content-head{margin-bottom:12px}.buy-grid{grid-template-columns:1fr}.buy-item{min-height:208px}.buy-loadout{display:flex;padding:16px;gap:10px}.buy-loadout>div{padding:7px 0;border-bottom:1px solid #3b494a}.buy-loadout .primary{width:100%;justify-content:space-between}.buy-loadout .text-button{align-self:center}}
 </style>
+  <style>
+    body.no-online .online-block { display: none !important; }
+    .mp-offline-note { display: none; }
+    body.no-online .mp-offline-note { display: block; }
+  </style>
 </head>
 <body>
   <canvas id="game" aria-label="Ігровий світ" hidden></canvas>
@@ -42,50 +47,40 @@
       </section>
       <section id="tab-mp" class="tab" hidden>
         <div class="section-heading"><div><span class="eyebrow">ГРА З ДРУЗЯМИ · 3 НА 3</span><h2>МУЛЬТИПЛЕЄР <span>BETA</span></h2></div><span class="section-note" id="mp-status">СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ</span></div>
+        <p id="mp-code-status" role="status" aria-live="polite"></p>
+        <p class="mp-offline-note" style="color:var(--muted)">Сервер кімнат зараз не підключений. З ботами можна грати одразу.</p>
         <div id="mp-home">
           <div class="settings-panel" style="margin:0 0 18px;max-width:none">
             <label>Позивний <input id="mp-nick" type="text" maxlength="16" placeholder="БОЄЦЬ" style="width:180px"></label>
-            <label>Спосіб гри <select id="mp-transport"><option value="server" selected>Онлайн · автоматичне підключення</option><option value="peer">Напряму з друзями</option></select></label>
-            <p id="mp-peer-help">Створи кімнату однією кнопкою. Передай другу запрошення, отримай його відповідь і прийми її тут. Власник має тримати вкладку гри відкритою.</p>
+            <label>Спосіб гри <select id="mp-transport"><option value="code">Напряму з друзями · за кодом</option><option value="server" selected>Онлайн · автоматичне підключення</option></select></label>
+            <p id="mp-code-help">Створи кімнату, скопіюй короткий код і надішли другу. Друг вводить код і приєднується автоматично. Тримай цю вкладку відкритою.</p>
             <div id="mp-server-options" hidden>
             <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
-            <p>Гра під’єднується до сервера одразу після запуску. Для GitHub Pages задай спільну адресу в <code>public/config.js</code> (wss://…).</p>
-            <div class="dialog-actions" style="margin-top:0">
+            <p>Обидва гравці мають використовувати одну адресу сервера. Якщо гру відкрито із сервера, адреса визначається автоматично.</p>
+            <div id="mp-server-actions" class="dialog-actions" style="margin-top:0">
               <button id="mp-connect" class="primary">ПОВТОРИТИ ПІДКЛЮЧЕННЯ <span>↻</span></button>
               <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
               <button id="mp-refresh" class="secondary">ОНОВИТИ СПИСОК</button>
             </div>
             </div>
           </div>
-          <div class="launch-bar" style="flex-wrap:wrap">
-            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b>
+          <div class="launch-bar online-block" style="flex-wrap:wrap">
+            <div class="mode-info" style="flex:1;min-width:220px"><b>НОВА КІМНАТА</b><span>Вхід лише за кодом — друг введе 4 символи або відкриє посилання</span>
               <span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
                 <input id="mp-room-name" type="text" maxlength="24" placeholder="Назва кімнати" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:9px 11px">
                 <select id="mp-room-map" title="Мапа"></select>
                 <select id="mp-room-max" title="Гравців"><option value="2">2 гравці</option><option value="4">4 гравці</option><option value="6" selected>6 гравців</option></select>
-                <select id="mp-room-visibility" title="Доступ" hidden><option value="public">Публічна</option><option value="private">Приватна (код)</option></select>
+                <select id="mp-room-visibility" title="Доступ"><option value="private" selected>Приватна (код)</option><option value="public">Публічна</option></select>
               </span>
             </div>
-            <button id="mp-create" class="primary">СТВОРИТИ <span>+</span></button>
+            <button id="mp-create" class="primary">СТВОРИТИ КІМНАТУ <span>+</span></button>
           </div>
-          <div id="mp-peer-join" class="settings-panel peer-panel">
-            <h3>УВІЙТИ ДО ДРУГА</h3>
-            <label for="mp-peer-offer">Запрошення від власника</label>
-            <textarea id="mp-peer-offer" rows="3" maxlength="100000" spellcheck="false" placeholder="Встав запрошення SECTOR1.…"></textarea>
-            <div class="dialog-actions"><button id="mp-peer-answer" class="primary">ПРИЄДНАТИСЯ</button><button id="mp-peer-cancel" class="secondary" hidden>СКАСУВАТИ</button></div>
-            <div id="mp-peer-reply-panel" hidden>
-              <p>Надішли відповідь власнику. Кімната відкриється, коли він її прийме.</p>
-              <label for="mp-peer-reply">Твоя відповідь</label><textarea id="mp-peer-reply" rows="3" readonly spellcheck="false"></textarea>
-              <button id="mp-peer-copy-reply" class="secondary">КОПІЮВАТИ ВІДПОВІДЬ</button>
-            </div>
-            <p id="mp-peer-join-status" role="status" aria-live="polite"></p>
-          </div>
-          <div id="mp-code-join" class="launch-bar" style="flex-wrap:wrap" hidden>
+          <div id="mp-code-join" class="launch-bar online-block" style="flex-wrap:wrap">
             <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
-            <input id="mp-join-code" type="text" maxlength="6" placeholder="КОД" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
-            <button id="mp-join-btn" class="secondary">УВІЙТИ ЗА КОДОМ</button>
+            <input id="mp-join-code" type="text" maxlength="4" placeholder="КОД" autocomplete="off" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
+            <button id="mp-join-btn" class="secondary">ПРИЄДНАТИСЬ</button>
           </div>
-          <div id="mp-public" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
+          <div id="mp-public" class="online-block" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
           <div id="mp-rooms" class="map-cards"></div>
           </div>
         </div>
@@ -94,16 +89,15 @@
             <h3 id="mp-room-title" style="margin-top:0">КІМНАТА</h3>
             <p id="mp-room-info"></p>
             <div id="mp-room-code" class="shop-balance" style="margin-bottom:12px"></div>
-            <div id="mp-peer-host" class="peer-panel" hidden>
-              <p>Для кожного друга створи окреме запрошення. Не закривай цю вкладку під час матчу.</p>
-              <button id="mp-peer-invite" class="secondary">ЗАПРОСИТИ ДРУГА</button>
-              <div id="mp-peer-invite-panel" hidden>
-                <label for="mp-peer-invite-text">1. Надішли це запрошення другу</label><textarea id="mp-peer-invite-text" rows="3" readonly spellcheck="false"></textarea>
-                <button id="mp-peer-copy-invite" class="secondary">КОПІЮВАТИ ЗАПРОШЕННЯ</button>
-                <label for="mp-peer-accept-text">2. Встав його відповідь</label><textarea id="mp-peer-accept-text" rows="3" maxlength="100000" spellcheck="false" placeholder="Відповідь SECTOR1.…"></textarea>
-                <button id="mp-peer-accept" class="primary">ПРИЙНЯТИ ДРУГА</button>
-              </div>
-              <p id="mp-peer-host-status" role="status" aria-live="polite"></p>
+            <div class="dialog-actions online-block" style="margin-top:0;margin-bottom:12px">
+              <button id="mp-copy-link" class="secondary">КОПІЮВАТИ ПОСИЛАННЯ</button>
+              <span style="color:var(--muted);font-size:13px">Дай другу код або посилання — за посиланням він зайде сам.</span>
+            </div>
+            <div id="mp-short-code-panel" class="peer-panel" hidden>
+              <label for="mp-short-code">Код кімнати — надішли другу</label>
+              <input id="mp-short-code" type="text" readonly maxlength="4" style="font-size:28px;letter-spacing:8px;width:150px;text-align:center" aria-label="Код кімнати">
+              <button id="mp-copy-code" class="secondary">КОПІЮВАТИ КОД</button>
+              <p>Друг обирає «Напряму з друзями · за кодом», вводить код і приєднується. Тримай цю вкладку відкритою.</p>
             </div>
             <div id="mp-players" class="control-list"></div>
             <div class="dialog-actions">
@@ -132,7 +126,7 @@
     <div id="game-message" class="game-message"></div>
     <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПІДГОТОВКА ДО БОЮ</span></div>
     <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ</div><div class="weapon-info"><small id="weapon-name">P-12</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">₡ 2 500</b></div></div>
-    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
   <div id="toast" class="toast" role="status" hidden></div>
@@ -171,6 +165,91 @@ const mirageCallouts = [
   {name:'ПАЛАЦ',point:[32.5,32.5]}, {name:'БАЛКОН',point:[22.5,36.5]},
   {name:'CT',point:[5.5,32.5]}, {name:'T',point:[35.5,20.5]}
 ];
+// Dust II reference: B and tunnels to the west, mid through the centre,
+// the bent short approach and long lane converge on the elevated A courtyard.
+const dust2Rooms = [
+  [3,4,10,10], [12,9,6,4], [12,6,7,2], // B, B doors, separate B window
+  [16,6,10,7], [23,8,8,3], // CT courtyard and A approach
+  [27,3,10,10], [25,10,7,6], [25,15,4,10], [22,22,6,4], // A, short, catwalk
+  [18,12,5,17], [18,26,5,9], [8,31,14,6], // mid, top mid, T courtyard
+  [3,19,9,7], [5,12,4,9], [10,22,11,4], [5,25,5,10], // upper/lower tunnels
+  [3,28,7,6], [6,33,7,4], // outside tunnels and the broad T approach
+  [20,31,13,5], [30,25,5,10], [30,23,5,5], // T to long doors
+  [34,8,4,17], [30,18,8,6], [29,16,4,5] // long A, corner, pit
+];
+const dust2Callouts = [
+  {name:'LONG A',point:[35.5,16.5]}, {name:'SHORT A',point:[26.5,18.5]},
+  {name:'ДВЕРІ LONG',point:[32.5,29.5]}, {name:'ЯМА',point:[30.5,17.5]},
+  {name:'ВЕРХНІ ТУНЕЛІ',point:[7.5,22.5]}, {name:'НИЖНІ ТУНЕЛІ',point:[15.5,23.5]},
+  {name:'ДВЕРІ MID',point:[20.5,15.5]}, {name:'ДВЕРІ B',point:[14.5,10.5]},
+  {name:'ВІКНО B',point:[14.5,6.5]}, {name:'ЗОВНІ ТУНЕЛІВ',point:[5.5,30.5]},
+  {name:'ДВІР LONG',point:[31.5,32.5]},
+  {name:'TOP MID',point:[20.5,28.5]}, {name:'СХОДИ A',point:[26.5,13.5]},
+  {name:'CT',point:[20.5,8.5]}, {name:'T',point:[12.5,34.5]}
+];
+// Photo adaptation: the park and A occupy the west, a winding connector
+// separates them from B and the long canal approach on the east. Height layers
+// are side by side: this renderer does not support a playable road over a tunnel.
+const overpassRooms = [
+  [5,4,12,9], [6,2,5,4], [15,7,7,3], [17,5,8,5], // A, bank, CT
+  [3,11,4,22], [3,29,16,10], // long A and fountain park
+  [12,11,5,12], [12,20,9,5], [16,22,5,13], // bathrooms and short A
+  [20,9,4,21], [23,7,9,3], // connector and heaven
+  [23,16,8,4], [29,8,11,10], // short B and B courtyard
+  [29,18,5,15], [36,17,4,16], // canal and separate Monster approach
+  [29,29,10,7], [33,34,7,8], [18,33,17,5] // lower canal, T and playground
+];
+const overpassCallouts = [
+  {name:'БАНК',point:[8.5,3.5]}, {name:'LONG A',point:[5.5,23.5]},
+  {name:'ФОНТАН',point:[10.5,31.5]}, {name:'ПАРК',point:[7.5,34.5]},
+  {name:'ТУАЛЕТИ',point:[14.5,20.5]}, {name:'SHORT A',point:[18.5,28.5]},
+  {name:'МАЙДАНЧИК',point:[24.5,35.5]}, {name:'HEAVEN',point:[26.5,8.5]},
+  {name:'SHORT B',point:[26.5,17.5]}, {name:'КАНАЛ',point:[32.5,27.5]},
+  {name:'MONSTER',point:[38.5,23.5]}, {name:'CT',point:[20.5,6.5]},
+  {name:'T',point:[35.5,38.5]}
+];
+// Ancient photo: two temple courtyards, a central donut loop and a broad
+// southern approach that splits into the western ruins and eastern cave lane.
+const ancientRooms = [
+  [3,4,12,10], [5,2,7,4], [13,6,10,4], [20,3,8,7], // A, temple, CT
+  [26,6,12,10], [35,13,5,9], // B and long approach
+  [3,12,4,15], [3,24,10,7], // western ruins
+  [11,12,4,8], [11,18,10,4], [18,10,4,12], // donut loop around solid masonry
+  [18,20,6,10], [11,25,11,5], // mid and T to ruins
+  [22,13,8,4], [27,14,4,12], [29,23,9,6], // cave and ramp B
+  [35,26,5,9], [24,31,14,5], // eastern T approach
+  [6,29,5,10], [7,35,21,5], [20,36,6,6] // T stairs, spawn and rear alcove
+];
+const ancientCallouts = [
+  {name:'ХРАМ',point:[8.5,3.5]}, {name:'РУЇНИ',point:[5.5,21.5]},
+  {name:'DONUT',point:[14.5,19.5]}, {name:'ТОП MID',point:[20.5,12.5]},
+  {name:'ПЕЧЕРА',point:[25.5,14.5]}, {name:'РАМПА B',point:[29.5,21.5]},
+  {name:'LONG B',point:[37.5,20.5]}, {name:'ДВІР T',point:[12.5,37.5]},
+  {name:'СХОДИ T',point:[8.5,32.5]}, {name:'CT',point:[23.5,5.5]},
+  {name:'T',point:[22.5,38.5]}
+];
+// Inferno photo: the fountain courtyard is reached by a bent Banana lane;
+// the long southern street splits around the apartments toward the A courtyard.
+const infernoRooms = [
+  [3,5,11,10], [4,2,7,5], [12,7,7,4], // B fountain, church and coffins
+  [18,3,11,9], [27,7,8,4], [29,9,4,8], // CT, library and arch
+  [33,8,11,11], [33,16,4,10], [39,18,5,10], // A, short and pit
+  [10,13,4,9], [10,20,8,4], [14,22,4,10], // winding Banana
+  [14,29,10,4], [12,32,5,10], // T ramp to Banana
+  [22,16,4,21], [24,14,13,4], [25,23,11,4], // mid, top mid and short
+  [24,28,19,4], [39,24,4,8], [34,30,4,11], // apartments, balcony and alt mid
+  [21,37,17,4], [12,39,15,6] // lower street and T spawn
+];
+const infernoCallouts = [
+  {name:'BANANA',point:[15.5,25.5]}, {name:'ФОНТАН B',point:[7.5,12.5]},
+  {name:'ЦЕРКВА',point:[7.5,3.5]}, {name:'COFFINS',point:[15.5,8.5]},
+  {name:'АРКА',point:[30.5,13.5]}, {name:'БІБЛІОТЕКА',point:[28.5,8.5]},
+  {name:'TOP MID',point:[26.5,16.5]}, {name:'SHORT A',point:[31.5,24.5]},
+  {name:'АПАРТАМЕНТИ',point:[36.5,29.5]}, {name:'БАЛКОН',point:[40.5,28.5]},
+  {name:'ЯМА',point:[41.5,24.5]}, {name:'ALT MID',point:[35.5,35.5]},
+  {name:'РАМПА T',point:[15.5,34.5]}, {name:'CT',point:[22.5,5.5]},
+  {name:'T',point:[18.5,42.5]}
+];
 const specs = [
   { id:'mirage', name:'MIRAGE · PIXEL', desc:'За твоєю схемою: A, B, MID, палац, апартаменти, ринок і конектор. Без контейнерів.', tag:'ПІКСЕЛЬНА АДАПТАЦІЯ', label:'ПАЛАЦ · MID · АПАРТАМЕНТИ', size:40, rooms:mirageRooms, callouts:mirageCallouts,
     wall:'#c5a273', light:'#f3dfb3', sky:'#b9d4d7', floor:'#b19a77', accent:'#779c9b',
@@ -188,25 +267,161 @@ const specs = [
       {x:15,y:8,w:3,h:5,axis:'y',dir:-1,rise:.6}
     ],
     blocks:[[5,6,1,2,2],[8,8,1,2,2],[31,5,1,1,1],[10,31,1,2,2],[14,33,2,1,2],[17,30,1,2,2],[30,30,1,1,2],[33,34,1,1,2]] },
-  { id:'terraces', name:'ТЕРАСИ', desc:'Високі сходи, балкони й відкритий MID між двома ярусами.', tag:'МІСЬКІ ТЕРАСИ', label:'ВЕРХНІЙ МАРШРУТ', wall:'#aa9276', light:'#e5d3ac', sky:'#b8a185', floor:'#756f61', accent:'#678d8a', blocks:[[4,2,2,7,1],[6,5,2,4,2],[10,3,5,2,2],[17,3,3,5,1],[3,11,4,2,1],[8,9,2,3,3],[14,10,4,2,2],[19,12,2,4,1],[5,17,3,4,2],[11,16,3,5,1],[16,17,4,2,1],[8,6,1,2,3]] },
-  { id:'furnace', name:'ГОРНИЛО', desc:'Промислові шахти, вузькі проходи й силові точки.', tag:'ЕНЕРГЕТИЧНИЙ ВУЗОЛ', label:'БЛИЖНІЙ БІЙ', wall:'#6c7771', light:'#c3c4a6', sky:'#596a70', floor:'#4d5b57', accent:'#d0784c', blocks:[[6,2,2,7,2],[12,2,3,5,1],[18,3,3,4,2],[3,11,5,2,1],[9,9,4,3,2],[15,10,3,5,1],[19,11,2,3,3],[5,17,4,2,2],[10,16,2,5,1],[16,17,3,3,2],[7,6,1,2,3]] },
-  { id:'canal', name:'КАНАЛ', desc:'Склади біля води з перехресним вогнем через містки.', tag:'ПОРТОВИЙ РАЙОН', label:'ДОВГІ ЛІНІЇ', wall:'#668187', light:'#c4d4ca', sky:'#789aa2', floor:'#52676b', accent:'#d59559', blocks:[[5,3,2,5,1],[10,2,4,3,2],[17,3,2,6,1],[3,11,5,2,2],[8,10,2,5,1],[13,10,5,2,3],[19,11,2,4,1],[5,16,2,5,1],[10,17,5,2,2],[17,16,2,4,1],[7,8,1,1,3]] },
-  { id:'citadel', name:'ЦИТАДЕЛЬ', desc:'Кам’яні двори, вузькі брами й захищений центр.', tag:'ГІРСЬКА ФОРТЕЦЯ', label:'МАНЕВРИ', wall:'#938a70', light:'#d9cfae', sky:'#9b9c8d', floor:'#68675c', accent:'#8b6b48', blocks:[[5,2,3,6,1],[11,3,3,4,1],[18,3,3,5,2],[2,11,5,2,1],[8,10,5,3,2],[16,10,5,3,1],[5,17,3,4,1],[11,16,3,5,1],[18,17,2,3,3],[8,8,1,1,3]] },
-  { id:'market', name:'РИНОК', desc:'Кам’яний ринок: фонтан у MID, високі сходи й відкриті двори.', tag:'МІСЬКИЙ РИНОК', label:'ФОНТАН У MID', wall:'#a88364', light:'#e8cf9b', sky:'#b7835d', floor:'#735c49', accent:'#6d8d78', blocks:[[5,2,3,5,2],[11,2,4,2,1],[18,3,2,6,3],[3,10,4,2,1],[8,8,2,4,2],[14,8,2,4,2],[10,10,2,2,3],[17,11,4,2,1],[5,16,2,5,3],[10,16,4,2,1],[17,17,3,3,2],[8,14,2,2,1]] },
-  { id:'terminal', name:'ТЕРМІНАЛ', desc:'Перони та службові коридори з кількома обходами.', tag:'ТРАНЗИТНИЙ ЦЕНТР', label:'ШВИДКИЙ ТЕМП', wall:'#727b81', light:'#cfd1b7', sky:'#84939a', floor:'#5b6368', accent:'#c97053', blocks:[[5,3,3,5,1],[11,2,2,6,2],[17,3,4,3,1],[3,11,5,3,2],[9,10,5,2,1],[16,10,4,4,2],[5,17,2,4,1],[10,16,4,2,3],[16,17,3,4,1],[8,6,1,2,3]] },
-  { id:'summit', name:'ВЕРШИНА', desc:'Холодна станція, відкриті підходи та міцні укриття.', tag:'ВИСОКОГІРНА БАЗА', label:'ДИСТАНЦІЯ', wall:'#74848b', light:'#d4ded5', sky:'#9aaebb', floor:'#5b6f78', accent:'#d7a85d', blocks:[[6,3,2,5,1],[11,2,4,3,2],[18,3,2,6,1],[3,10,4,3,1],[8,9,2,5,2],[13,10,5,2,1],[19,11,2,3,3],[5,17,4,2,1],[10,16,2,5,2],[16,17,4,3,1],[7,6,1,2,3]] },
-  { id:'palace', name:'ПАЛАЦ', desc:'Сонячний двір, великі парадні сходи й верхні тераси.', tag:'КОЛИШНЯ РЕЗИДЕНЦІЯ', label:'ВЕРХНЯ ТЕРАСА', wall:'#c8a471', light:'#f6dfad', sky:'#d39a61', floor:'#80654c', accent:'#4f8790', blue:[[2.5,4.5],[3.5,3.5],[3.5,5.5]], red:[[21.5,18.5],[20.5,19.5],[20.5,17.5]], blocks:[[5,2,3,3,2],[11,2,5,2,1],[18,3,3,5,3],[4,7,2,5,1],[8,7,2,3,2],[14,7,2,3,2],[10,10,4,2,3],[3,13,5,2,3],[8,13,2,3,2],[14,13,2,3,2],[18,12,2,5,1],[10,16,4,2,3],[5,18,3,3,1],[12,19,5,2,2]] }
+  {
+    id:'dust2',name:'DUST II · PIXEL',desc:'За твоїм фото: двори A/B, Long, Short, яма, подвійні двері й тунелі. Піщаний макет з об’ємними сходами та вікном B.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'LONG · SHORT · ТУНЕЛІ',size:40,rooms:dust2Rooms,callouts:dust2Callouts,
+    wall:'#dac9a5',light:'#f4e5c4',sky:'#c6d9dd',floor:'#bca47c',accent:'#a88d62',
+    blue:[[20.5,8.5],[18.5,9.5],[21.5,10.5]],red:[[12.5,34.5],[14.5,32.5],[10.5,35.5]],
+    platforms:[{x:27,y:3,w:10,h:10,z:.9},{x:25,y:10,w:4,h:12,z:.6},{x:25,y:10,w:4,h:2,z:.9},{x:34,y:14,w:4,h:11,z:.45},{x:30,y:21,w:8,h:3,z:.45},{x:3,y:19,w:9,h:7,z:.6},{x:13,y:6,w:3,h:2,z:.45}],
+    stairs:[
+      {x:23,y:8,w:5,h:3,axis:'x',dir:1,rise:.9},
+      {x:25,y:12,w:4,h:4,axis:'y',dir:-1,base:.6,rise:.3},
+      {x:25,y:21,w:4,h:4,axis:'y',dir:-1,rise:.6},
+      {x:34,y:8,w:4,h:6,axis:'y',dir:-1,base:.45,rise:.45},
+      {x:31,y:24,w:4,h:4,axis:'y',dir:-1,rise:.45},
+      {x:30,y:18,w:3,h:4,axis:'y',dir:1,rise:.45},
+      {x:5,y:13,w:4,h:6,axis:'y',dir:1,rise:.6},
+      {x:5,y:25,w:5,h:4,axis:'y',dir:-1,rise:.6},
+      {x:10,y:22,w:8,h:4,axis:'x',dir:-1,rise:.6},
+      {x:9,y:6,w:4,h:2,axis:'x',dir:1,rise:.45},
+      {x:16,y:6,w:3,h:2,axis:'x',dir:-1,rise:.45}
+    ],
+    blocks:[
+      [3,4,2,1,1],[3,13,2,1,1],[5,6,2,1,2],[9,9,1,2,2],[4,11,1,2,2], // B courtyard
+      [13,9,1,1,3],[13,12,1,1,3], // B doors leave a two-tile opening
+      [27,3,2,1,1],[36,3,1,2,1],[29,5,2,1,2],[33,8,1,2,2],[35,5,1,2,2], // A cover
+      [18,15,2,1,3],[22,15,1,1,3], // offset mid doors
+      [30,29,2,1,3],[34,28,1,2,3], // long doors, below the stairs
+      [36,22,2,1,2],[31,16,2,1,2], // long corner and pit cover
+      [3,19,2,1,1],[10,19,2,1,1],[7,20,1,1,2],[8,23,1,1,2], // tunnel pillars
+      [3,28,1,2,1],[8,34,1,2,2],[16,35,2,1,2],[25,33,2,1,2] // T courtyard
+    ]
+  },
+  {
+    id:'overpass',name:'OVERPASS · PIXEL',desc:'За твоїм фото: парк із фонтаном, Long A, туалети, конектор, канал і Monster. Верхня точка A та нижній двір B.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'ПАРК · КАНАЛ · MONSTER',size:44,rooms:overpassRooms,callouts:overpassCallouts,
+    wall:'#999d91',light:'#ded9c2',sky:'#b6c7c8',floor:'#8d8977',accent:'#73948d',
+    blue:[[19.5,6.5],[21.5,6.5],[18.5,8.5]],red:[[35.5,38.5],[37.5,39.5],[34.5,36.5]],
+    platforms:[{x:3,y:2,w:22,h:11,z:.9},{x:29,y:8,w:11,h:10,z:.3},{x:23,y:7,w:9,h:3,z:.9}],
+    stairs:[
+      {x:3,y:13,w:4,h:6,axis:'y',dir:-1,rise:.9},
+      {x:12,y:13,w:5,h:6,axis:'y',dir:-1,rise:.9},
+      {x:20,y:13,w:4,h:6,axis:'y',dir:-1,rise:.9},
+      {x:29,y:10,w:3,h:6,axis:'y',dir:-1,base:.3,rise:.6},
+      {x:29,y:18,w:5,h:4,axis:'y',dir:-1,rise:.3},
+      {x:36,y:18,w:4,h:4,axis:'y',dir:-1,rise:.3}
+    ],
+    blocks:[
+      [5,4,2,1,1],[6,2,1,1,1],[9,6,2,1,2],[13,9,2,2,2], // A cover and bank
+      [8,30,2,2,2],[14,34,1,2,2],[5,36,2,1,2], // fountain and park benches
+      [3,23,1,3,1],[12,20,1,2,1],[18,23,1,2,1], // long and bathroom turns
+      [34,10,2,2,3],[37,14,2,1,2],[32,16,2,1,2], // B pillar and cover
+      [30,25,1,3,2],[38,26,2,1,3],[36,35,1,2,2],[38,40,2,1,1] // canal and T approach
+    ]
+  },
+  {
+    id:'ancient',name:'ANCIENT · PIXEL',desc:'За твоїм фото: зелені кам’яні руїни, храм A, Donut, MID, печера та рампа B. Сходи й двори серед стародавніх стін.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'ХРАМ · DONUT · ПЕЧЕРА',size:44,rooms:ancientRooms,callouts:ancientCallouts,
+    wall:'#71815a',light:'#b0bc88',sky:'#a8b9a1',floor:'#65734b',accent:'#87966b',
+    blue:[[23.5,5.5],[21.5,4.5],[25.5,7.5]],red:[[22.5,38.5],[20.5,37.5],[24.5,40.5]],
+    platforms:[{x:3,y:2,w:37,h:12,z:.6},{x:11,y:14,w:11,h:8,z:.3},{x:22,y:13,w:5,h:4,z:.6},{x:26,y:6,w:12,h:10,z:.6},{x:18,y:20,w:6,h:2,z:.3},{x:6,y:35,w:34,h:7,z:.3}],
+    stairs:[
+      {x:3,y:14,w:4,h:6,axis:'y',dir:-1,rise:.6},
+      {x:11,y:14,w:4,h:4,axis:'y',dir:-1,base:.3,rise:.3},
+      {x:18,y:14,w:4,h:4,axis:'y',dir:-1,base:.3,rise:.3},
+      {x:18,y:22,w:6,h:4,axis:'y',dir:-1,rise:.3},
+      {x:27,y:14,w:4,h:6,axis:'y',dir:-1,rise:.6},
+      {x:35,y:14,w:5,h:6,axis:'y',dir:-1,rise:.6},
+      {x:6,y:29,w:5,h:6,axis:'y',dir:1,rise:.3},
+      {x:24,y:31,w:4,h:4,axis:'y',dir:1,rise:.3}
+    ],
+    blocks:[
+      [3,4,2,1,1],[5,2,1,1,1],[5,7,2,2,2],[10,10,2,1,2],
+      [29,8,2,2,2],[35,10,2,1,2],[36,6,2,1,1],
+      [4,25,2,2,2],[12,19,1,1,3],[19,27,1,2,2],
+      [35,24,2,1,2],[36,31,1,2,2],[8,36,2,1,2],[25,36,1,1,2]
+    ]
+  },
+  {
+    id:'inferno',name:'INFERNO · PIXEL',desc:'За твоїм фото: Banana, фонтан B, MID, апартаменти, арка й двір A з ямою. Тепла штукатурка, цегляні стіни та об’ємні сходи.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'BANANA · MID · АПАРТАМЕНТИ',size:48,rooms:infernoRooms,callouts:infernoCallouts,
+    wall:'#c69b75',light:'#efd4aa',sky:'#c3d2d6',floor:'#a78d72',accent:'#ac7053',
+    blue:[[22.5,5.5],[20.5,4.5],[24.5,6.5]],red:[[18.5,42.5],[16.5,41.5],[20.5,43.5]],
+    platforms:[{x:3,y:2,w:11,h:13,z:.3},{x:18,y:3,w:17,h:9,z:.6},{x:33,y:8,w:11,h:11,z:.6},{x:33,y:28,w:10,h:4,z:.45}],
+    stairs:[
+      {x:14,y:7,w:4,h:4,axis:'x',dir:1,base:.3,rise:.3},
+      {x:10,y:15,w:4,h:5,axis:'y',dir:-1,rise:.3},
+      {x:29,y:11,w:4,h:6,axis:'y',dir:-1,rise:.6},
+      {x:33,y:19,w:4,h:5,axis:'y',dir:-1,rise:.6},
+      {x:39,y:19,w:5,h:5,axis:'y',dir:-1,rise:.6},
+      {x:27,y:28,w:6,h:4,axis:'x',dir:1,rise:.45},
+      {x:39,y:24,w:4,h:4,axis:'y',dir:1,rise:.45},
+      {x:34,y:32,w:4,h:5,axis:'y',dir:-1,rise:.45}
+    ],
+    blocks:[
+      [7,9,2,2,2],[4,6,2,1,2],[11,6,1,2,2],[4,2,1,1,1], // B fountain and coffins
+      [19,8,2,1,2],[26,4,2,1,2], // CT courtyard
+      [35,10,2,2,2],[40,13,2,1,2],[42,8,2,1,1],[34,16,1,1,3], // A cover
+      [10,21,1,2,2],[16,29,1,1,2],[23,20,1,1,3], // Banana and mid corners
+      [35,29,1,1,2],[34,38,1,1,3], // apartments and alt mid
+      [13,40,1,2,2],[22,42,2,1,2],[15,37,1,1,2] // T street
+    ]
+  },
+  {
+    id:'vertigo',name:'VERTIGO · PIXEL',desc:'За твоїм фото: бетонні майданчики A/B, рампа A, сходи B, MID, ліфти й риштування. Перепади висоти та відкриті двори будівництва.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'РАМПА A · MID · СХОДИ B',size:44,
+    wall:'#999e9d',light:'#d9d9cf',sky:'#bdcfdd',floor:'#858d8e',accent:'#ba9c52',
+    rooms:[[3,3,12,10],[17,3,10,7],[13,6,7,4],[25,6,14,4],[17,9,7,14],[10,18,12,5],[7,11,4,10],[3,29,13,11],[3,20,5,12],[6,24,12,5],[29,24,12,16],[17,34,15,6],[23,23,8,5],[20,22,7,7],[35,9,5,19],[13,34,8,5]],
+    callouts:[{name:'РАМПА A',point:[25.5,36.5]},{name:'СХОДИ B',point:[8.5,16.5]},{name:'ЛІФТИ',point:[20.5,10.5]},{name:'РИШТУВАННЯ',point:[37.5,18.5]},{name:'SHORT A',point:[25.5,25.5]},{name:'НИЖНІЙ МАЙДАНЧИК',point:[6.5,26.5]},{name:'CT',point:[21.5,6.5]},{name:'T',point:[7.5,35.5]}],
+    blue:[[21.5,6.5],[19.5,4.5],[24.5,8.5]],red:[[7.5,35.5],[5.5,37.5],[10.5,38.5]],
+    platforms:[{x:3,y:3,w:37,h:10,z:.6},{x:29,y:23,w:12,h:17,z:.9}],
+    stairs:[{x:17,y:13,w:7,h:6,axis:'y',dir:-1,rise:.6},{x:7,y:13,w:4,h:6,axis:'y',dir:-1,rise:.6},{x:23,y:34,w:6,h:6,axis:'x',dir:1,rise:.9},{x:23,y:23,w:6,h:5,axis:'x',dir:1,rise:.9},{x:35,y:13,w:5,h:10,axis:'y',dir:1,base:.6,rise:.3}],
+    blocks:[[5,5,2,2,2],[11,8,2,1,2],[3,10,1,1,3],[25,4,1,1,3],[18,20,1,2,2],[4,24,1,2,3],[11,31,2,2,2],[4,38,1,1,3],[31,28,2,2,2],[37,32,2,1,2],[39,37,1,2,3],[30,37,1,1,2]]
+  },
+  {
+    id:'office',name:'OFFICE · PIXEL',desc:'За твоїм фото: кабінети, переговорна, довгі коридори, склад паперу та гараж. Офісні перегородки, столи й кілька обходів.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'КАБІНЕТИ · КОРИДОРИ · ГАРАЖ',size:44,
+    wall:'#a2aab2',light:'#e1e6e5',sky:'#b9c9d5',floor:'#69777e',accent:'#7b8f9d',
+    rooms:[[4,3,10,8],[28,3,12,9],[18,4,7,10],[12,7,8,3],[23,7,8,3],[18,12,7,20],[4,15,11,10],[12,17,8,4],[9,10,4,8],[29,16,11,10],[23,18,8,4],[35,10,4,10],[3,30,13,10],[13,29,12,5],[26,30,14,11],[23,34,6,4],[13,37,16,4],[4,23,4,10],[35,24,5,9]],
+    callouts:[{name:'ПЕРЕГОВОРНА',point:[9.5,6.5]},{name:'ПАПІР',point:[6.5,20.5]},{name:'ДОВГИЙ КОРИДОР',point:[21.5,15.5]},{name:'ПРОЄКТОР',point:[33.5,20.5]},{name:'РЕСЕПШН',point:[20.5,30.5]},{name:'ЗАДНІЙ ДВІР',point:[33.5,36.5]},{name:'ГАРАЖ',point:[11.5,35.5]},{name:'CT',point:[7.5,35.5]},{name:'T',point:[34.5,6.5]}],
+    blue:[[7.5,35.5],[5.5,37.5],[9.5,38.5]],red:[[34.5,6.5],[31.5,4.5],[37.5,8.5]],
+    platforms:[{x:3,y:3,w:38,h:23,z:.3}],
+    stairs:[{x:18,y:26,w:7,h:6,axis:'y',dir:-1,rise:.3},{x:4,y:25,w:4,h:6,axis:'y',dir:-1,rise:.3},{x:35,y:26,w:5,h:5,axis:'y',dir:-1,rise:.3}],
+    blocks:[[6,5,2,1,2],[11,4,1,3,3],[29,5,1,2,3],[36,9,2,1,2],[5,17,2,1,2],[10,21,2,2,2],[13,23,1,1,3],[19,23,1,2,3],[30,18,2,1,2],[36,22,2,1,2],[38,17,1,2,3],[4,32,2,1,2],[12,37,2,1,2],[29,33,2,2,2],[37,38,2,1,2]]
+  },
+  {
+    id:'cache',name:'CACHE · PIXEL',desc:'За твоїм фото: промислові двори A/B, A Main, Squeaky, MID, вентиляція, Checkers і Heaven. Кам’яні та металеві укриття.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'A MAIN · MID · CHECKERS',size:44,
+    wall:'#b4b39a',light:'#e5dfbf',sky:'#bac9c5',floor:'#94977c',accent:'#668878',
+    rooms:[[3,3,12,12],[29,3,12,12],[18,3,8,8],[13,6,7,4],[24,6,7,4],[18,13,8,14],[20,9,4,7],[5,13,5,18],[3,29,12,11],[33,13,5,20],[29,30,12,10],[12,34,20,6],[19,25,6,12],[12,18,8,4],[24,18,11,4],[12,12,4,8],[27,12,8,5],[27,15,4,7]],
+    callouts:[{name:'A MAIN',point:[7.5,24.5]},{name:'SQUEAKY',point:[13.5,14.5]},{name:'ВЕНТИЛЯЦІЯ',point:[16.5,19.5]},{name:'CHECKERS',point:[29.5,14.5]},{name:'HEAVEN',point:[34.5,16.5]},{name:'B MAIN',point:[35.5,26.5]},{name:'ГАРАЖ T',point:[8.5,34.5]},{name:'СКЛАД',point:[35.5,35.5]},{name:'CT',point:[21.5,5.5]},{name:'T',point:[21.5,37.5]}],
+    blue:[[21.5,5.5],[19.5,4.5],[23.5,7.5]],red:[[21.5,37.5],[17.5,36.5],[25.5,38.5]],
+    platforms:[{x:3,y:3,w:13,h:12,z:.3},{x:27,y:3,w:14,h:14,z:.3},{x:13,y:3,w:18,h:8,z:.3}],
+    stairs:[{x:5,y:15,w:5,h:6,axis:'y',dir:-1,rise:.3},{x:12,y:15,w:4,h:5,axis:'y',dir:-1,rise:.3},{x:33,y:17,w:5,h:5,axis:'y',dir:-1,rise:.3},{x:27,y:17,w:4,h:5,axis:'y',dir:-1,rise:.3},{x:20,y:11,w:4,h:5,axis:'y',dir:-1,rise:.3}],
+    blocks:[[5,5,2,2,2],[10,9,2,1,2],[3,12,1,2,3],[31,6,2,2,2],[37,10,2,1,2],[39,4,1,2,3],[20,19,2,1,2],[23,23,1,2,3],[6,31,2,2,2],[12,36,1,2,3],[32,35,2,2,2],[38,31,1,2,3],[28,37,1,2,2]]
+  },
+  {
+    id:'nuke',name:'NUKE · PIXEL',desc:'За твоїм фото: реакторний зал A, нижній сектор B, двір із силосом, Lobby, Hut, Ramp і Secret. Металеві стіни та сходові переходи.',
+    tag:'ПІКСЕЛЬНА АДАПТАЦІЯ',label:'OUTSIDE · RAMP · SECRET',size:48,
+    wall:'#8e9fa7',light:'#d9e1df',sky:'#b9cddd',floor:'#7a878d',accent:'#d0b85f',
+    rooms:[[3,3,8,10],[5,10,5,11],[8,16,6,4],[11,16,9,10],[20,15,12,13],[35,15,10,13],[29,9,11,9],[18,10,14,8],[16,21,6,7],[17,27,7,5],[3,20,10,17],[10,30,28,9],[3,35,12,8],[35,35,7,10],[36,26,6,12],[28,26,6,9],[31,24,6,5],[24,26,4,7]],
+    callouts:[{name:'СИЛОС',point:[8.5,25.5]},{name:'OUTSIDE',point:[16.5,34.5]},{name:'LOBBY',point:[15.5,18.5]},{name:'HUT',point:[18.5,23.5]},{name:'SQUEAKY',point:[18.5,29.5]},{name:'RAMP',point:[36.5,13.5]},{name:'SECRET',point:[30.5,30.5]},{name:'ВЕНТИЛЯЦІЯ',point:[25.5,29.5]},{name:'ГАРАЖ',point:[9.5,38.5]},{name:'CT',point:[7.5,6.5]},{name:'T',point:[38.5,41.5]}],
+    blue:[[7.5,6.5],[5.5,4.5],[8.5,9.5]],red:[[38.5,41.5],[36.5,39.5],[40.5,43.5]],
+    platforms:[{x:3,y:3,w:29,h:15,z:.3},{x:11,y:16,w:9,h:10,z:.3},{x:20,y:15,w:12,h:13,z:.9},{x:29,y:9,w:11,h:3,z:.3}],
+    stairs:[{x:5,y:14,w:5,h:6,axis:'y',dir:-1,rise:.3},{x:11,y:20,w:5,h:4,axis:'x',dir:1,rise:.3},{x:20,y:12,w:6,h:6,axis:'y',dir:1,base:.3,rise:.6},{x:16,y:21,w:6,h:5,axis:'x',dir:1,base:.3,rise:.6},{x:20,y:28,w:4,h:4,axis:'y',dir:-1,rise:.9},{x:24,y:28,w:4,h:5,axis:'y',dir:-1,rise:.9},{x:35,y:12,w:5,h:6,axis:'y',dir:-1,rise:.3}],
+    blocks:[[4,10,1,2,3],[12,17,1,2,2],[5,23,2,2,2],[10,27,2,1,3],[23,20,2,2,2],[28,24,2,2,2],[36,20,2,2,2],[41,24,2,1,2],[30,10,1,1,3],[13,34,2,1,2],[5,38,2,2,2],[29,36,2,1,2],[38,37,2,1,2]]
+  }
 ];
 const TACTICAL_LAYOUTS = {
+  vertigo:{a:{name:'A SITE',point:[35.5,29.5]},mid:{name:'MID',point:[20.5,20.5]},b:{name:'B SITE',point:[8.5,7.5]}},
+  office:{a:{name:'ПЕРЕГОВОРНА',point:[9.5,8.5]},mid:{name:'КОРИДОР',point:[21.5,21.5]},b:{name:'КАБІНЕТИ',point:[33.5,9.5]}},
+  cache:{a:{name:'A SITE',point:[9.5,7.5]},mid:{name:'MID',point:[22.5,22.5]},b:{name:'B SITE',point:[35.5,8.5]}},
+  nuke:{a:{name:'РЕАКТОР A',point:[27.5,20.5]},mid:{name:'LOBBY',point:[16.5,19.5]},b:{name:'СЕКТОР B',point:[40.5,21.5]}},
+  inferno:{a:{name:'A SITE',point:[38.5,15.5]},mid:{name:'MID',point:[23.5,26.5]},b:{name:'B SITE',point:[9.5,7.5]}},
+  dust2:{a:{name:'A SITE',point:[32.5,6.5]},mid:{name:'MID',point:[20.5,19.5]},b:{name:'B SITE',point:[7.5,9.5]}},
   mirage:{a:{name:'A SITE',point:[13.5,31.5]},mid:{name:'MID',point:[20.5,19.5]},b:{name:'B SITE',point:[7.5,9.5]}},
-  terraces:{a:{name:'НИЖНІ СХОДИ',point:[6,18]},mid:{name:'ВЕРХНІ СХОДИ',point:[12,12]},b:{name:'БАЛКОН',point:[18,6]}},
-  furnace:{a:{name:'КРАН',point:[6,17]},mid:{name:'КОТЕЛ',point:[13,12]},b:{name:'ПІЧ',point:[18,6]}},
-  canal:{a:{name:'ДОК',point:[6,17]},mid:{name:'МІСТ',point:[12,12]},b:{name:'МАЯК',point:[18,6]}},
-  citadel:{a:{name:'НИЖНІЙ ДВІР',point:[6,17]},mid:{name:'БРАМА',point:[13,13]},b:{name:'ВЕРХНЯ БРАМА',point:[18,6]}},
-  market:{a:{name:'КРАМНИЦІ',point:[6,17]},mid:{name:'ФОНТАН',point:[12,12]},b:{name:'ЛОЖІ',point:[18,6]}},
-  terminal:{a:{name:'ПЕРОН',point:[6,17]},mid:{name:'ПЕРЕХІД',point:[12,12]},b:{name:'ВИХІД',point:[18,6]}},
-  summit:{a:{name:'АНГАР',point:[6,17]},mid:{name:'ВЕЖА',point:[12,12]},b:{name:'РАДІОВЕЖА',point:[18,6]}},
-  palace:{a:{name:'САД',point:[6,17]},mid:{name:'ДВІР',point:[12,13]},b:{name:'ТЕРАСА',point:[18,6]}}
+  ancient:{a:{name:'A SITE',point:[9.5,8.5]},mid:{name:'MID',point:[20.5,24.5]},b:{name:'B SITE',point:[33.5,11.5]}},
+  overpass:{a:{name:'A SITE',point:[10.5,9.5]},mid:{name:'КОНЕКТОР',point:[21.5,22.5]},b:{name:'B SITE',point:[35.5,15.5]}}
 };
 function nearestOpen(grid,[x,y]){
   let point=[1.5,1.5],distance=Infinity;
@@ -221,7 +436,7 @@ const MAPS = specs.map(s=>{
   const tactical=TACTICAL_LAYOUTS[s.id],mark=area=>({name:area.name,point:nearestOpen(grid,area.point)});
   const sites={a:mark(tactical.a),b:mark(tactical.b)};
   const ground=Array.from({length:size},()=>Array(size).fill(0));
-  if(s.id==='mirage'){
+  if(s.platforms){
     for(const [id,site] of [[1,sites.a],[2,sites.b]]){
       const [cx,cy]=site.point.map(Math.floor);
       for(let y=cy-1;y<=cy+1;y++)for(let x=cx-1;x<=cx+1;x++)if(grid[y]?.[x]===0)ground[y][x]=id;
@@ -238,7 +453,7 @@ const MAPS = specs.map(s=>{
     for(const p of s.stairs)if(px>=p.x&&px<p.x+p.w&&py>=p.y&&py<p.y+p.h){
       const length=p.axis==='x'?p.w:p.h,offset=p.axis==='x'?px-p.x:py-p.y;
       const step=Math.floor(offset*heightScale),count=length*heightScale;
-      z=p.rise*(p.dir===1?step+1:count-step)/count;
+      z=(p.base||0)+p.rise*(p.dir===1?step+1:count-step)/count;
     }
     return z;
   })):null;
@@ -301,6 +516,46 @@ function weaponWallProximity(map,x,y,angle,id){
 function blocked(map,x,y){ return (map.grid[Math.floor(y)]?.[Math.floor(x)]??1)!==0; }
 function canStand(map,x,y,r=.21){return !blocked(map,x-r,y-r)&&!blocked(map,x+r,y-r)&&!blocked(map,x-r,y+r)&&!blocked(map,x+r,y+r);}
 function floorHeight(map,x,y){return map.heights?.[Math.floor(y*map.heightScale)]?.[Math.floor(x*map.heightScale)]||0;}
+function actorHeight(map,a){
+  const floor=floorHeight(map,a.x,a.y);
+  if(!Number.isFinite(a.z))return floor;
+  return a.grounded===false?a.z:Math.max(floor,Math.min(a.z,supportHeight(map,a.x,a.y)));
+}
+function resetActorHeight(map,a){a.z=floorHeight(map,a.x,a.y);a.vz=0;a.grounded=true;a.landingSpeed=0;}
+const JUMP_SPEED=4.2,GRAVITY=12;
+function supportHeight(map,x,y,r=.21){
+  return Math.max(floorHeight(map,x,y),...[[r,r],[r,-r],[-r,r],[-r,-r]].map(([dx,dy])=>floorHeight(map,x+dx,y+dy)));
+}
+function jumpActor(map,a){
+  if(a.grounded===false||!canStand(map,a.x,a.y))return false;
+  a.z=actorHeight(map,a);a.vz=JUMP_SPEED;a.grounded=false;a.landingSpeed=0;
+  return true;
+}
+// Feet have a world-space height. Substeps prevent fast frames from passing
+// through a riser; airborne actors can clear low platforms, never solid walls.
+function stepActor(map,a,dx,dy,dt){
+  if(!Number.isFinite(dt)||dt<=0)return;
+  a.z=actorHeight(map,a);a.vz??=0;a.grounded??=true;a.landingSpeed=0;
+  const count=Math.max(1,Math.ceil(dt*120),Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/.05)),h=dt/count;
+  for(let i=0;i<count;i++){
+    if(!a.grounded){
+      a.z+=a.vz*h-GRAVITY*h*h*.5;a.vz-=GRAVITY*h;
+      const ground=supportHeight(map,a.x,a.y);
+      if(a.vz<=0&&a.z<=ground){a.z=ground;a.landingSpeed=-a.vz;a.vz=0;a.grounded=true;}
+    }
+    for(const [axis,delta] of [['x',dx/count],['y',dy/count]]){
+      if(!delta)continue;
+      const x=a.x+(axis==='x'?delta:0),y=a.y+(axis==='y'?delta:0);
+      if(!canStand(map,x,y)||supportHeight(map,x,y)>a.z+(a.grounded?.181:.001))continue;
+      a[axis]+=delta;
+      if(a.grounded){
+        const ground=supportHeight(map,a.x,a.y);
+        if(a.z-ground>.181){a.grounded=false;a.vz=0;}else a.z=ground;
+      }
+    }
+    if(a.grounded&&a.z-supportHeight(map,a.x,a.y)>.181){a.grounded=false;a.vz=0;}
+  }
+}
 function canTraverse(map,x,y,tx,ty,r=.21){
   const count=Math.max(1,Math.ceil(Math.hypot(tx-x,ty-y)/.08));let z=floorHeight(map,x,y);
   for(let i=1;i<=count;i++){
@@ -323,13 +578,37 @@ function lineOfSight(map,x,y,tx,ty,z=floorHeight(map,x,y)+.5,tz=floorHeight(map,
   for(let s=.08;s<d;s+=.08){const px=x+(tx-x)*s/d,py=y+(ty-y)*s/d;if(blocked(map,px,py)||floorHeight(map,px,py)>z+(tz-z)*s/d+.001)return false;}
   return true;
 }
+const pathWorkspaces=new WeakMap();
+const pathDirections=[[1,0],[0,1],[-1,0],[0,-1]];
 function findPath(map,sx,sy,tx,ty){
   sx=Math.floor(sx);sy=Math.floor(sy);tx=Math.floor(tx);ty=Math.floor(ty);
-  if(blocked(map,tx,ty))return [];
-  const queue=[[sx,sy]], prev=new Map([[`${sx},${sy}`,null]]);
-  for(let i=0;i<queue.length;i++){
-    const [x,y]=queue[i];if(x===tx&&y===ty){const path=[];let key=`${x},${y}`;while(prev.get(key)!==null){const [px,py]=key.split(',').map(Number);path.unshift({x:px+.5,y:py+.5});key=prev.get(key);}return path;}
-    for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const nx=x+dx,ny=y+dy,k=`${nx},${ny}`;if(!prev.has(k)&&!blocked(map,nx+.5,ny+.5)&&(!map.heights||canTraverse(map,x+.5,y+.5,nx+.5,ny+.5))){prev.set(k,`${x},${y}`);queue.push([nx,ny]);}}
+  const n=map.size;
+  if(![sx,sy,tx,ty].every(Number.isFinite)||sx<0||sy<0||sx>=n||sy>=n||blocked(map,tx,ty))return [];
+  if(sx===tx&&sy===ty)return [];
+  let work=pathWorkspaces.get(map);
+  if(!work||work.grid!==map.grid||work.heights!==map.heights||work.n!==n){
+    work={grid:map.grid,heights:map.heights,n,edges:new Int8Array(n*n).fill(-1),queue:new Int32Array(n*n),prev:new Int32Array(n*n)};
+    // Built-in geometry is static. Custom/edited maps get a fresh graph so
+    // callers can change their cells between searches without stale routes.
+    if(MAPS.includes(map))pathWorkspaces.set(map,work);
+  }
+  const {edges,queue,prev}=work,start=sy*n+sx,target=ty*n+tx;
+  prev.fill(-2);prev[start]=-1;queue[0]=start;let length=1;
+  for(let i=0;i<length;i++){
+    const key=queue[i],x=key%n,y=Math.floor(key/n);
+    if(key===target){const path=[];for(let k=key;prev[k]!==-1;k=prev[k])path.push({x:k%n+.5,y:Math.floor(k/n)+.5});return path.reverse();}
+    if(edges[key]===-1){
+      let mask=0;
+      for(let d=0;d<4;d++){
+        const [dx,dy]=pathDirections[d],nx=x+dx,ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<n&&ny<n&&!blocked(map,nx+.5,ny+.5)&&(!map.heights||canTraverse(map,x+.5,y+.5,nx+.5,ny+.5)))mask|=1<<d;
+      }
+      edges[key]=mask;
+    }
+    for(let d=0;d<4;d++)if(edges[key]&(1<<d)){
+      const next=key+pathDirections[d][0]+pathDirections[d][1]*n;
+      if(prev[next]===-2){prev[next]=key;queue[length++]=next;}
+    }
   }return [];
 }
 function applyDamage(actor,damage,head=false){const absorbed=head?0:Math.min(actor.armor,damage*.5);actor.armor-=absorbed;actor.hp=Math.max(0,actor.hp-damage+absorbed);return actor.hp;}
@@ -352,111 +631,130 @@ function hex(s){return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),pars
 function tint(s,k){return `rgb(${hex(s).map(v=>Math.min(255,Math.max(0,Math.round(v*k)))).join(',')})`;}
 function poly(c,points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
 // Render the playable grid itself as a sandstone model, like the reference photo.
-function mirageArt(canvas,map,hero){
+function architecturalMapArt(canvas,map,hero){
   const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height,n=map.size;
   const u=Math.min((w-40)/(n*2),(h-50)/(n+4)),ox=w/2,oy=(h-28-n*u)/2+u;
   const p=(x,y,z=0)=>[ox+(x-y)*u,oy+(x+y)*u*.5-z*u];
   c.imageSmoothingEnabled=false;c.clearRect(0,0,w,h);c.fillStyle='#202725';c.fillRect(0,0,w,h);
   const scale=map.heightScale,step=1/scale;
+  const eastColor=tint(map.wall,.64),southColor=tint(map.wall,.85),floorColors=[tint(map.floor,1.04),tint(map.floor,1.14)];
   for(let d=0;d<n*scale*2;d++)for(let iy=0;iy<n*scale;iy++){
     const ix=d-iy;if(ix<0||ix>=n*scale)continue;
     const x=ix/scale,y=iy/scale,gx=Math.floor(x),gy=Math.floor(y),solid=map.grid[gy][gx];
     if(solid&&![[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>map.grid[gy+dy]?.[gx+dx]===0))continue;
     const z=solid?2.7:floorHeight(map,x+step*.5,y+step*.5);
     const east=solid?0:floorHeight(map,x+step*1.5,y+step*.5),south=solid?0:floorHeight(map,x+step*.5,y+step*1.5);
-    if(z>east)poly(c,[p(x+step,y,east),p(x+step,y+step,east),p(x+step,y+step,z),p(x+step,y,z)],'#92764e');
-    if(z>south)poly(c,[p(x,y+step,south),p(x+step,y+step,south),p(x+step,y+step,z),p(x,y+step,z)],'#b39161');
-    poly(c,[p(x,y,z),p(x+step,y,z),p(x+step,y+step,z),p(x,y+step,z)],solid?'#eed8b0':(gx+gy)%3===0?'#bda57e':'#cbb48f');
+    if(z>east)poly(c,[p(x+step,y,east),p(x+step,y+step,east),p(x+step,y+step,z),p(x+step,y,z)],eastColor);
+    if(z>south)poly(c,[p(x,y+step,south),p(x+step,y+step,south),p(x+step,y+step,z),p(x,y+step,z)],southColor);
+    const top=solid?(map.id==='dust2'&&solid===3?'#806443':map.light):floorColors[(gx+gy)%3===0?0:1];
+    poly(c,[p(x,y,z),p(x+step,y,z),p(x+step,y+step,z),p(x,y+step,z)],top);
   }
   const labels=[{name:'A',point:map.sites.a.point},{name:'B',point:map.sites.b.point},{name:'MID',point:map.mid.point}];
-  if(hero)labels.push(...map.callouts.filter(a=>['ПАЛАЦ','АПАРТАМЕНТИ','РИНОК','CT','T'].includes(a.name)));
+  if(hero)labels.push(...map.callouts.filter(a=>['ПАЛАЦ','АПАРТАМЕНТИ','РИНОК','LONG A','SHORT A','ВЕРХНІ ТУНЕЛІ','ФОНТАН','ТУАЛЕТИ','MONSTER','HEAVEN','КАНАЛ','ХРАМ','DONUT','ПЕЧЕРА','РУЇНИ','LONG B','BANANA','АРКА','ALT MID','ЛІФТИ','РИШТУВАННЯ','СХОДИ B','ГАРАЖ','ПАПІР','ПРОЄКТОР','A MAIN','B MAIN','CHECKERS','OUTSIDE','RAMP','SECRET','CT','T'].includes(a.name)));
   c.textAlign='center';c.textBaseline='middle';c.font=`bold ${hero?11:10}px monospace`;
   for(const label of labels){const [x,y]=p(...label.point,floorHeight(map,...label.point)),width=label.name.length*(hero?7:6)+10;c.fillStyle='#172623e8';c.fillRect(x-width/2,y-8,width,16);c.fillStyle='#f3dfb3';c.fillText(label.name,x,y);}
-  c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle='#f3dfb3';c.font='bold 12px monospace';c.fillText('MIRAGE / PIXEL',16,h-13);
+  c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle='#f3dfb3';c.font='bold 12px monospace';c.fillText(map.name.replace(' · ',' / '),16,h-13);
   c.textAlign='right';c.fillStyle='#a5b8b0';c.font='10px monospace';c.fillText('A · MID · B',w-16,h-13);c.textAlign='left';
 }
-function drawMapLandmark(c,map,ox,oy,pw,ph,tw,th){
-  const u=Math.max(3,Math.floor(Math.min(tw,th)*.45)),cx=Math.round(ox+pw*.5),cy=Math.round(oy+ph*.47),light=tint(map.light,.88),shadow=tint(map.wall,.48),accent=tint(map.accent,1.18);
-  const r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
-  const stairs=(x,y,steps,dir=1)=>{for(let i=0;i<steps;i++){const width=(i+1)*u*2,left=dir>0?x:x-width;r(left,y+i*u,width,Math.max(2,u*.78),i%2?light:shadow);r(left,y+i*u,width,1,accent);}};
-  const terrace=(x,y,w,h)=>{r(x,y,w,h,shadow);r(x,y,w,Math.max(2,u*.5),light);r(x+u,y+u,w-u*2,Math.max(2,h-u*1.5),accent);};
-  switch(map.id){
-    case 'terraces': stairs(cx-6*u,cy-5*u,6,1);stairs(cx+6*u,cy-5*u,6,-1);terrace(cx-3*u,cy+u,u*6,u*2);break;
-    case 'furnace': r(cx-5*u,cy-3*u,3*u,6*u,shadow);r(cx+2*u,cy-4*u,3*u,7*u,shadow);stairs(cx-4*u,cy-2*u,4,1);r(cx-4*u,cy-2*u,8*u,u,accent);break;
-    case 'canal': r(cx-6*u,cy-u,12*u,2*u,accent);stairs(cx-6*u,cy-4*u,3,1);stairs(cx+6*u,cy-4*u,3,-1);terrace(cx-3*u,cy-u*.35,u*6,u*.7);break;
-    case 'citadel': r(cx-5*u,cy-5*u,3*u,8*u,shadow);r(cx+2*u,cy-5*u,3*u,8*u,shadow);for(const x of [-5,-3,2,4])r(cx+x*u,cy-6*u,u,u,light);stairs(cx-4*u,cy-3*u,5,1);terrace(cx+u,cy+u,u*3,u*2);break;
-    case 'market': stairs(cx-6*u,cy-4*u,5,1);stairs(cx+6*u,cy-4*u,5,-1);terrace(cx-2*u,cy+u,u*4,u*2);break;
-    case 'terminal': r(cx-6*u,cy-3*u,12*u,u,light);r(cx-5*u,cy-2*u,u,5*u,shadow);r(cx+4*u,cy-2*u,u,5*u,shadow);stairs(cx-5*u,cy,3,1);r(cx-6*u,cy+2*u,12*u,u,accent);break;
-    case 'summit': r(cx-u*.5,cy-6*u,u,9*u,shadow);stairs(cx-5*u,cy-5*u,6,1);r(cx-4*u,cy+3*u,8*u,u,accent);break;
-    case 'palace': stairs(cx-6*u,cy-6*u,6,1);stairs(cx+6*u,cy-6*u,6,-1);terrace(cx-3*u,cy+u,u*6,u*2);break;
-  }
-}
 function paintMapTexture(c,map,type){
+  if(map.id==='dust2'&&type===3){
+    // Fixed open door leaves: weathered timber, iron straps and rivets.
+    c.fillStyle='#725536';c.fillRect(0,0,64,64);
+    for(let x=0;x<64;x+=8){
+      c.fillStyle=x%16?'#846440':'#98764d';c.fillRect(x+1,0,6,64);
+      c.fillStyle='#493b2b';c.fillRect(x,0,1,64);
+    }
+    for(const y of [10,46]){
+      c.fillStyle='#343b36';c.fillRect(0,y,64,6);
+      c.fillStyle='#a59a79';for(let x=4;x<64;x+=16)c.fillRect(x,y+2,2,2);
+    }
+    c.fillStyle='#292f2b';c.fillRect(27,29,10,8);
+    c.fillStyle='#b8a17a';c.fillRect(29,31,6,4);
+    return;
+  }
+  if(map.id==='dust2'&&type===2){
+    c.fillStyle='#aa8c5e';c.fillRect(0,0,64,64);
+    for(let y=0;y<64;y+=16)for(let x=-((y/16)%2)*16;x<64;x+=32){
+      c.fillStyle=(x+y)%3?'#c1a475':'#b89b6c';c.fillRect(x+1,y+1,30,14);
+      c.fillStyle='#dfc99e';c.fillRect(x+2,y+1,28,2);
+      c.fillStyle='#7d694b';c.fillRect(x,y+15,32,1);
+    }
+    return;
+  }
+  if(map.id==='office'&&type===3){
+    c.fillStyle='#596b78';c.fillRect(0,0,64,64);
+    c.fillStyle='#a9b6ba';c.fillRect(5,3,54,61);
+    c.fillStyle='#6c574b';c.fillRect(9,7,46,57);
+    c.fillStyle='#8e7660';c.fillRect(12,10,40,54);
+    c.fillStyle='#394e5b';c.fillRect(17,16,30,19);
+    c.fillStyle='#bec8c6';c.fillRect(43,42,8,2);
+    return;
+  }
   if(type!==1)return;
-  const light=tint(map.light,.62),shadow=tint(map.wall,.42),accent=tint(map.accent,1.12),r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
-  const stairs=(x,y,steps,dir=1)=>{for(let i=0;i<steps;i++){const width=(i+1)*7,left=dir>0?x:x-width;r(left,y+i*7,width,5,i%2?light:shadow);r(left,y+i*7,width,1,accent);}};
+  const light=tint(map.light,.62),shadow=tint(map.wall,.42),r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
   switch(map.id){
+    case 'dust2':
+      // Sun-bleached plaster above a rough sandstone base, without tiled windows.
+      r(0,0,64,64,'#dac9a5');r(0,0,64,4,'#f4e5c4');
+      for(let y=5;y<43;y+=4)for(let x=2;x<64;x+=5){
+        if((x*7+y*11)%9<3)r(x,y,2,1,(x+y)%2?'#cbb891':'#e7d8b9');
+      }
+      r(0,42,64,3,'#8f9e99');r(0,45,64,19,'#b39970');
+      for(let y=46;y<64;y+=9){r(0,y,64,1,'#8e7656');for(let x=y===46?0:12;x<64;x+=24)r(x,y,1,9,'#8e7656');}
+      r(11,13,1,7,'#baa985');r(12,20,1,4,'#baa985');r(10,24,2,1,'#baa985');
+      r(45,33,7,2,'#c3af89');r(47,35,9,3,'#c3af89');break;
+    case 'overpass':
+      r(0,0,64,64,'#a6aaa0');r(0,2,64,2,'#d1d1bd');
+      r(0,31,64,2,'#747d77');r(31,0,2,64,'#747d77');
+      for(const x of [5,55])for(const y of [7,24,39,56]){r(x,y,3,3,'#656f69');r(x,y,2,1,'#d2d0b9');}
+      r(0,48,64,9,'#668d85');r(0,57,64,7,'#757d70');
+      for(let x=3;x<64;x+=11)r(x,59,2,5,'#666d61');break;
+    case 'vertigo':
+      r(0,0,64,64,'#a4aaa8');r(0,30,64,2,'#737e7c');
+      for(const x of [5,54])for(const y of [7,22,39,54]){r(x,y,3,3,'#677371');r(x,y,2,1,'#d3d6cc');}
+      for(let x=0;x<64;x+=8){r(x,46,8,8,x%16?'#414a49':'#d5b756');}
+      r(0,55,64,9,'#7e8986');break;
+    case 'office':
+      r(0,0,64,64,'#d7dedd');r(0,0,64,3,'#f0f1e9');
+      for(let x=0;x<64;x+=32){r(x,3,1,45,'#bac7c9');r(x+1,3,1,45,'#e8ede7');}
+      r(0,43,64,3,'#627785');r(0,46,64,15,'#80949e');r(0,61,64,3,'#465964');break;
+    case 'cache':
+      r(0,0,64,64,'#d5d2b9');
+      for(let y=0;y<64;y+=10){r(0,y,64,1,'#92977f');for(let x=(y/10%2)*12;x<64;x+=24)r(x,y,1,10,'#92977f');}
+      r(0,41,64,12,'#608574');r(0,53,64,2,'#405e52');
+      for(let x=2;x<64;x+=9){r(x,55,3,9,'#929a77');r(x+2,59,2,5,'#687a59');}break;
+    case 'nuke':
+      r(0,0,64,64,'#b7c4c8');
+      for(let x=0;x<64;x+=8){r(x,0,2,64,'#788f99');r(x+2,0,1,64,'#dce4df');}
+      r(0,36,64,15,'#517789');r(0,51,64,3,'#324f60');
+      for(let x=0;x<64;x+=8)r(x,56,8,6,x%16?'#424b48':'#dcc266');
+      for(const x of [4,58])for(const y of [5,29])r(x,y,2,2,'#526a73');break;
+    case 'inferno':
+      // Warm village plaster, exposed terracotta brick and a stone cornice.
+      r(0,0,64,64,'#d6b78c');r(0,0,64,4,'#f3dfb9');r(0,4,64,2,'#9d7658');
+      for(let y=8;y<42;y+=7)for(let x=3;x<64;x+=11)if((x+y)%3===0)r(x,y,4,2,'#c5a279');
+      r(0,42,64,22,'#8b5744');
+      for(let y=43;y<64;y+=7)for(let x=-((y-43)/7%2)*9;x<64;x+=18){r(x+1,y,16,5,'#b57a59');r(x+2,y,14,1,'#d49d74');}
+      r(0,39,64,3,'#b09470');r(8,18,1,10,'#b99770');r(9,28,3,1,'#b99770');break;
+    case 'ancient':
+      r(0,0,64,64,'#65734e');
+      for(let y=0;y<64;y+=16)for(let x=-((y/16)%2)*16;x<64;x+=32){
+        r(x+1,y+1,30,14,(x+y)%3?'#829165':'#76855a');
+        r(x+2,y+1,28,2,'#a5b480');r(x,y+14,32,2,'#48563b');
+      }
+      for(let x=2;x<64;x+=7){const h=4+(x*3)%11;r(x,0,3,h,'#465d39');r(x+1,h,2,3,'#5c7547');}
+      r(22,21,20,23,'#566443');r(24,23,16,19,'#a4af78');
+      r(28,26,8,3,'#5f7048');r(28,29,3,10,'#5f7048');r(31,36,5,3,'#5f7048');break;
     case 'mirage':
       r(0,0,64,40,tint(map.wall,1.08));r(0,40,64,3,light);
       for(let y=45;y<64;y+=9){r(0,y,64,1,shadow);for(let x=y%2?12:0;x<64;x+=24)r(x,y,1,9,shadow);}
       r(19,10,26,24,light);r(22,12,20,19,shadow);r(23,13,18,17,map.accent);
       for(let y=15;y<30;y+=4)r(24,y,16,1,shadow);
       r(17,33,30,3,light);break;
-    case 'terraces': stairs(4,7,6,1);stairs(60,7,6,-1);break;
-    case 'furnace': r(7,8,9,48,shadow);r(10,6,3,52,accent);r(38,0,8,64,shadow);stairs(20,19,4,1);break;
-    case 'canal': for(let y=11;y<60;y+=14){r(0,y,64,2,accent);r(8,y+3,20,2,light);}stairs(6,18,4,1);break;
-    case 'citadel': for(let x=3;x<64;x+=14)r(x,4,8,5,light);stairs(15,18,5,1);break;
-    case 'market': stairs(5,11,5,1);stairs(59,11,5,-1);break;
-    case 'terminal': r(0,11,64,5,light);r(0,46,64,4,accent);stairs(14,18,4,1);break;
-    case 'summit': r(0,7,64,5,light);stairs(8,13,6,1);r(0,53,64,3,accent);break;
-    case 'palace': stairs(4,8,6,1);stairs(60,8,6,-1);break;
+
   }
 }
-function mapArt(canvas,map,hero=false){
-  if(map.id==='mirage'){mirageArt(canvas,map,hero);return;}
-  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-  c.imageSmoothingEnabled=false;c.clearRect(0,0,w,h);
-  c.fillStyle='#081312';c.fillRect(0,0,w,h);
-  for(let y=0;y<h;y+=8){c.fillStyle=y%16?'#10201d':'#132823';c.fillRect(0,y,w,8);}
-  const mapW=Math.floor(w*(hero?.76:.72)),mapH=Math.floor(h*(hero?.82:.78));
-  const tw=Math.max(4,Math.floor(mapW/24)),th=Math.max(4,Math.floor(mapH/24));
-  const pw=tw*24,ph=th*24,ox=Math.floor((w-pw)/2),oy=Math.floor((h-ph)/2);
-  c.fillStyle='#050b0b';c.fillRect(ox-7,oy-7,pw+14,ph+14);
-  c.fillStyle=tint(map.accent,.8);c.fillRect(ox-7,oy-7,pw+14,3);c.fillRect(ox-7,oy-7,3,ph+14);
-  c.fillStyle='#1b302b';c.fillRect(ox-4,oy-4,pw+8,ph+8);
-  for(let y=0;y<24;y++)for(let x=0;x<24;x++){
-    const px=ox+x*tw,py=oy+y*th,type=map.grid[y][x];
-    if(!type){
-      c.fillStyle=(x*11+y*7)%5===0?tint(map.floor,.82):map.floor;c.fillRect(px,py,tw,th);
-      if((x+y*3)%7===0){c.fillStyle='#dce8c016';c.fillRect(px+1,py+1,Math.max(1,tw-3),1);}
-      continue;
-    }
-    const color=type===2?map.accent:type===3?tint(map.wall,.62):map.wall;
-    c.fillStyle='#07100f99';c.fillRect(px+2,py+2,tw,th);
-    c.fillStyle=tint(color,.63);c.fillRect(px,py,tw,th);
-    c.fillStyle=tint(color,1.2);c.fillRect(px+1,py+1,Math.max(1,tw-2),Math.max(2,Math.floor(th*.35)));
-    c.fillStyle='#08121166';c.fillRect(px,py+th-2,tw,2);
-    if(type===2){c.fillStyle='#fff0bb66';c.fillRect(px+Math.floor(tw*.35),py+1,Math.max(1,Math.floor(tw*.16)),Math.max(1,th-2));}
-    if(type===3){c.fillStyle='#0a1514aa';c.fillRect(px+Math.floor(tw*.25),py+Math.floor(th*.25),Math.max(1,Math.floor(tw*.5)),Math.max(1,Math.floor(th*.5)));}
-  }
-  drawMapLandmark(c,map,ox,oy,pw,ph,tw,th);
-  const mark=(label,point,color)=>{
-    const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);
-    c.fillStyle='#07110ed9';c.fillRect(x-6,y-6,13,13);c.fillStyle=color;c.fillRect(x-4,y-4,9,9);
-    c.fillStyle='#07110e';c.font=`bold ${Math.max(7,Math.min(tw,th))}px monospace`;c.textAlign='center';c.textBaseline='middle';c.fillText(label,x+.5,y+.5);c.textAlign='left';c.textBaseline='alphabetic';
-  };
-  mark('A',map.sites.a.point,'#d89a57');mark('M',map.mid.point,'#f4d47c');mark('B',map.sites.b.point,'#79a5a1');
-  const spawn=(point,color)=>{const x=Math.round(ox+(point[0]-.5)*tw),y=Math.round(oy+(point[1]-.5)*th);c.fillStyle='#07110e';c.fillRect(x-3,y-3,7,7);c.fillStyle=color;c.fillRect(x-2,y-2,5,5);};
-  map.blue.forEach(p=>spawn(p,'#c3f66b'));map.red.forEach(p=>spawn(p,'#f4a46a'));
-  c.fillStyle='#0b1715dd';c.fillRect(ox+5,oy+5,Math.min(148,pw-10),23);
-  c.fillStyle='#d9ead7';c.font=`bold ${hero?13:10}px monospace`;c.fillText(`PIXEL // ${map.name}`,ox+11,oy+15);
-  c.fillStyle=tint(map.accent,1.3);c.font=`${hero?8:7}px monospace`;c.fillText(`A / ${map.mid.name} / B`,ox+11,oy+24);
-  if(hero){
-    const sprite=makeOperator('#5b7367','#cede9e');const x=ox+pw-Math.max(37,tw*2),y=oy+ph-Math.max(72,th*7);
-    c.drawImage(sprite,x,y,Math.max(34,tw*2),Math.max(68,th*7));
-  }
-  c.globalAlpha=.22;c.fillStyle='#e4f5ce';for(let y=0;y<h;y+=4)c.fillRect(0,y,w,1);c.globalAlpha=1;
-}
+function mapArt(canvas,map,hero=false){architecturalMapArt(canvas,map,hero);}
 function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   const cv=document.createElement('canvas');cv.width=128;cv.height=256;const c=cv.getContext('2d');
   const r=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
@@ -695,15 +993,6 @@ function textures(map){
       c.fillStyle='#0d161955';c.fillRect(0,0,64,5);c.fillRect(0,59,64,5);
     }
     paintMapTexture(c,map,type);
-    if(map.id==='palace'&&type===1){c.fillStyle=tint(map.light,.54);for(let x=6;x<64;x+=20){c.fillRect(x,8,5,48);c.fillRect(x-2,5,9,4);c.fillRect(x-1,56,7,3);}}
-    if(map.id==='palace'&&type===2){c.fillStyle=tint(map.accent,1.24);for(let x=6;x<64;x+=16){c.fillRect(x,12,4,4);c.fillRect(x,44,4,4);}}
-    if(map.id==='palace'&&type===3){
-      for(let i=0;i<6;i++){
-        const width=16+i*7,x=(64-width)/2,y=12+i*7;
-        c.fillStyle=i%2?tint(map.wall,.52):tint(map.light,.88);c.fillRect(x,y,width,5);
-        c.fillStyle=tint(map.accent,1.12);c.fillRect(x,y+4,width,2);
-      }
-    }
     return cv;})];
 }
 
@@ -743,16 +1032,24 @@ function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths
   for(let x=0;x<w;x+=colStep){
     const camera=2*x/w-1,rx=ca-sa*fov*camera,ry=sa+ca*fov*camera;
     const surfaces=terrainColumn(map,view.x,view.y,rx,ry);
-    for(let i=surfaces.length-1;i>=0;i--){
+    // A height field forms a continuous silhouette from the bottom of a ray.
+    // Paint near-to-far, clipping everything behind the visible silhouette.
+    let uncovered=h;
+    const columnEnd=Math.min(w,x+colStep);
+    for(let i=0;i<surfaces.length;i++){
       const s=surfaces[i],near=Math.max(.001,s.near),isFloor=s.kind==='floor';
       if(isFloor&&s.z>=eye)continue;
       const top=isFloor?horizon+projection*(eye-s.z)/Math.max(.001,s.far):horizon+projection*(eye-s.high)/near;
       const bottom=horizon+projection*(eye-(isFloor?s.z:s.low))/near;
-      const start=Math.max(0,Math.ceil(top-.5)),end=Math.min(h,Math.ceil(bottom-.5));
+      const start=Math.max(0,Math.ceil(top-.5)),projectedEnd=Math.min(h,Math.ceil(bottom-.5));
+      // Keep the wall distance even when a nearer platform fully hides it;
+      // actor labels use this separate wall-only buffer.
+      if(s.kind==='wall'&&projectedEnd>start)for(let k=x;k<columnEnd;k++)zbuffer[k]=near;
+      const end=Math.min(uncovered,projectedEnd);
       if(end<=start)continue;
+      uncovered=start;
       if(s.kind==='wall'){
         ctx.drawImage(wallTextures[s.type]||wallTextures[1],s.tx,(start-top)*64/(bottom-top),1,(end-start)*64/(bottom-top),x,start,colStep,end-start);
-        for(let k=x;k<Math.min(w,x+colStep);k++)zbuffer[k]=near;
       }else{
         ctx.fillStyle=isFloor?floors[s.material]||floors[0]:s.side?'#94754e':'#ad8a5b';
         ctx.fillRect(x,start,colStep,end-start);
@@ -761,9 +1058,11 @@ function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths
       const distance=isFloor?(near+s.far)*.5:near;
       ctx.fillStyle=`rgba(12,20,20,${Math.min(.72,distance/48+(isFloor?s.checker*.045:s.side?.12:0))})`;
       ctx.fillRect(x,start,colStep,end-start);
+      const floorProjection=projection*(eye-s.z);
       for(let y=start;y<end;y++){
-        const depth=isFloor?projection*(eye-s.z)/(y+.5-horizon):near;
-        for(let k=x;k<Math.min(w,x+colStep);k++)depths[y*w+k]=depth;
+        const depth=isFloor?floorProjection/(y+.5-horizon):near;
+        const offset=y*w;
+        for(let k=x;k<columnEnd;k++)depths[offset+k]=depth;
       }
     }
   }
@@ -778,7 +1077,7 @@ const MP = {
   KILL_TARGET: 20,
   MATCH_TIME: 300,
   RESPAWN_DELAY: 3,
-  CODE_LEN: 6,
+  CODE_LEN: 4,
 };
 
 // Типи повідомлень клієнт -> сервер
@@ -792,7 +1091,8 @@ const S2C = {
   MATCH_START: 'matchStart', SNAPSHOT: 'snapshot', EVENTS: 'events', MATCH_END: 'matchEnd', ERROR: 'error',
 };
 
-const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+// Короткий код кімнати як у balloon-catcher: 4 символи, без схожих I/O/0/1.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode(rand = Math.random) {
   let s = '';
   for (let i = 0; i < MP.CODE_LEN; i++) s += CODE_ALPHABET[Math.floor(rand() * CODE_ALPHABET.length)];
@@ -932,7 +1232,7 @@ function snapshotRoom(room) {
   };
 }
 
-// Browser-hosted matches. Signalling is exchanged manually; game traffic uses WebRTC.
+// Browser-hosted matches. Signalling may be manual or automatic; gameplay uses WebRTC.
 
 
 function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
@@ -946,6 +1246,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
     const positions=p.team?MAPS[room.mapId].red:MAPS[room.mapId].blue;
     const mates=Object.values(room.players).filter(q=>q.team===p.team);
     [p.x,p.y]=positions[mates.indexOf(p)%positions.length];
+    resetActorHeight(MAPS[room.mapId],p);
     p.angle=p.team?3.8:.72;p.hp=100;p.alive=true;p.moving=false;
     p.weapon='pistol';p.ammo=12;p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
   }
@@ -985,6 +1286,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
           const x=Number(msg.x),y=Number(msg.y),angle=Number(msg.angle);
           if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)){
             p.x=x;p.y=y;p.angle=angle;p.moving=!!msg.moving;
+            if(msg.jump===true)jumpActor(MAPS[room.mapId],p);
           }
           if(Object.hasOwn(WEAPONS,msg.weapon)&&msg.weapon!==p.weapon){p.weapon=msg.weapon;p.ammo=WEAPONS[p.weapon].size;p.reloadingUntil=0;}
           break;
@@ -1000,7 +1302,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
           if(target&&target.alive&&target.team!==p.team){
             const distance=Math.hypot(target.x-p.x,target.y-p.y),angle=Math.atan2(target.y-p.y,target.x-p.x);
             const diff=Math.abs(Math.atan2(Math.sin(angle-p.angle),Math.cos(angle-p.angle)));
-            if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y)){
+            if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y,actorHeight(MAPS[room.mapId],p)+.5,actorHeight(MAPS[room.mapId],target)+.5)){
               const amount=w.damage*(msg.head?(w.headMult||2):1)*(p.weapon==='shotgun'?w.pellets*clamp(1-distance/14,.15,1):1);
               applyDamage(target,amount,!!msg.head);
               if(target.hp<=0){target.alive=false;target.deaths++;target.respawnIn=MP.RESPAWN_DELAY;p.kills++;events.push({t:'kill',source:id,target:target.id,sourceNick:p.nick,targetNick:target.nick});}
@@ -1017,6 +1319,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
     },
     tick(dt){
       if(room.phase!=='playing')return;
+      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt);
       const events=matchTick(room,dt);
       for(const event of events)if(event.t==='respawn')spawn(room.players[event.id]);
       for(const p of Object.values(room.players))if(p.reloadingUntil&&now()>=p.reloadingUntil){p.reloadingUntil=0;p.ammo=WEAPONS[p.weapon].size;}
@@ -1051,18 +1354,18 @@ function createPeerClient(handlers, dependencies={}){
     try{peer.channel.send(JSON.stringify(msg));}catch{}
   };
   const fail=message=>{lastError=message;handlers.onError?.(message);};
-  function removePeer(id){
+  function removePeer(id,notifyClose=true){
     const peer=peers.get(id);if(!peer)return;
     peers.delete(id);clearTimeout(peer.timeout);clearTimeout(peer.disconnectTimer);
     peer.cancelGather?.();peer.pc.onconnectionstatechange=null;peer.pc.ondatachannel=null;
     if(peer.channel){peer.channel.onclose=null;peer.channel.onmessage=null;peer.channel.onopen=null;peer.channel.onerror=null;}
     peer.pc.close();if(pending===id)pending=null;
     if(host)host.leave(id);
-    else if(!closed){client.connected=false;handlers.onClose?.(lastError);}
+    else if(!closed){client.connected=false;if(notifyClose)handlers.onClose?.(lastError);}
   }
   function newPeer(id){
     if(!RTC)throw new Error('Цей браузер не підтримує гру напряму. Відкрий гру в сучасному Chrome або Firefox');
-    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]});
     const peer={pc,channel:null,id};peers.set(id,peer);
     pc.onconnectionstatechange=()=>{
       if(pc.connectionState==='failed'){fail('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером');removePeer(id);}
@@ -1095,20 +1398,36 @@ function createPeerClient(handlers, dependencies={}){
     channel.onerror=()=>{fail('Зв’язок із гравцем перервано');removePeer(peer.id);};
   }
   async function gather(peer,description){
+    client.signalWarning='';
     await peer.pc.setLocalDescription(description);
     if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
-    if(peer.pc.iceGatheringState==='complete')return;
-    await new Promise((resolve,reject)=>{
-      const finish=error=>{clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);peer.cancelGather=null;error?reject(error):resolve();};
+    if(peer.pc.iceGatheringState!=='complete')await new Promise((resolve,reject)=>{
+      let finished=false;
+      const finish=error=>{
+        if(finished)return;finished=true;
+        clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);
+        peer.pc.removeEventListener('icecandidate',candidate);peer.cancelGather=null;
+        error?reject(error):resolve();
+      };
       const check=()=>{if(peer.pc.iceGatheringState==='complete')finish();};
-      // Manual signalling must contain every candidate; never export a partial offer.
-      const timeout=setTimeout(()=>finish(new Error('Не вдалося підготувати запрошення. Перевір мережу й спробуй ще раз')),15000);
+      const candidate=event=>{if(event.candidate===null)finish();};
+      // A stalled STUN request must not discard usable candidates. Export a
+      // snapshot at the deadline; later candidates are not manually signalled.
+      const timeout=setTimeout(()=>finish(),dependencies.iceGatheringTimeoutMs??15000);
       peer.cancelGather=()=>finish(new Error('Запрошення скасовано'));
-      peer.pc.addEventListener('icegatheringstatechange',check);check();
+      peer.pc.addEventListener('icegatheringstatechange',check);
+      peer.pc.addEventListener('icecandidate',candidate);check();
     });
+    if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
+    const sdp=peer.pc.localDescription?.sdp||'';
+    const candidates=[...sdp.matchAll(/^a=candidate:[^\r\n]+\btyp (host|srflx|prflx|relay)\b/gm)];
+    if(!candidates.length)throw new Error('Браузер не знайшов жодної адреси для прямого зв’язку. Спробуй іншу мережу або режим із ігровим сервером.');
+    if(candidates.every(candidate=>candidate[1]==='host'))client.signalWarning='Знайдено лише локальні адреси. Спробуйте спільний Wi-Fi; між різними мережами може знадобитися ігровий сервер.';
+    else if(peer.pc.iceGatheringState!=='complete')client.signalWarning='Пошук адрес ще триває. Код містить уже знайдені адреси; якщо з’єднання не вдасться, створи нове запрошення.';
+    return sdp;
   }
   const client={
-    kind:'peer',connected:false,myId:null,
+    kind:'peer',connected:false,myId:null,signalWarning:'',
     host(options,nick){
       if(closed||host||peers.size)throw new Error('Кімнату вже створено');
       host=createPeerHost(options,nick,(id,msg)=>id==='host'?dispatch(msg):sendChannel(peers.get(id),msg));
@@ -1117,16 +1436,16 @@ function createPeerClient(handlers, dependencies={}){
       let last=Date.now();timer=setInterval(()=>{const current=Date.now();host.tick(Math.min(2,(current-last)/1000));last=current;},1000/MP.TICK_HZ);
       return snapshotRoom(host.room);
     },
-    async invite(){
+    async invite({parallel=false}={}){
       if(closed||!host||host.room.phase!=='lobby')throw new Error('Запрошувати друзів можна в лобі кімнати');
       if(Object.keys(host.room.players).length>=host.room.maxPlayers)throw new Error('Кімната заповнена');
-      if(pending)removePeer(pending);
+      if(pending&&!parallel)removePeer(pending);
       const id='p'+(globalThis.crypto?.randomUUID?.()||makeCode()+Date.now().toString(36));
       const peer=newPeer(id);pending=id;wire(peer,peer.pc.createDataChannel('sector'));
       try{
-        await gather(peer,await peer.pc.createOffer());
+        const sdp=await gather(peer,await peer.pc.createOffer());
         if(closed||!peers.has(id))throw new Error('Запрошення скасовано');
-        return encodePeerSignal({type:'offer',id,sdp:peer.pc.localDescription.sdp});
+        return encodePeerSignal({type:'offer',id,sdp});
       }catch(error){removePeer(id);throw error;}
     },
     async answer(text,nick){
@@ -1135,25 +1454,119 @@ function createPeerClient(handlers, dependencies={}){
       const peer=newPeer(signal.id);peer.pc.ondatachannel=event=>wire(peer,event.channel);
       try{
         await peer.pc.setRemoteDescription({type:'offer',sdp:signal.sdp});
-        await gather(peer,await peer.pc.createAnswer());
+        const sdp=await gather(peer,await peer.pc.createAnswer());
         if(closed||!peers.has(signal.id))throw new Error('Приєднання скасовано');
         if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Відповідь не прийнято або мережа блокує з’єднання. Спробуй нове запрошення');removePeer(signal.id);},180000);
-        return encodePeerSignal({type:'answer',id:signal.id,sdp:peer.pc.localDescription.sdp});
-      }catch(error){removePeer(signal.id);throw error;}
+        return encodePeerSignal({type:'answer',id:signal.id,sdp});
+      // Setup errors belong to the pending answer operation. A disconnect
+      // callback here would tear down the UI before it can display that error.
+      }catch(error){removePeer(signal.id,false);throw error;}
     },
     async accept(text){
       const signal=decodePeerSignal(text,'answer');
       const peer=peers.get(signal.id);
-      if(closed||!host||!peer||signal.id!==pending)throw new Error('Ця відповідь не відповідає поточному запрошенню');
+      if(closed||!host||!peer)throw new Error('Ця відповідь не відповідає поточному запрошенню');
       if(peer.pc.remoteDescription)throw new Error('Цю відповідь уже прийнято');
       await peer.pc.setRemoteDescription({type:'answer',sdp:signal.sdp});
       if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Мережа блокує пряме з’єднання. Спробуйте іншу мережу або режим із сервером');removePeer(signal.id);},30000);
     },
+    cancelInvite(id){const peer=peers.get(id);if(host&&peer?.channel?.readyState!=='open')removePeer(id);},
     send(msg){if(closed)return;if(host)host.receive('host',msg);else sendChannel([...peers.values()][0],msg);},
     close(){
       if(closed)return;closed=true;client.connected=false;clearInterval(timer);
       for(const id of [...peers.keys()])removePeer(id);
     }
+  };
+  return client;
+}
+
+// Accept lowercase codes and visually identical Ukrainian letters when pasted.
+function normalizeRoomCode(value){
+  const similar={'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','І':'I'};
+  return String(value||'').trim().toUpperCase().replace(/[АВСЕНКМОРТХІ]/g,c=>similar[c]);
+}
+function validRoomCode(value){return /^[A-Z0-9]{4}$/.test(normalizeRoomCode(value));}
+
+
+
+function createPeerCodeClient(url,handlers,dependencies={}){
+  const WS=dependencies.WS||globalThis.WebSocket;
+  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null;
+  const jobs=new Map();
+  const sendSignal=msg=>{if(!closed&&socket?.readyState===1)socket.send(JSON.stringify(msg));};
+  const status=message=>{if(!closed)handlers.onStatus?.(message);};
+  const finish=message=>{if(closed)return;client.close();handlers.onClose?.(message);};
+  const phase=room=>{if(mode==='host')sendSignal({t:'peer:phase',phase:room.phase});};
+  const peer=createPeerClient({...handlers,
+    onJoined(room){clearTimeout(timer);if(mode==='guest')sendSignal({t:'peer:connected',id:linkId});phase(room);handlers.onJoined?.(room);},
+    onRoom(room){phase(room);handlers.onRoom?.(room);},
+    onMatchStart(room){phase(room);handlers.onMatchStart?.(room);},
+    onMatchEnd(room){phase(room);handlers.onMatchEnd?.(room);},
+    onClose:finish
+  },dependencies);
+  async function receive(msg){
+    if(closed)return;
+    if(msg.t==='peer:created'&&mode==='host'&&!peer.connected){
+      clearTimeout(timer);client.shortCode=msg.code;handlers.onCode?.(msg.code);peer.host(options,nick);
+    }else if(msg.t==='peer:waiting'&&mode==='guest'){
+      clearTimeout(timer);status('КІМНАТУ ЗНАЙДЕНО · З’ЄДНУЄМО З ДРУГОМ…');
+      timer=setTimeout(()=>finish('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером.'),90000);
+    }else if(msg.t==='peer:request'&&mode==='host'){
+      jobs.set(msg.id,null);
+      try{
+        const signal=await peer.invite({parallel:true}),id=decodePeerSignal(signal,'offer').id;
+        if(closed||!jobs.has(msg.id)){peer.cancelInvite(id);return;}
+        jobs.set(msg.id,id);sendSignal({t:'peer:offer',id:msg.id,signal});
+      }catch(error){if(!closed){jobs.delete(msg.id);handlers.onError?.(error.message);sendSignal({t:'peer:reject',id:msg.id});}}
+    }else if(msg.t==='peer:offer'&&mode==='guest'&&!linkId){
+      linkId=msg.id;
+      try{const signal=await peer.answer(msg.signal,nick);sendSignal({t:'peer:answer',id:msg.id,signal});}
+      catch(error){sendSignal({t:'peer:reject',id:msg.id});finish(error.message);}
+    }else if(msg.t==='peer:answer'&&mode==='host'&&jobs.has(msg.id)){
+      try{
+        if(decodePeerSignal(msg.signal,'answer').id!==jobs.get(msg.id))throw new Error('Відповідь не відповідає запрошенню');
+        await peer.accept(msg.signal);
+      }catch(error){handlers.onError?.(error.message);sendSignal({t:'peer:reject',id:msg.id});}
+    }else if(msg.t==='peer:cancel'&&mode==='host'){
+      const id=jobs.get(msg.id);jobs.delete(msg.id);if(id)peer.cancelInvite(id);
+    }else if(msg.t==='peer:error'){
+      if(!peer.connected)finish(msg.message);
+      else handlers.onError?.(msg.message);
+    }
+  }
+  function begin(action){
+    if(closed||socket)throw new Error('Спершу вийди з поточної кімнати');
+    if(!url)throw new Error('Сервіс кодів не налаштований. Відкрий гру за адресою запущеного сервера.');
+    if(!WS)throw new Error('Браузер не підтримує підключення за кодом');
+    // Сюди можна передати вже відкрите з'єднання (див. mpWarmUp у game.js):
+    // тоді діємо одразу, без очікування onopen. З'єднання в стані підключення
+    // теж підходить — дію надішлемо, щойно воно відкриється.
+    if(dependencies.socket&&(dependencies.socket.readyState===1||dependencies.socket.readyState===0))socket=dependencies.socket;
+    else socket=new WS(url);
+    status('ПІДКЛЮЧЕННЯ ДО СЕРВІСУ КОДІВ…');
+    timer=setTimeout(()=>finish('Сервіс кодів не відповідає. Перевір адресу сервера.'),10000);
+    if(socket.readyState===1)sendSignal(action);
+    else socket.onopen=()=>sendSignal(action);
+    socket.onmessage=event=>{
+      if(typeof event.data!=='string'||event.data.length>131072)return;
+      let msg;try{msg=JSON.parse(event.data);}catch{return;}
+      if(msg&&typeof msg.t==='string')receive(msg).catch(error=>finish(error.message));
+    };
+    const unavailable=()=>{
+      if(closed)return;
+      if(!peer.connected){finish('Сервіс кодів недоступний. Перевір адресу сервера.');return;}
+      client.shortCode='';handlers.onCode?.('');
+      status('Сервіс кодів відключився. Поточний прямий зв’язок залишається; для нових друзів створи кімнату знову.');
+    };
+    socket.onclose=unavailable;socket.onerror=unavailable;
+  }
+  const client={
+    kind:'peer',codeMode:true,shortCode:'',
+    get connected(){return peer.connected;},get myId(){return peer.myId;},
+    host(roomOptions,hostNick){mode='host';options=roomOptions;nick=hostNick;begin({t:'peer:create',maxPlayers:roomOptions.maxPlayers});},
+    join(code,guestNick){if(!validRoomCode(code))throw new Error('Код має 4 літери або цифри, наприклад 938A');mode='guest';nick=guestNick;begin({t:'peer:join',code:normalizeRoomCode(code)});},
+    send:msg=>peer.send(msg),
+    close(){if(closed)return;closed=true;clearTimeout(timer);jobs.clear();peer.close();if(socket){socket.onclose=null;socket.onerror=null;socket.onmessage=null;socket.onopen=null;socket.close();}}
   };
   return client;
 }
@@ -1167,23 +1580,44 @@ function createPeerClient(handlers, dependencies={}){
 
 
 
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
-const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mpNick:'',mpServer:''};
-try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
+const minimapBackgrounds=new WeakMap();
+const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mapKey:'mirage',mpNick:'',mpServer:''};
+try{
+  const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');
+  for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];
+  // Before the three-map rotation, Dust II occupied index 9. Removed maps
+  // return to Mirage; stable keys keep subsequent reordering unambiguous.
+  const key=saved.mapKey||(saved.map===9?'dust2':'mirage');
+  settings.map=Math.max(0,MAPS.findIndex(m=>m.id===key));
+}catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
-const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
+const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
-let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
+let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
-let mpEpoch=0,mpPeerBusy=false;
+let mpEpoch=0;
+let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
+let mpManualOff=false,mpEnsureTimer=0,mpSharedAt=0;
+let mpWarmSocket=null,mpWarmUrl='';
 let audio;
 let gunMotion=createWeaponMotion(),gunSample=null;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
+// Будь-яка необроблена помилка одразу показується гравцю, а не губиться в консолі.
+function showJsError(reason){
+  let msg='';
+  try{msg=String(reason?.message||reason||'невідома помилка');}catch{msg='невідома помилка';}
+  try{toast('Помилка: '+msg.slice(0,200));}catch{}
+  try{const s=$('#mp-code-status');if(s)s.textContent='Помилка: '+msg.slice(0,200);}catch{}
+}
+window.addEventListener('error',e=>showJsError(e.error||e.message));
+window.addEventListener('unhandledrejection',e=>showJsError(e.reason));
 function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
 function sound(kind='shot',weapon='pistol'){
   if(!audio||settings.volume===0)return;
@@ -1225,8 +1659,8 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
-function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап, зокрема адаптація Mirage за наданою схемою, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, стрибка ↑ та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
@@ -1239,10 +1673,10 @@ function start(){
 }
 $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
-  round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;jump=0;jumpVelocity=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
+  round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
   actors.forEach((a,i)=>{const pos=a.team?map.red[i-3]:map.blue[i];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;
     if(a.hp<=0){a.primary=null;a.armor=0;a.weapon='pistol';a.inventory={pistol:{ammo:12,reserve:36}};}
-    a.hp=100;a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
+    a.hp=100;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
     for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
   });
@@ -1311,7 +1745,7 @@ function aimProgress(){return player?.hp>0?(settings.motion?clamp(gunMotion.aim.
 function viewFov(){const zoom=player&&WEAPONS[player.weapon]?.scope||.5;return .78-(.78-zoom)*aimProgress();}
 function resetGunMotion(){
   gunMotion=createWeaponMotion();
-  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon}:null;
+  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,weapon:player.weapon}:null;
 }
 function updateGunMotion(dt){
   if(!player||player.hp<=0||modal||!settings.motion){resetGunMotion();return;}
@@ -1325,12 +1759,12 @@ function updateGunMotion(dt){
       turn,look:(pitch-previous.pitch)/dt,
       side:(-dx*Math.sin(player.angle)+dy*Math.cos(player.angle))/3.3,
       forward:(dx*Math.cos(player.angle)+dy*Math.sin(player.angle))/3.3,
-      moving:player.moving,walk,aiming,lift:jumpVelocity,
-      landing:previous.jump>0&&jump===0?previous.velocity:0,
+      moving:player.moving&&player.grounded,walk,aiming,lift:player.vz||0,
+      landing:player.landingSpeed||0,
       wall:weaponWallProximity(map,player.x,player.y,player.angle,player.weapon)
     },dt);
   }
-  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon};
+  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,weapon:player.weapon};
 }
 function kickGun(){if(settings.motion)kickWeaponMotion(gunMotion,player.weapon,aiming);}
 function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
@@ -1350,13 +1784,13 @@ function shoot(){
     let shotTarget=null,shotHead=false;
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
       const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       if(a.team===player.team)break;
       shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
     }
-    if(mpClient?.kind==='peer')mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
+    if(mpClient)mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
     mpClient?.send({t:C2S.SHOOT,weapon:player.weapon,target:shotTarget,head:shotHead});
     updateHUD();return;
   }
@@ -1367,8 +1801,8 @@ function shoot(){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
       const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
@@ -1376,22 +1810,26 @@ function shoot(){
   if(anyHit){hitTime=.15;sound('hit');}updateHUD();
 }
 
+function requestJump(){
+  if(state!=='playing'||paused||modal||!player||player.hp<=0||!['buy','fight','mp'].includes(phase))return;
+  if(jumpActor(map,player)&&mpMode)mpClient?.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon,jump:true});
+}
 function updatePlayer(dt){
   player.moving=false;if(player.hp<=0||modal)return;
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
-  moveActor(map,player,dx,dy);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
-  if(player.moving){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
+  stepActor(map,player,dx,dy,dt);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
+  if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
-  if(jump>0||jumpVelocity>0){jumpVelocity-=dt*4;jump=Math.max(0,jump+jumpVelocity*dt);if(jump===0)jumpVelocity=0;}
+  if(player.landingSpeed>1)sound('step');
 }
 function updateBots(dt){
   const level=settings.difficulty==='easy'?.55:settings.difficulty==='hard'?1.35:1;
   for(const a of actors){if(a.isPlayer||a.hp<=0)continue;a.flash=Math.max(0,a.flash-dt);a.cooldown-=dt;a.pathTimer-=dt;
     const enemies=actors.filter(e=>e.team!==a.team&&e.hp>0).sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));if(!enemies.length)continue;
-    const visible=enemies.find(e=>Math.hypot(e.x-a.x,e.y-a.y)<15&&lineOfSight(map,a.x,a.y,e.x,e.y));const target=visible||enemies[0];const distance=Math.hypot(target.x-a.x,target.y-a.y);a.moving=false;
+    const visible=enemies.find(e=>Math.hypot(e.x-a.x,e.y-a.y)<15&&lineOfSight(map,a.x,a.y,e.x,e.y,actorHeight(map,a)+.5,actorHeight(map,e)+.5));const target=visible||enemies[0];const distance=Math.hypot(target.x-a.x,target.y-a.y);a.moving=false;
     if(visible){a.angle=Math.atan2(target.y-a.y,target.x-a.x);a.seen+=dt;const skill=a.team===0?.85:level;
       if(a.cooldown<=0&&a.seen>.45){a.cooldown=(.58+Math.random()*.65)/skill;a.flash=.09;a.shots++;const chance=clamp(.85-distance*.04,.15,.75)*skill;if(Math.random()<chance)damage(target,WEAPONS[a.weapon].damage*.65,a);if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}}
     }else a.seen=0;
@@ -1446,11 +1884,11 @@ function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>
 function render(){
   if(state!=='playing')return;
   ctx.imageSmoothingEnabled=false;
-  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(keys.has('ControlLeft')?h*.06:0);
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
-  const eye=floorHeight(map,view.x,view.y)+.5;
+  const eye=actorHeight(map,view)+.5;
   if(map.heights){
     drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep:settings.quality==='low'?2:1,depths:terrainDepth,zbuffer,wallTextures});
   }else{
@@ -1477,7 +1915,7 @@ function render(){
   }
   }
   const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
-  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-floorHeight(map,a.x,a.y))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
+  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-actorHeight(map,a))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
     for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){
       const tx=clamp(Math.floor((sx-x)/sw*128),0,127);
       if(!map.heights){if(depth<zbuffer[sx])ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);continue;}
@@ -1530,13 +1968,20 @@ function drawGun(w,h){
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
-  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/map.size;
-  for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
-    if(map.grid[y][x]){mc.fillStyle=map.id==='mirage'?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s,s);}
+  const s=160/map.size;
+  let background=minimapBackgrounds.get(map);
+  if(!background){
+    background=document.createElement('canvas');background.width=160;background.height=160;
+    const c=background.getContext('2d');c.fillStyle='#102019';c.fillRect(0,0,160,160);
+    for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
+      if(map.grid[y][x]){c.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';c.fillRect(x*s,y*s,s,s);}
+    }
+    const tacticalMark=(label,[x,y],color)=>{c.fillStyle='#07110ee0';c.fillRect(x*s-5,y*s-5,10,10);c.fillStyle=color;c.fillRect(x*s-4,y*s-4,8,8);c.fillStyle='#07110e';c.font='bold 7px monospace';c.textAlign='center';c.textBaseline='middle';c.fillText(label,x*s,y*s+.5);};
+    tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');
+    minimapBackgrounds.set(map,background);
   }
-  const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
-  tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
-  for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
+  mc.drawImage(background,0,0);mc.textAlign='left';mc.textBaseline='alphabetic';
+  for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y,actorHeight(map,view)+.5,actorHeight(map,a)+.5))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
   mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
 }
 function frame(now){const dt=Math.min(.045,(now-lastTime)/1000);lastTime=now;update(dt);render();hudTimer-=dt;if(hudTimer<=0){hudTimer=.08;if(state==='playing')updateHUD();}requestAnimationFrame(frame);}
@@ -1554,11 +1999,11 @@ addEventListener('keydown',e=>{
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
     if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
     if(e.code==='KeyB')toast('Магазина в мережі немає — усі 7 стволів доступні на 1–7');
-    if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+    if(e.code==='Space')requestJump();
     if(e.code==='Tab'&&mpRoom)toast(`ВАРТА ${mpRoom.score[0]} : ${mpRoom.score[1]} РЕЙД · Фраги: ${kills} · Смерті: ${deaths}`);
     return;
   }
-  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space')requestJump();
   if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
@@ -1573,7 +2018,7 @@ $('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focus
 const joy=$('#joystick');let joyId;
 joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect();stick.x=clamp((e.clientX-r.left-50)/40,-1,1);stick.y=clamp((e.clientY-r.top-50)/40,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*25}px,${stick.y*25}px)`;});
 function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
-$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
+$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-jump').onclick=requestJump;$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
 canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
 // ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
@@ -1587,28 +2032,54 @@ function mpSetup(){
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
     $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
     if(!$('#mp-transport').value)$('#mp-transport').value='server';
+    // Усі кімнати — приватні за кодом, як у balloon-catcher. Публічний список
+    // лишається лише для тих, хто явно обере «Публічна».
+    if($('#mp-room-visibility')&&!$('#mp-room-visibility').value)$('#mp-room-visibility').value='private';
     $('#mp-connect').onclick=()=>mpConnect();
-    $('#mp-transport').onchange=()=>{mpDisconnect(true);mpTransportChanged();};
-    mpWirePeer();$('#mp-disconnect').onclick=()=>mpDisconnect();
+    $('#mp-transport').onchange=()=>{mpManualOff=false;mpDisconnect(true);mpTransportChanged();};
+    $('#mp-disconnect').onclick=()=>{mpManualOff=true;mpDisconnect();};
     $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
     $('#mp-create').onclick=()=>{
       settings.mpNick=$('#mp-nick').value;save();
       const options={t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)};
-      if(mpUsesPeer()){
-        mpDisconnect(true);mpClient=createPeerClient(mpHandlers(mpEpoch));mpClient.host(options,settings.mpNick);
-      }else mpServerAction(options);
+      if(mpUsesCode())mpCodeAction(null,options);
+      else mpServerAction(options);
     };
     $('#mp-join-btn').onclick=()=>{
-      const code=$('#mp-join-code').value.trim().toUpperCase();
-      if(code.length!==6)return toast('Код має 6 символів');
+      if(mpUsesCode()){
+        const code=normalizeRoomCode($('#mp-join-code').value);
+        if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
+        mpCodeAction(code);return;
+      }
+      // Код кімнати як у balloon-catcher: 4 символи, малі літери й схожі українські приймаємо.
+      const code=normalizeRoomCode($('#mp-join-code').value);
+      if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
       mpServerAction({t:C2S.JOIN_CODE,code});
     };
+    $('#mp-join-code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#mp-join-btn').onclick();});
+    $('#mp-copy-code').onclick=()=>mpCopy('mp-short-code');
+    $('#mp-copy-link').onclick=()=>mpCopyInvite();
     $('#mp-ready').onclick=()=>{if(mpClient&&mpRoom){const me=mpMe();mpClient.send({t:C2S.READY,ready:!(me&&me.ready)});}};
     $('#mp-start').onclick=()=>{if(mpClient&&mpRoom)mpClient.send({t:C2S.START});};
     $('#mp-leave').onclick=()=>{if(mpClient?.kind==='peer'){mpDisconnect();return;}if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
     const sendChat=()=>{const inp=$('#mp-chat-input'),text=inp.value.trim();if(text&&mpClient&&mpRoom){mpClient.send({t:C2S.CHAT,text});inp.value='';}};
     $('#mp-chat-send').onclick=sendChat;
     $('#mp-chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();e.stopPropagation();});
+    // Тримаємо підключення до сервера постійно: якщо зв'язку нема і гравець його
+    // не вимикав вручну — мовчки пробуємо знову кожні 5 секунд.
+    if(!mpEnsureTimer)mpEnsureTimer=setInterval(()=>{
+      if(mpManualOff||mpUsesPeer()||mpRoom||mpMode)return;
+      if(mpClient&&(mpClient.connected||mpClient.connecting))return;
+      // Адреси нема (статичний хостинг без сервера) — раз на 30 с перевіряємо
+      // ws.json: господар міг підняти сервер уже після відкриття сторінки.
+      if(!defaultMpUrl($('#mp-server').value)){
+        const now=Date.now();
+        if(now-mpSharedAt>30000){mpSharedAt=now;findSharedServer().then(url=>{if(url&&!mpClient?.connected&&!mpManualOff){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});}
+        return;
+      }
+      mpConnect(null,true);
+    },5000);
+    mpWarmUp();
   }
 }
 function mpTabOpened(){
@@ -1616,14 +2087,53 @@ function mpTabOpened(){
   mpTransportChanged();
   if(mpRoom)mpShowRoom();else mpShowHome();
   if(mpClient&&mpClient.connected&&!mpRoom&&mpClient.kind!=='peer')mpClient.send({t:C2S.LIST});
+  else if(!mpUsesPeer()&&!mpManualOff&&!mpRoom&&!mpMode&&(!mpClient||!mpClient.connecting))mpConnect(null,true);
 }
 function mpUsesPeer(){return $('#mp-transport').value!=='server';}
+function mpUsesCode(){return $('#mp-transport').value==='code';}
 function mpTransportChanged(){
-  const peer=mpUsesPeer();
-  $('#mp-server-options').hidden=peer;$('#mp-peer-help').hidden=!peer;
-  $('#mp-peer-join').hidden=!peer;$('#mp-room-visibility').hidden=peer;
-  $('#mp-code-join').hidden=peer;$('#mp-public').hidden=peer;
-  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  const peer=mpUsesPeer(),code=mpUsesCode();
+  // Адреса завжди видима: вона потрібна і онлайн-режиму, і сервісу коротких кодів.
+  $('#mp-server-options').hidden=false;
+  $('#mp-server-actions').hidden=code;
+  $('#mp-room-visibility').hidden=peer;
+  $('#mp-code-join').hidden=false;$('#mp-public').hidden=peer;
+  $('#mp-join-code').maxLength=4;$('#mp-join-code').placeholder='КОД';
+  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й НАДІШЛИ ДРУГУ КОД':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  mpWarmUp();
+}
+// Сервіс кодів підключаємо заздалегідь — одразу при відкритті вкладки, виборі
+// режиму чи виході з кімнати. Тоді «Створити» і «Приєднатись» спрацьовують
+// миттєво: з'єднання вже відкрите, чекати нема чого.
+function mpWarmUp(){
+  try{
+    if(!mpUsesCode()||mpClient||mpRoom||mpMode)return;
+    const WS=globalThis.WebSocket;
+    if(!WS)return;
+    const url=defaultMpUrl($('#mp-server').value);
+    if(!url)return;
+    if(mpWarmSocket&&(mpWarmSocket.readyState===1||mpWarmSocket.readyState===0)&&mpWarmUrl===url)return;
+    try{mpWarmSocket?.close?.();}catch{}
+    mpWarmUrl=url;
+    const s=new WS(url);
+    mpWarmSocket=s;
+    s.onclose=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+  }catch{}
+}
+function mpTakeWarm(url){
+  const s=mpWarmSocket;mpWarmSocket=null;
+  if(s&&mpWarmUrl===url&&(s.readyState===1||s.readyState===0))return s;
+  try{s?.close?.();}catch{}
+  return null;
+}
+function mpCodeAction(code,options){
+  mpDisconnect(true);settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  const url=defaultMpUrl(settings.mpServer);
+  if(!url){const message='Для коротких кодів потрібен сервіс кімнат. Відкрий гру за адресою запущеного сервера або вкажи його адресу.';$('#mp-code-status').textContent=message;toast(message);return;}
+  mpClient=createPeerCodeClient(url,mpHandlers(mpEpoch),{socket:mpTakeWarm(url)});
+  try{if(code)mpClient.join(code,settings.mpNick);else mpClient.host(options,settings.mpNick);}
+  catch(error){mpDisconnect(true);$('#mp-code-status').textContent=error.message;toast(error.message);}
 }
 function mpServerAction(action){
   if(mpClient?.connected&&mpMyId&&mpClient.kind!=='peer')mpClient.send(action);
@@ -1632,6 +2142,8 @@ function mpServerAction(action){
 function mpHandlers(epoch,action=null,automatic=false){
   const active=fn=>(...args)=>{if(epoch===mpEpoch)fn(...args);};
   return {
+    onStatus:active(message=>{$('#mp-code-status').textContent=message;mpSetStatus(message);}),
+    onCode:active(code=>{$('#mp-short-code').value=code;$('#mp-short-code-panel').hidden=!code;if(code)$('#mp-code-status').textContent='Код готовий. Скопіюй і надішли другу.';}),
     onOpen:active(()=>mpClient.send({t:C2S.HELLO,nick:settings.mpNick})),
     onWelcome:active(msg=>{
       mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();
@@ -1644,7 +2156,7 @@ function mpHandlers(epoch,action=null,automatic=false){
       }
     }),
     onRooms:active(rooms=>{mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}}),
-    onJoined:active(room=>{mpRoom=room;mpChat=[];mpShowRoom();}),
+    onJoined:active(room=>{mpRoom=room;mpChat=[];mpLastJoin={code:room.code};mpReconnectTries=0;mpShowRoom();}),
     onRoom:active(room=>{mpRoom=room;if(!mpMode)mpShowRoom();}),
     onMatchStart:active(room=>mpStartMatch(room)),
     onSnapshot:active(snap=>{if(mpMode)mpApplySnapshot(snap);}),
@@ -1652,16 +2164,84 @@ function mpHandlers(epoch,action=null,automatic=false){
     onMatchEnd:active(room=>{mpRoom=room;mpShowResult({winner:room.winner,score:room.score});}),
     onError:active(message=>{
       if(!automatic)toast(message);
-      if(mpClient?.kind==='peer'){
-        $('#mp-peer-host-status').textContent=message;$('#mp-peer-join-status').textContent=message;
-      }else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
+      if(mpUsesCode()||mpClient?.kind==='peer')$('#mp-code-status').textContent=message;
+      if(mpClient?.kind==='peer'){mpSetStatus(message);}
+      else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
     }),
-    onClose:active(message=>{const peer=mpClient?.kind==='peer';mpDisconnect();const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');if(!automatic)toast(reason);if(peer)$('#mp-peer-join-status').textContent=reason;})
+    onClose:active(message=>{
+      const peer=mpClient?.kind==='peer';
+      const join=mpLastJoin;
+      mpDisconnect();
+      const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');
+      mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');
+      if(!automatic)toast(reason);
+      if(peer)$('#mp-code-status').textContent=reason;
+      // Обрив як у balloon-catcher: кімната на сервері живе, поки в ній є хоч хтось,
+      // тож повертаємось у ту саму гру кілька разів, перш ніж відпустити в меню.
+      if(!peer&&join?.code&&epoch===mpEpoch)mpReconnect(join.code);
+    })
   };
 }
+// Повернення в кімнату після обриву: до 10 спроб із ростом паузи (~40 с разом).
+// Сервер ще трохи тримає старе місце, тож перші спроби можуть бачити «кімната повна».
+async function mpReconnect(code){
+  for(let i=1;i<=10;i++){
+    mpSetStatus(`Зв'язок обірвався. Повертаємось у кімнату ${code}… (${i}/10)`);
+    await new Promise(r=>setTimeout(r,Math.min(1200*i,5000)));
+    if(mpRoom||mpMode||!mpLastJoin||mpLastJoin.code!==code)return;
+    if(state!=='lobby'&&!mpMode)return;
+    mpReconnectTries=i;
+    mpConnect({t:C2S.JOIN_CODE,code},true);
+    await new Promise(r=>setTimeout(r,1500));
+    if(mpRoom&&mpRoom.code===code)return;
+  }
+  mpLastJoin=null;
+  mpSetStatus('Кімната '+code+' не відповідає');
+}
+async function mpCopyInvite(){
+  const code=mpRoom?.code||normalizeRoomCode($('#mp-join-code').value);
+  if(!validRoomCode(code||''))return toast('Введи код кімнати з 4 символів');
+  const link=inviteLink(code,mpClient?.url||$('#mp-server').value);
+  try{
+    await navigator.clipboard.writeText(link);
+    const btn=$('#mp-copy-link');
+    if(btn){btn.textContent='Скопійовано ✓';setTimeout(()=>{btn.textContent='КОПІЮВАТИ ПОСИЛАННЯ';},1600);}
+    toast('Посилання скопійовано — надішли другу');
+  }catch{
+    toast(link);
+  }
+}
+// Запрошення ?room=КОД (&ws=адреса) як у balloon-catcher: відкриває вкладку
+// мультиплеєра і заходить само. Викликається один раз при старті.
+async function mpCheckInvite(){
+  if(mpInviteChecked)return;mpInviteChecked=true;
+  let q;
+  try{q=new URLSearchParams(location.search);}catch{return;}
+  const fromQuery=serverUrlFromQuery();
+  if(fromQuery){setSharedServerUrl(fromQuery);settings.mpServer=fromQuery;save();const inp=$('#mp-server');if(inp)inp.value=fromQuery;}
+  else{
+    // Статична збірка без сервера ховає онлайн (клас no-online), ws.json його повертає.
+    try{
+      if(location.hostname?.endsWith('.github.io')&&!String(SERVER_URL||'').trim()&&!q.get('ws'))document.body?.classList?.add('no-online');
+    }catch{}
+    await findSharedServer();
+    const sharedNow=defaultMpUrl($('#mp-server')?.value);
+    if(sharedNow&&$('#mp-server')&&!$('#mp-server').value){$('#mp-server').value=sharedNow;settings.mpServer=sharedNow;save();}
+  }
+  try{document.body?.classList?.toggle('no-online',!defaultMpUrl($('#mp-server')?.value));}catch{}
+  const invite=normalizeRoomCode(q.get('room'));
+  if(!invite||!validRoomCode(invite))return;
+  if(mpUsesPeer()){const t=$('#mp-transport');if(t){t.value='server';mpTransportChanged();}}
+  tab('mp');
+  const inp=$('#mp-join-code');if(inp)inp.value=invite;
+  mpLastJoin={code:invite};
+  mpConnect({t:C2S.JOIN_CODE,code:invite});
+}
 function mpConnect(action=null,automatic=false){
+  mpManualOff=false;
   mpDisconnect(true);
   settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  if(action?.t===C2S.JOIN_CODE&&validRoomCode(action.code||''))mpLastJoin={code:normalizeRoomCode(action.code)};
   const url=defaultMpUrl(settings.mpServer);
   if(!url){mpSetStatus('ВКАЖИ АДРЕСУ ІГРОВОГО СЕРВЕРА');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');if(!automatic)toast('Для гри без ігрового сервера вибери «Напряму з друзями»');return;}
   mpSetStatus('ПІДКЛЮЧЕННЯ…');mpSetConnectionStatus('ПІДКЛЮЧЕННЯ ДО СЕРВЕРА…');
@@ -1674,21 +2254,25 @@ function mpAutoConnect(){
   const shared=String(SERVER_URL||'').trim();
   if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
   if(!defaultMpUrl($('#mp-server').value)){
-    mpSetStatus('СЕРВЕР НЕ НАЛАШТОВАНО');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    mpSetStatus('СЕРВЕР КІМНАТ ЗАРАЗ НЕ ПІДКЛЮЧЕНИЙ. З БОТАМИ МОЖНА ГРАТИ ОДРАЗУ.');
+    mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    try{document.body?.classList?.add('no-online');}catch{}
+    // Статичний сайт може знайти сервер пізніше через ws.json — тоді кімнати з'являться самі.
+    findSharedServer().then(url=>{if(url){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});
     return;
   }
   mpConnect(null,true);
 }
 function mpDisconnect(silent=false){
-  mpEpoch++;mpPeerBusy=false;
+  mpEpoch++;
+  clearTimeout(mpReconnectTimer);mpReconnectTimer=0;
+  if(!silent)mpLastJoin=null;
   clearInterval(mpListTimer);mpListTimer=0;
   const old=mpClient;mpClient=null;if(old){try{old.close();}catch{}}
   mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;mpRooms=[];
   $('#mp-disconnect').hidden=true;
-  for(const id of ['mp-peer-invite-panel','mp-peer-reply-panel','mp-peer-cancel','mp-peer-host'])$('#'+id).hidden=true;
-  for(const id of ['mp-peer-invite-text','mp-peer-accept-text','mp-peer-reply'])$('#'+id).value='';
-  for(const id of ['mp-peer-invite','mp-peer-answer','mp-peer-accept'])$('#'+id).disabled=false;
-  $('#mp-peer-host-status').textContent='';$('#mp-peer-join-status').textContent='';
+  $('#mp-short-code-panel').hidden=true;
+  $('#mp-short-code').value='';$('#mp-code-status').textContent='';
   if(!silent){
     state='lobby';paused=false;modal='';release();
     $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
@@ -1697,41 +2281,10 @@ function mpDisconnect(silent=false){
   if(state==='lobby')mpShowHome();
   mpTransportChanged();
 }
-async function mpPeerTask(button,status,work){
-  if(mpPeerBusy)return;mpPeerBusy=true;
-  const client=mpClient;$('#'+button).disabled=true;$('#'+status).textContent='ГОТУЄМО З’ЄДНАННЯ…';
-  try{await work(client);}catch(error){if(client===mpClient){$('#'+status).textContent=error.message;toast(error.message);}}
-  finally{if(client===mpClient){mpPeerBusy=false;$('#'+button).disabled=false;}}
-}
 async function mpCopy(id){
   const field=$('#'+id);if(!field.value)return;
   try{await navigator.clipboard.writeText(field.value);toast('Скопійовано — надішли другу');}
   catch{field.focus();field.select();toast('Текст виділено. Натисни Ctrl+C та надішли другу');}
-}
-function mpWirePeer(){
-  $('#mp-peer-invite').onclick=()=>mpPeerTask('mp-peer-invite','mp-peer-host-status',async client=>{
-    const text=await client.invite();if(client!==mpClient)return;
-    $('#mp-peer-invite-text').value=text;$('#mp-peer-accept-text').value='';$('#mp-peer-invite-panel').hidden=false;
-    $('#mp-peer-host-status').textContent='Надішли запрошення другу й встав його відповідь нижче.';
-  });
-  $('#mp-peer-accept').onclick=()=>mpPeerTask('mp-peer-accept','mp-peer-host-status',async client=>{
-    await client.accept($('#mp-peer-accept-text').value);if(client!==mpClient)return;
-    $('#mp-peer-host-status').textContent='Відповідь прийнято. Чекаємо на друга…';
-  });
-  $('#mp-peer-answer').onclick=()=>{
-    if(mpPeerBusy)return;
-    const text=$('#mp-peer-offer').value;
-    mpDisconnect(true);settings.mpNick=$('#mp-nick').value;save();
-    mpClient=createPeerClient(mpHandlers(mpEpoch));$('#mp-peer-cancel').hidden=false;
-    return mpPeerTask('mp-peer-answer','mp-peer-join-status',async client=>{
-      const answer=await client.answer(text,settings.mpNick);if(client!==mpClient)return;
-      $('#mp-peer-reply').value=answer;$('#mp-peer-reply-panel').hidden=false;
-      $('#mp-peer-join-status').textContent='Передай відповідь власнику та залишай цю вкладку відкритою.';
-    });
-  };
-  $('#mp-peer-cancel').onclick=()=>mpDisconnect();
-  $('#mp-peer-copy-invite').onclick=()=>mpCopy('mp-peer-invite-text');
-  $('#mp-peer-copy-reply').onclick=()=>mpCopy('mp-peer-reply');
 }
 function mpShowHome(){
   $('#mp-home').hidden=false;$('#mp-room').hidden=true;
@@ -1757,11 +2310,11 @@ function mpRenderRoom(){
   const m=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   const me=room.players.find(p=>p.id===mpMyId);
   $('#mp-room-title').textContent=`КІМНАТА · ${room.name}`;
-  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі 7 стволів доступні`;
-  $('#mp-peer-host').hidden=mpClient?.kind!=='peer'||room.hostId!==mpMyId;
-  $('#mp-peer-invite').disabled=room.phase!=='lobby'||room.players.length>=room.maxPlayers||mpPeerBusy;
-  if(mpClient?.kind==='peer'&&room.players.length>1)$('#mp-peer-host-status').textContent=`У кімнаті ${room.players.length} гравців. Позначте готовність для початку.`;
-  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА ЗАПРОШЕННЯМ':room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  // Підпис як у balloon-catcher: скільки гравців і чи чекаємо ще.
+  const waiting=room.phase==='lobby'&&room.players.length<2?` · Чекаємо на друзів… Дай їм код ${room.code}`:'';
+  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв${waiting}`;
+  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА КОРОТКИМ КОДОМ':room.isPublic?`ПУБЛІЧНА · КОД ДЛЯ ДРУЗІВ: ${room.code}`:`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  const copyLink=$('#mp-copy-link');if(copyLink)copyLink.hidden=mpClient?.kind==='peer';
   $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${escapeText(p.nick)}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
   $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
   const startBtn=$('#mp-start');
@@ -1786,12 +2339,12 @@ function mpStartMatch(room){
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
   for(const p of room.players){
     if(p.id===mpMyId)continue;
-    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
+    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
   }
   actors=[player,...mpRemotes.values()];
   state='playing';phase='mp';paused=false;modal='';mpMode=true;
   pitch=0;aiming=false;shootHeld=false;touchFire=false;nextShot=0;reload=0;reloadTotal=0;reloadStage=0;recoil=0;hitTime=0;hurtTime=0;keys.clear();
-  jump=0;jumpVelocity=0;resetGunMotion();
+  resetActorHeight(map,player);resetGunMotion();
   $('#overlay').hidden=true;$('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;
   $('#touch-controls').hidden=!touchDevice;
   resize();updateHUD();lock();
@@ -1805,7 +2358,7 @@ function mpApplySnapshot(snap){
     const wasAlive=player.hp>0;
     player.hp=me.hp;player.armor=me.armor||0;
     if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
-    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;jump=0;jumpVelocity=0;resetGunMotion();$('#game-message').textContent='';}
+    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;resetActorHeight(map,player);resetGunMotion();$('#game-message').textContent='';}
     if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
   }
   const seen=new Set();
@@ -1813,8 +2366,8 @@ function mpApplySnapshot(snap){
     if(p.id===mpMyId)continue;
     seen.add(p.id);
     let a=mpRemotes.get(p.id);
-    if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
-    a.tx=p.x;a.ty=p.y;a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
+    if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
+    a.tx=p.x;a.ty=p.y;a.tz=p.z??floorHeight(map,p.x,p.y);a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
     if((p.flashAt||0)>a.lastFlash){a.lastFlash=p.flashAt;a.pendingFlash=true;}
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
@@ -1846,7 +2399,7 @@ function mpUpdate(dt){
   }
   if(shootHeld||touchFire){if((WEAPONS[player.weapon]||{}).automatic)shoot();}
   for(const a of mpRemotes.values()){
-    a.x+=(a.tx-a.x)*Math.min(1,dt*12);a.y+=(a.ty-a.y)*Math.min(1,dt*12);a.angle=a.tAngle;
+    a.x+=(a.tx-a.x)*Math.min(1,dt*12);a.y+=(a.ty-a.y)*Math.min(1,dt*12);a.angle=a.tAngle;a.z+=(a.tz-a.z)*Math.min(1,dt*12);
     if(a.pendingFlash){a.pendingFlash=false;a.flash=.09;if(Math.hypot(a.x-player.x,a.y-player.y)<25)sound('shot',a.weapon);}
   }
 }
@@ -1875,30 +2428,108 @@ function mpShowLobby(){
 }
 
 mpAutoConnect();
+mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
 if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
 
 // Клієнт мультиплеєра: з'єднання, лобі, кімнати. Без прямого доступу до DOM гри:
 // вся інтеграція — через handlers, які передає game.js.
+//
+// Адреса сервера — як у balloon-catcher:
+//   ?ws=  → пряме посилання-запрошення від друга (найвищий пріоритет),
+//   ws.json → файл поруч зі сторінкою, який лишає `share` на комп'ютері господаря,
+//   поле «Адреса сервера» / SERVER_URL → ручне налаштування,
+//   інакше — той самий хост, що віддав сторінку (на github.io без цього — null).
+
+const SHARE_TTL = 12 * 3600 * 1000;
+
+// `var`, а не `let`: тестовий стенд клеїть модулі в один файл (mp.js останнім),
+// тож код game.js виконується раніше за цю декларацію — звернення мусить не падати в TDZ.
+var shared = '';
+
+function setSharedServerUrl(url) { shared = String(url || ''); }
+function getSharedServerUrl() { return shared; }
+
+function normalizeMpUrl(value) {
+  const c = String(value || '').trim();
+  if (!c) return null;
+  try {
+    const url = new URL(c.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:'));
+    if (!['ws:', 'wss:'].includes(url.protocol)) return null;
+    const path = url.pathname.replace(/\/$/, '');
+    url.pathname = path.endsWith(MP.PATH) ? path : path + MP.PATH;
+    return url.toString();
+  } catch { return null; }
+}
+
+function serverUrlFromQuery(search) {
+  try {
+    const q = new URLSearchParams(search ?? (typeof location !== 'undefined' ? location.search : ''));
+    return normalizeMpUrl(q.get('ws'));
+  } catch { return null; }
+}
 
 function defaultMpUrl(custom) {
-  const c = String(custom || '').trim();
-  if (c) {
-    try {
-      const url=new URL(c.replace(/^http:/,'ws:').replace(/^https:/,'wss:'));
-      if(!['ws:','wss:'].includes(url.protocol))return null;
-      const path=url.pathname.replace(/\/$/,'');
-      url.pathname=path.endsWith(MP.PATH)?path:path+MP.PATH;
-      return url.toString();
-    } catch { return null; }
-  }
+  // 1. Запрошення від друга: ?ws=wss://…
+  const fromQuery = serverUrlFromQuery();
+  if (fromQuery) return fromQuery;
+  // 2. Адреса, знайдена у ws.json під час роботи (див. findSharedServer).
+  const fromShared = normalizeMpUrl(shared);
+  if (fromShared) return fromShared;
+  // 3. Ручне поле або вбудований SERVER_URL.
+  const fromCustom = normalizeMpUrl(custom);
+  if (fromCustom) return fromCustom;
   if (typeof location !== 'undefined' && location.host) {
-    if(location.hostname?.endsWith('.github.io'))return null;
+    if (location.hostname?.endsWith('.github.io')) return null;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${proto}//${location.host}${MP.PATH}`;
   }
   return null;
+}
+
+// Посилання-запрошення як у balloon-catcher: везе і код, і адресу з'єднання,
+// щоб друг потрапив саме в цю кімнату, навіть якщо ws.json уже змінився.
+function inviteLink(code, wsUrl) {
+  if (typeof location === 'undefined') return String(code || '');
+  const url = new URL(location.pathname, location.origin);
+  if (code) url.searchParams.set('room', String(code).toUpperCase());
+  const ws = normalizeMpUrl(wsUrl) || defaultMpUrl();
+  if (ws) {
+    try {
+      const raw = new URL(ws);
+      const httpProto = raw.protocol === 'wss:' ? 'https:' : 'http:';
+      url.searchParams.set('ws', `${httpProto}//${raw.host}`);
+    } catch { /* код без адреси — теж запрошення */ }
+  }
+  return url.href;
+}
+
+function isTunnelUrl(value) {
+  try { return new URL(value).hostname.endsWith('.trycloudflare.com'); } catch { return false; }
+}
+
+// Статичний сайт сам сервера не має, але `share` кладе поруч `ws.json`
+// з адресою тунелю. Поки запис свіжий (12 год) — кімнати вмикаються.
+async function findSharedServer() {
+  try {
+    if (typeof fetch === 'undefined' || typeof location === 'undefined') return null;
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 5000) : 0;
+    let res;
+    try {
+      res = await fetch('./ws.json', { cache: 'no-store', signal: ctrl?.signal });
+    } finally { if (timer) clearTimeout(timer); }
+    if (!res || !res.ok) return null;
+    const data = await res.json();
+    if (!data?.url || Date.now() - (data.ts ?? 0) > SHARE_TTL) return null;
+    const url = normalizeMpUrl(data.url);
+    if (!url) return null;
+    if (location.protocol === 'https:' && !url.startsWith('wss:')) return null;
+    setSharedServerUrl(url);
+    if (typeof document !== 'undefined') document.body?.classList?.remove('no-online');
+    return url;
+  } catch { return null; }
 }
 
 function createMpClient(url, handlers) {
@@ -1916,7 +2547,7 @@ function createMpClient(url, handlers) {
   const finish=()=>{if(finished)return;finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;handlers.onClose?.();};
   const timeout=setTimeout(()=>{if(!client.myId){handlers.onError?.('Сервер не відповів. Повтори спробу або перевір адресу');finish();try{ws.close();}catch{}}},10000);
   const client = {
-    connected: false, connecting:true, myId: null,
+    connected: false, connecting:true, myId: null, url,
     send(o) { try { if (ws.readyState === 1) ws.send(JSON.stringify(o)); } catch {} },
     close() { finished=true;clearTimeout(timeout);client.connected=false;client.connecting=false;try { ws.close(); } catch {} },
   };

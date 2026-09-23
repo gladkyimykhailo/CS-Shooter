@@ -35,13 +35,13 @@ test('weapon weight, aimed recoil, turn inertia and landing affect the spring',(
 });
 
 test('long barrels retract earlier; empty space and walls behind do not retract',()=>{
-  const map=MAPS.find(candidate=>candidate.id==='furnace');
+  const map=MAPS.find(candidate=>candidate.id==='dust2');
   assert.ok(map);
-  assert.equal(weaponWallProximity(map,2.5,3.5,0,'rifle'),0);
-  assert.equal(weaponWallProximity(map,5.3,4.5,0,'pistol'),0);
-  assert.ok(weaponWallProximity(map,5.3,4.5,0,'rifle')>0);
-  assert.ok(weaponWallProximity(map,5.7,4.5,0,'rifle')>.5);
-  assert.equal(weaponWallProximity(map,5.7,4.5,Math.PI,'rifle'),0);
+  assert.equal(weaponWallProximity(map,20.5,8.5,0,'rifle'),0);
+  assert.equal(weaponWallProximity(map,8.3,9.5,0,'pistol'),0);
+  assert.ok(weaponWallProximity(map,8.3,9.5,0,'rifle')>0);
+  assert.ok(weaponWallProximity(map,8.7,9.5,0,'rifle')>.5);
+  assert.equal(weaponWallProximity(map,8.7,9.5,Math.PI,'rifle'),0);
 });
 
 test('sustained fire and large timesteps keep every axis finite and bounded',()=>{

@@ -7,7 +7,7 @@ export const MP = {
   KILL_TARGET: 20,
   MATCH_TIME: 300,
   RESPAWN_DELAY: 3,
-  CODE_LEN: 6,
+  CODE_LEN: 4,
 };
 
 // Типи повідомлень клієнт -> сервер
@@ -21,7 +21,8 @@ export const S2C = {
   MATCH_START: 'matchStart', SNAPSHOT: 'snapshot', EVENTS: 'events', MATCH_END: 'matchEnd', ERROR: 'error',
 };
 
-const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+// Короткий код кімнати як у balloon-catcher: 4 символи, без схожих I/O/0/1.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export function makeCode(rand = Math.random) {
   let s = '';
   for (let i = 0; i < MP.CODE_LEN; i++) s += CODE_ALPHABET[Math.floor(rand() * CODE_ALPHABET.length)];

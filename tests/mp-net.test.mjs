@@ -9,15 +9,15 @@ test('коди приватних кімнат не розкриваються �
   const seen = new Set();
   for (let i = 0; i < 200; i++) seen.add(makeCode());
   assert.ok(seen.size > 190, 'коди мають бути різними');
-  assert.ok(/^[A-Z2-9]{6}$/.test(makeCode()));
-  const room = createRoom({ id: 'r1', code: 'ABC123', name: 'Тест', isPublic: false, hostId: 'h' });
+  assert.ok(/^[A-HJ-NP-Z2-9]{4}$/.test(makeCode()));
+  const room = createRoom({ id: 'r1', code: 'ABCD', name: 'Тест', isPublic: false, hostId: 'h' });
   const info = publicRoomInfo(room);
   assert.equal(info.isPublic, false);
   assert.ok(!('code' in info), 'код не повинен потрапляти у публічний список');
 });
 
 test('команди балансуються, старт лише за готовності всіх', () => {
-  const room = createRoom({ id: 'r1', code: 'XXXXXX', name: '', isPublic: true, hostId: null });
+  const room = createRoom({ id: 'r1', code: 'XXXX', name: '', isPublic: true, hostId: null });
   assert.equal(room.name, 'КІМНАТА');
   addPlayer(room, 'a', 'Альфа');
   addPlayer(room, 'b', 'Браво');

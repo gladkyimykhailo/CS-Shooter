@@ -1,30 +1,51 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from './core.js';
 import { createWeaponMotion, kickWeaponMotion, stepWeaponMotion, weaponWallProximity } from './core.js';
-import { floorHeight } from './core.js';
+import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor } from './core.js';
 import { drawTerrain } from './terrain.js';
 import { mapArt, makeOperator, drawOperator, textures, hex, tint, WEAPON_FILES, drawHeldWeapon, drawWeaponSights, drawScopeOverlay, WEAPON_MUZZLES } from './art.js';
 import { MP, C2S, canStart } from './net.js';
-import { defaultMpUrl, createMpClient } from './mp.js';
-import { createPeerClient } from './peer.js';
+import { defaultMpUrl, createMpClient, findSharedServer, inviteLink, isTunnelUrl, serverUrlFromQuery, setSharedServerUrl } from './mp.js';
+import { createPeerCodeClient } from './peer-code.js';
+import { normalizeRoomCode, validRoomCode } from './room-code.js';
 import { SERVER_URL } from './config.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
-const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mpNick:'',mpServer:''};
-try{const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];}catch{}
+const minimapBackgrounds=new WeakMap();
+const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mapKey:'mirage',mpNick:'',mpServer:''};
+try{
+  const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');
+  for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];
+  // Before the three-map rotation, Dust II occupied index 9. Removed maps
+  // return to Mirage; stable keys keep subsequent reordering unambiguous.
+  const key=saved.mapKey||(saved.map===9?'dust2':'mirage');
+  settings.map=Math.max(0,MAPS.findIndex(m=>m.id===key));
+}catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
-const save=()=>{try{localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
+const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
-let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,jump=0,jumpVelocity=0,stepTimer=0,intermission=0,elapsed=0;
+let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
-let mpEpoch=0,mpPeerBusy=false;
+let mpEpoch=0;
+let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
+let mpManualOff=false,mpEnsureTimer=0,mpSharedAt=0;
+let mpWarmSocket=null,mpWarmUrl='';
 let audio;
 let gunMotion=createWeaponMotion(),gunSample=null;
 const touchDevice=matchMedia('(pointer: coarse)').matches;
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3200);}
+// Будь-яка необроблена помилка одразу показується гравцю, а не губиться в консолі.
+function showJsError(reason){
+  let msg='';
+  try{msg=String(reason?.message||reason||'невідома помилка');}catch{msg='невідома помилка';}
+  try{toast('Помилка: '+msg.slice(0,200));}catch{}
+  try{const s=$('#mp-code-status');if(s)s.textContent='Помилка: '+msg.slice(0,200);}catch{}
+}
+window.addEventListener('error',e=>showJsError(e.error||e.message));
+window.addEventListener('unhandledrejection',e=>showJsError(e.reason));
 function initAudio(){try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
 function sound(kind='shot',weapon='pistol'){
   if(!audio||settings.volume===0)return;
@@ -66,8 +87,8 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
-function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: десять піксельних мап, зокрема адаптації Mirage і Dust II за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>Перемагай у раундах, заробляй кредити та купуй зброю. Зелені оператори — союзники, помаранчеві — суперники.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, стрибка ↑ та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:2500,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}},shots:0,spray:0};}
@@ -80,10 +101,10 @@ function start(){
 }
 $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
-  round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;jump=0;jumpVelocity=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
+  round++;phase='buy';clock=20;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;keys.clear();
   actors.forEach((a,i)=>{const pos=a.team?map.red[i-3]:map.blue[i];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;
     if(a.hp<=0){a.primary=null;a.armor=0;a.weapon='pistol';a.inventory={pistol:{ammo:12,reserve:36}};}
-    a.hp=100;a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
+    a.hp=100;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
     for(const id of ['pistol',a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){if(!a.primary)purchase(a,a.money>=3050?'rifle':'smg');if(a.armor<50)purchase(a,'armor');}
   });
@@ -152,7 +173,7 @@ function aimProgress(){return player?.hp>0?(settings.motion?clamp(gunMotion.aim.
 function viewFov(){const zoom=player&&WEAPONS[player.weapon]?.scope||.5;return .78-(.78-zoom)*aimProgress();}
 function resetGunMotion(){
   gunMotion=createWeaponMotion();
-  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon}:null;
+  gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,weapon:player.weapon}:null;
 }
 function updateGunMotion(dt){
   if(!player||player.hp<=0||modal||!settings.motion){resetGunMotion();return;}
@@ -166,12 +187,12 @@ function updateGunMotion(dt){
       turn,look:(pitch-previous.pitch)/dt,
       side:(-dx*Math.sin(player.angle)+dy*Math.cos(player.angle))/3.3,
       forward:(dx*Math.cos(player.angle)+dy*Math.sin(player.angle))/3.3,
-      moving:player.moving,walk,aiming,lift:jumpVelocity,
-      landing:previous.jump>0&&jump===0?previous.velocity:0,
+      moving:player.moving&&player.grounded,walk,aiming,lift:player.vz||0,
+      landing:player.landingSpeed||0,
       wall:weaponWallProximity(map,player.x,player.y,player.angle,player.weapon)
     },dt);
   }
-  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,jump,velocity:jumpVelocity,weapon:player.weapon};
+  gunSample={x:player.x,y:player.y,angle:player.angle,pitch,weapon:player.weapon};
 }
 function kickGun(){if(settings.motion)kickWeaponMotion(gunMotion,player.weapon,aiming);}
 function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inventory[id])return;player.weapon=id;reload=0;reloadTotal=0;reloadStage=0;nextShot=.2;updateHUD();}
@@ -191,13 +212,13 @@ function shoot(){
     let shotTarget=null,shotHead=false;
     const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
       const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       if(a.team===player.team)break;
       shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
     }
-    if(mpClient?.kind==='peer')mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
+    if(mpClient)mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
     mpClient?.send({t:C2S.SHOOT,weapon:player.weapon,target:shotTarget,head:shotHead});
     updateHUD();return;
   }
@@ -208,8 +229,8 @@ function shoot(){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
     for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=floorHeight(map,player.x,player.y)+.5,targetZ=floorHeight(map,a.x,a.y);
+      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
       const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
       const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
     }
@@ -217,22 +238,26 @@ function shoot(){
   if(anyHit){hitTime=.15;sound('hit');}updateHUD();
 }
 
+function requestJump(){
+  if(state!=='playing'||paused||modal||!player||player.hp<=0||!['buy','fight','mp'].includes(phase))return;
+  if(jumpActor(map,player)&&mpMode)mpClient?.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon,jump:true});
+}
 function updatePlayer(dt){
   player.moving=false;if(player.hp<=0||modal)return;
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
-  moveActor(map,player,dx,dy);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
-  if(player.moving){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
+  stepActor(map,player,dx,dy,dt);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
+  if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
-  if(jump>0||jumpVelocity>0){jumpVelocity-=dt*4;jump=Math.max(0,jump+jumpVelocity*dt);if(jump===0)jumpVelocity=0;}
+  if(player.landingSpeed>1)sound('step');
 }
 function updateBots(dt){
   const level=settings.difficulty==='easy'?.55:settings.difficulty==='hard'?1.35:1;
   for(const a of actors){if(a.isPlayer||a.hp<=0)continue;a.flash=Math.max(0,a.flash-dt);a.cooldown-=dt;a.pathTimer-=dt;
     const enemies=actors.filter(e=>e.team!==a.team&&e.hp>0).sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));if(!enemies.length)continue;
-    const visible=enemies.find(e=>Math.hypot(e.x-a.x,e.y-a.y)<15&&lineOfSight(map,a.x,a.y,e.x,e.y));const target=visible||enemies[0];const distance=Math.hypot(target.x-a.x,target.y-a.y);a.moving=false;
+    const visible=enemies.find(e=>Math.hypot(e.x-a.x,e.y-a.y)<15&&lineOfSight(map,a.x,a.y,e.x,e.y,actorHeight(map,a)+.5,actorHeight(map,e)+.5));const target=visible||enemies[0];const distance=Math.hypot(target.x-a.x,target.y-a.y);a.moving=false;
     if(visible){a.angle=Math.atan2(target.y-a.y,target.x-a.x);a.seen+=dt;const skill=a.team===0?.85:level;
       if(a.cooldown<=0&&a.seen>.45){a.cooldown=(.58+Math.random()*.65)/skill;a.flash=.09;a.shots++;const chance=clamp(.85-distance*.04,.15,.75)*skill;if(Math.random()<chance)damage(target,WEAPONS[a.weapon].damage*.65,a);if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}}
     }else a.seen=0;
@@ -287,11 +312,11 @@ function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>
 function render(){
   if(state!=='playing')return;
   ctx.imageSmoothingEnabled=false;
-  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(settings.motion?jump*50:0)+(keys.has('ControlLeft')?h*.06:0);
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(keys.has('ControlLeft')?h*.06:0);
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
-  const eye=floorHeight(map,view.x,view.y)+.5;
+  const eye=actorHeight(map,view)+.5;
   if(map.heights){
     drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep:settings.quality==='low'?2:1,depths:terrainDepth,zbuffer,wallTextures});
   }else{
@@ -318,7 +343,7 @@ function render(){
   }
   }
   const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
-  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-floorHeight(map,a.x,a.y))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
+  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-actorHeight(map,a))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
     for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){
       const tx=clamp(Math.floor((sx-x)/sw*128),0,127);
       if(!map.heights){if(depth<zbuffer[sx])ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);continue;}
@@ -371,13 +396,20 @@ function drawGun(w,h){
   if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
-  mc.clearRect(0,0,160,160);mc.fillStyle='#102019';mc.fillRect(0,0,160,160);const s=160/map.size;
-  for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
-    if(map.grid[y][x]){mc.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';mc.fillRect(x*s,y*s,s,s);}
+  const s=160/map.size;
+  let background=minimapBackgrounds.get(map);
+  if(!background){
+    background=document.createElement('canvas');background.width=160;background.height=160;
+    const c=background.getContext('2d');c.fillStyle='#102019';c.fillRect(0,0,160,160);
+    for(let y=0;y<map.size;y++)for(let x=0;x<map.size;x++){
+      if(map.grid[y][x]){c.fillStyle=map.heights?'#89765a':map.grid[y][x]===2?'#657156':'#45574c';c.fillRect(x*s,y*s,s,s);}
+    }
+    const tacticalMark=(label,[x,y],color)=>{c.fillStyle='#07110ee0';c.fillRect(x*s-5,y*s-5,10,10);c.fillStyle=color;c.fillRect(x*s-4,y*s-4,8,8);c.fillStyle='#07110e';c.font='bold 7px monospace';c.textAlign='center';c.textBaseline='middle';c.fillText(label,x*s,y*s+.5);};
+    tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');
+    minimapBackgrounds.set(map,background);
   }
-  const tacticalMark=(label,[x,y],color)=>{mc.fillStyle='#07110ee0';mc.fillRect(x*s-5,y*s-5,10,10);mc.fillStyle=color;mc.fillRect(x*s-4,y*s-4,8,8);mc.fillStyle='#07110e';mc.font='bold 7px monospace';mc.textAlign='center';mc.textBaseline='middle';mc.fillText(label,x*s,y*s+.5);};
-  tacticalMark('A',map.sites.a.point,'#e4a062');tacticalMark('M',map.mid.point,'#f4d47c');tacticalMark('B',map.sites.b.point,'#83b7b0');mc.textAlign='left';mc.textBaseline='alphabetic';
-  for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
+  mc.drawImage(background,0,0);mc.textAlign='left';mc.textBaseline='alphabetic';
+  for(const a of actors){if(a.hp<=0)continue;if(a.team===1&&!lineOfSight(map,view.x,view.y,a.x,a.y,actorHeight(map,view)+.5,actorHeight(map,a)+.5))continue;mc.fillStyle=a.team===0?'#c3f66b':'#f4a46a';mc.beginPath();mc.arc(a.x*s,a.y*s,a.isPlayer?3.6:2.4,0,7);mc.fill();}
   mc.strokeStyle='#c3f66b99';mc.beginPath();mc.moveTo(view.x*s,view.y*s);mc.lineTo((view.x+Math.cos(view.angle)*2)*s,(view.y+Math.sin(view.angle)*2)*s);mc.stroke();
 }
 function frame(now){const dt=Math.min(.045,(now-lastTime)/1000);lastTime=now;update(dt);render();hudTimer-=dt;if(hudTimer<=0){hudTimer=.08;if(state==='playing')updateHUD();}requestAnimationFrame(frame);}
@@ -395,11 +427,11 @@ addEventListener('keydown',e=>{
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
     if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
     if(e.code==='KeyB')toast('Магазина в мережі немає — усі 7 стволів доступні на 1–7');
-    if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+    if(e.code==='Space')requestJump();
     if(e.code==='Tab'&&mpRoom)toast(`ВАРТА ${mpRoom.score[0]} : ${mpRoom.score[1]} РЕЙД · Фраги: ${kills} · Смерті: ${deaths}`);
     return;
   }
-  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space'&&jump===0&&player.hp>0)jumpVelocity=1.65;
+  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1'&&player.primary)switchWeapon(player.primary);if(e.code==='Digit2')switchWeapon('pistol');if(e.code==='Space')requestJump();
   if(e.code==='Tab')toast(`ВАРТА ${score[0]} : ${score[1]} РЕЙД · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
@@ -414,7 +446,7 @@ $('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focus
 const joy=$('#joystick');let joyId;
 joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect();stick.x=clamp((e.clientX-r.left-50)/40,-1,1);stick.y=clamp((e.clientY-r.top-50)/40,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*25}px,${stick.y*25}px)`;});
 function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
-$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
+$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-jump').onclick=requestJump;$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
 canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
 // ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
@@ -428,28 +460,54 @@ function mpSetup(){
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
     $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
     if(!$('#mp-transport').value)$('#mp-transport').value='server';
+    // Усі кімнати — приватні за кодом, як у balloon-catcher. Публічний список
+    // лишається лише для тих, хто явно обере «Публічна».
+    if($('#mp-room-visibility')&&!$('#mp-room-visibility').value)$('#mp-room-visibility').value='private';
     $('#mp-connect').onclick=()=>mpConnect();
-    $('#mp-transport').onchange=()=>{mpDisconnect(true);mpTransportChanged();};
-    mpWirePeer();$('#mp-disconnect').onclick=()=>mpDisconnect();
+    $('#mp-transport').onchange=()=>{mpManualOff=false;mpDisconnect(true);mpTransportChanged();};
+    $('#mp-disconnect').onclick=()=>{mpManualOff=true;mpDisconnect();};
     $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
     $('#mp-create').onclick=()=>{
       settings.mpNick=$('#mp-nick').value;save();
       const options={t:C2S.CREATE,name:$('#mp-room-name').value,isPublic:$('#mp-room-visibility').value==='public',mapId:Number($('#mp-room-map').value),maxPlayers:Number($('#mp-room-max').value)};
-      if(mpUsesPeer()){
-        mpDisconnect(true);mpClient=createPeerClient(mpHandlers(mpEpoch));mpClient.host(options,settings.mpNick);
-      }else mpServerAction(options);
+      if(mpUsesCode())mpCodeAction(null,options);
+      else mpServerAction(options);
     };
     $('#mp-join-btn').onclick=()=>{
-      const code=$('#mp-join-code').value.trim().toUpperCase();
-      if(code.length!==6)return toast('Код має 6 символів');
+      if(mpUsesCode()){
+        const code=normalizeRoomCode($('#mp-join-code').value);
+        if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
+        mpCodeAction(code);return;
+      }
+      // Код кімнати як у balloon-catcher: 4 символи, малі літери й схожі українські приймаємо.
+      const code=normalizeRoomCode($('#mp-join-code').value);
+      if(!validRoomCode(code))return toast('Введи код кімнати з 4 символів');
       mpServerAction({t:C2S.JOIN_CODE,code});
     };
+    $('#mp-join-code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#mp-join-btn').onclick();});
+    $('#mp-copy-code').onclick=()=>mpCopy('mp-short-code');
+    $('#mp-copy-link').onclick=()=>mpCopyInvite();
     $('#mp-ready').onclick=()=>{if(mpClient&&mpRoom){const me=mpMe();mpClient.send({t:C2S.READY,ready:!(me&&me.ready)});}};
     $('#mp-start').onclick=()=>{if(mpClient&&mpRoom)mpClient.send({t:C2S.START});};
     $('#mp-leave').onclick=()=>{if(mpClient?.kind==='peer'){mpDisconnect();return;}if(mpClient)mpClient.send({t:C2S.LEAVE});mpRoom=null;mpShowHome();};
     const sendChat=()=>{const inp=$('#mp-chat-input'),text=inp.value.trim();if(text&&mpClient&&mpRoom){mpClient.send({t:C2S.CHAT,text});inp.value='';}};
     $('#mp-chat-send').onclick=sendChat;
     $('#mp-chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();e.stopPropagation();});
+    // Тримаємо підключення до сервера постійно: якщо зв'язку нема і гравець його
+    // не вимикав вручну — мовчки пробуємо знову кожні 5 секунд.
+    if(!mpEnsureTimer)mpEnsureTimer=setInterval(()=>{
+      if(mpManualOff||mpUsesPeer()||mpRoom||mpMode)return;
+      if(mpClient&&(mpClient.connected||mpClient.connecting))return;
+      // Адреси нема (статичний хостинг без сервера) — раз на 30 с перевіряємо
+      // ws.json: господар міг підняти сервер уже після відкриття сторінки.
+      if(!defaultMpUrl($('#mp-server').value)){
+        const now=Date.now();
+        if(now-mpSharedAt>30000){mpSharedAt=now;findSharedServer().then(url=>{if(url&&!mpClient?.connected&&!mpManualOff){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});}
+        return;
+      }
+      mpConnect(null,true);
+    },5000);
+    mpWarmUp();
   }
 }
 function mpTabOpened(){
@@ -457,14 +515,53 @@ function mpTabOpened(){
   mpTransportChanged();
   if(mpRoom)mpShowRoom();else mpShowHome();
   if(mpClient&&mpClient.connected&&!mpRoom&&mpClient.kind!=='peer')mpClient.send({t:C2S.LIST});
+  else if(!mpUsesPeer()&&!mpManualOff&&!mpRoom&&!mpMode&&(!mpClient||!mpClient.connecting))mpConnect(null,true);
 }
 function mpUsesPeer(){return $('#mp-transport').value!=='server';}
+function mpUsesCode(){return $('#mp-transport').value==='code';}
 function mpTransportChanged(){
-  const peer=mpUsesPeer();
-  $('#mp-server-options').hidden=peer;$('#mp-peer-help').hidden=!peer;
-  $('#mp-peer-join').hidden=!peer;$('#mp-room-visibility').hidden=peer;
-  $('#mp-code-join').hidden=peer;$('#mp-public').hidden=peer;
-  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й ЗАПРОСИ ДРУЗІВ':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  const peer=mpUsesPeer(),code=mpUsesCode();
+  // Адреса завжди видима: вона потрібна і онлайн-режиму, і сервісу коротких кодів.
+  $('#mp-server-options').hidden=false;
+  $('#mp-server-actions').hidden=code;
+  $('#mp-room-visibility').hidden=peer;
+  $('#mp-code-join').hidden=false;$('#mp-public').hidden=peer;
+  $('#mp-join-code').maxLength=4;$('#mp-join-code').placeholder='КОД';
+  if(!mpClient)mpSetStatus(peer?'СТВОРИ КІМНАТУ Й НАДІШЛИ ДРУГУ КОД':'ПІДКЛЮЧЕННЯ ПІД ЧАС СТВОРЕННЯ АБО ВХОДУ');
+  mpWarmUp();
+}
+// Сервіс кодів підключаємо заздалегідь — одразу при відкритті вкладки, виборі
+// режиму чи виході з кімнати. Тоді «Створити» і «Приєднатись» спрацьовують
+// миттєво: з'єднання вже відкрите, чекати нема чого.
+function mpWarmUp(){
+  try{
+    if(!mpUsesCode()||mpClient||mpRoom||mpMode)return;
+    const WS=globalThis.WebSocket;
+    if(!WS)return;
+    const url=defaultMpUrl($('#mp-server').value);
+    if(!url)return;
+    if(mpWarmSocket&&(mpWarmSocket.readyState===1||mpWarmSocket.readyState===0)&&mpWarmUrl===url)return;
+    try{mpWarmSocket?.close?.();}catch{}
+    mpWarmUrl=url;
+    const s=new WS(url);
+    mpWarmSocket=s;
+    s.onclose=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+  }catch{}
+}
+function mpTakeWarm(url){
+  const s=mpWarmSocket;mpWarmSocket=null;
+  if(s&&mpWarmUrl===url&&(s.readyState===1||s.readyState===0))return s;
+  try{s?.close?.();}catch{}
+  return null;
+}
+function mpCodeAction(code,options){
+  mpDisconnect(true);settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  const url=defaultMpUrl(settings.mpServer);
+  if(!url){const message='Для коротких кодів потрібен сервіс кімнат. Відкрий гру за адресою запущеного сервера або вкажи його адресу.';$('#mp-code-status').textContent=message;toast(message);return;}
+  mpClient=createPeerCodeClient(url,mpHandlers(mpEpoch),{socket:mpTakeWarm(url)});
+  try{if(code)mpClient.join(code,settings.mpNick);else mpClient.host(options,settings.mpNick);}
+  catch(error){mpDisconnect(true);$('#mp-code-status').textContent=error.message;toast(error.message);}
 }
 function mpServerAction(action){
   if(mpClient?.connected&&mpMyId&&mpClient.kind!=='peer')mpClient.send(action);
@@ -473,6 +570,8 @@ function mpServerAction(action){
 function mpHandlers(epoch,action=null,automatic=false){
   const active=fn=>(...args)=>{if(epoch===mpEpoch)fn(...args);};
   return {
+    onStatus:active(message=>{$('#mp-code-status').textContent=message;mpSetStatus(message);}),
+    onCode:active(code=>{$('#mp-short-code').value=code;$('#mp-short-code-panel').hidden=!code;if(code)$('#mp-code-status').textContent='Код готовий. Скопіюй і надішли другу.';}),
     onOpen:active(()=>mpClient.send({t:C2S.HELLO,nick:settings.mpNick})),
     onWelcome:active(msg=>{
       mpMyId=msg.id;mpRooms=msg.rooms||[];mpRenderRooms();
@@ -485,7 +584,7 @@ function mpHandlers(epoch,action=null,automatic=false){
       }
     }),
     onRooms:active(rooms=>{mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}}),
-    onJoined:active(room=>{mpRoom=room;mpChat=[];mpShowRoom();}),
+    onJoined:active(room=>{mpRoom=room;mpChat=[];mpLastJoin={code:room.code};mpReconnectTries=0;mpShowRoom();}),
     onRoom:active(room=>{mpRoom=room;if(!mpMode)mpShowRoom();}),
     onMatchStart:active(room=>mpStartMatch(room)),
     onSnapshot:active(snap=>{if(mpMode)mpApplySnapshot(snap);}),
@@ -493,16 +592,84 @@ function mpHandlers(epoch,action=null,automatic=false){
     onMatchEnd:active(room=>{mpRoom=room;mpShowResult({winner:room.winner,score:room.score});}),
     onError:active(message=>{
       if(!automatic)toast(message);
-      if(mpClient?.kind==='peer'){
-        $('#mp-peer-host-status').textContent=message;$('#mp-peer-join-status').textContent=message;
-      }else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
+      if(mpUsesCode()||mpClient?.kind==='peer')$('#mp-code-status').textContent=message;
+      if(mpClient?.kind==='peer'){mpSetStatus(message);}
+      else{mpSetStatus(message);mpSetConnectionStatus('СЕРВЕР НЕДОСТУПНИЙ');}
     }),
-    onClose:active(message=>{const peer=mpClient?.kind==='peer';mpDisconnect();const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');if(!automatic)toast(reason);if(peer)$('#mp-peer-join-status').textContent=reason;})
+    onClose:active(message=>{
+      const peer=mpClient?.kind==='peer';
+      const join=mpLastJoin;
+      mpDisconnect();
+      const reason=message||(peer?'Зв’язок із власником кімнати втрачено. Попроси нове запрошення':'З’єднання з сервером втрачено');
+      mpSetConnectionStatus(peer?'ЗВʼЯЗОК ІЗ ГРАВЦЕМ ВТРАЧЕНО':'СЕРВЕР НЕДОСТУПНИЙ');
+      if(!automatic)toast(reason);
+      if(peer)$('#mp-code-status').textContent=reason;
+      // Обрив як у balloon-catcher: кімната на сервері живе, поки в ній є хоч хтось,
+      // тож повертаємось у ту саму гру кілька разів, перш ніж відпустити в меню.
+      if(!peer&&join?.code&&epoch===mpEpoch)mpReconnect(join.code);
+    })
   };
 }
+// Повернення в кімнату після обриву: до 10 спроб із ростом паузи (~40 с разом).
+// Сервер ще трохи тримає старе місце, тож перші спроби можуть бачити «кімната повна».
+async function mpReconnect(code){
+  for(let i=1;i<=10;i++){
+    mpSetStatus(`Зв'язок обірвався. Повертаємось у кімнату ${code}… (${i}/10)`);
+    await new Promise(r=>setTimeout(r,Math.min(1200*i,5000)));
+    if(mpRoom||mpMode||!mpLastJoin||mpLastJoin.code!==code)return;
+    if(state!=='lobby'&&!mpMode)return;
+    mpReconnectTries=i;
+    mpConnect({t:C2S.JOIN_CODE,code},true);
+    await new Promise(r=>setTimeout(r,1500));
+    if(mpRoom&&mpRoom.code===code)return;
+  }
+  mpLastJoin=null;
+  mpSetStatus('Кімната '+code+' не відповідає');
+}
+async function mpCopyInvite(){
+  const code=mpRoom?.code||normalizeRoomCode($('#mp-join-code').value);
+  if(!validRoomCode(code||''))return toast('Введи код кімнати з 4 символів');
+  const link=inviteLink(code,mpClient?.url||$('#mp-server').value);
+  try{
+    await navigator.clipboard.writeText(link);
+    const btn=$('#mp-copy-link');
+    if(btn){btn.textContent='Скопійовано ✓';setTimeout(()=>{btn.textContent='КОПІЮВАТИ ПОСИЛАННЯ';},1600);}
+    toast('Посилання скопійовано — надішли другу');
+  }catch{
+    toast(link);
+  }
+}
+// Запрошення ?room=КОД (&ws=адреса) як у balloon-catcher: відкриває вкладку
+// мультиплеєра і заходить само. Викликається один раз при старті.
+async function mpCheckInvite(){
+  if(mpInviteChecked)return;mpInviteChecked=true;
+  let q;
+  try{q=new URLSearchParams(location.search);}catch{return;}
+  const fromQuery=serverUrlFromQuery();
+  if(fromQuery){setSharedServerUrl(fromQuery);settings.mpServer=fromQuery;save();const inp=$('#mp-server');if(inp)inp.value=fromQuery;}
+  else{
+    // Статична збірка без сервера ховає онлайн (клас no-online), ws.json його повертає.
+    try{
+      if(location.hostname?.endsWith('.github.io')&&!String(SERVER_URL||'').trim()&&!q.get('ws'))document.body?.classList?.add('no-online');
+    }catch{}
+    await findSharedServer();
+    const sharedNow=defaultMpUrl($('#mp-server')?.value);
+    if(sharedNow&&$('#mp-server')&&!$('#mp-server').value){$('#mp-server').value=sharedNow;settings.mpServer=sharedNow;save();}
+  }
+  try{document.body?.classList?.toggle('no-online',!defaultMpUrl($('#mp-server')?.value));}catch{}
+  const invite=normalizeRoomCode(q.get('room'));
+  if(!invite||!validRoomCode(invite))return;
+  if(mpUsesPeer()){const t=$('#mp-transport');if(t){t.value='server';mpTransportChanged();}}
+  tab('mp');
+  const inp=$('#mp-join-code');if(inp)inp.value=invite;
+  mpLastJoin={code:invite};
+  mpConnect({t:C2S.JOIN_CODE,code:invite});
+}
 function mpConnect(action=null,automatic=false){
+  mpManualOff=false;
   mpDisconnect(true);
   settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
+  if(action?.t===C2S.JOIN_CODE&&validRoomCode(action.code||''))mpLastJoin={code:normalizeRoomCode(action.code)};
   const url=defaultMpUrl(settings.mpServer);
   if(!url){mpSetStatus('ВКАЖИ АДРЕСУ ІГРОВОГО СЕРВЕРА');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');if(!automatic)toast('Для гри без ігрового сервера вибери «Напряму з друзями»');return;}
   mpSetStatus('ПІДКЛЮЧЕННЯ…');mpSetConnectionStatus('ПІДКЛЮЧЕННЯ ДО СЕРВЕРА…');
@@ -515,21 +682,25 @@ function mpAutoConnect(){
   const shared=String(SERVER_URL||'').trim();
   if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
   if(!defaultMpUrl($('#mp-server').value)){
-    mpSetStatus('СЕРВЕР НЕ НАЛАШТОВАНО');mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    mpSetStatus('СЕРВЕР КІМНАТ ЗАРАЗ НЕ ПІДКЛЮЧЕНИЙ. З БОТАМИ МОЖНА ГРАТИ ОДРАЗУ.');
+    mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
+    try{document.body?.classList?.add('no-online');}catch{}
+    // Статичний сайт може знайти сервер пізніше через ws.json — тоді кімнати з'являться самі.
+    findSharedServer().then(url=>{if(url){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});
     return;
   }
   mpConnect(null,true);
 }
 function mpDisconnect(silent=false){
-  mpEpoch++;mpPeerBusy=false;
+  mpEpoch++;
+  clearTimeout(mpReconnectTimer);mpReconnectTimer=0;
+  if(!silent)mpLastJoin=null;
   clearInterval(mpListTimer);mpListTimer=0;
   const old=mpClient;mpClient=null;if(old){try{old.close();}catch{}}
   mpRoom=null;mpMyId=null;mpMode=false;mpRemotes=new Map();mpReloadT=0;mpResultShown=false;mpRooms=[];
   $('#mp-disconnect').hidden=true;
-  for(const id of ['mp-peer-invite-panel','mp-peer-reply-panel','mp-peer-cancel','mp-peer-host'])$('#'+id).hidden=true;
-  for(const id of ['mp-peer-invite-text','mp-peer-accept-text','mp-peer-reply'])$('#'+id).value='';
-  for(const id of ['mp-peer-invite','mp-peer-answer','mp-peer-accept'])$('#'+id).disabled=false;
-  $('#mp-peer-host-status').textContent='';$('#mp-peer-join-status').textContent='';
+  $('#mp-short-code-panel').hidden=true;
+  $('#mp-short-code').value='';$('#mp-code-status').textContent='';
   if(!silent){
     state='lobby';paused=false;modal='';release();
     $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
@@ -538,41 +709,10 @@ function mpDisconnect(silent=false){
   if(state==='lobby')mpShowHome();
   mpTransportChanged();
 }
-async function mpPeerTask(button,status,work){
-  if(mpPeerBusy)return;mpPeerBusy=true;
-  const client=mpClient;$('#'+button).disabled=true;$('#'+status).textContent='ГОТУЄМО З’ЄДНАННЯ…';
-  try{await work(client);}catch(error){if(client===mpClient){$('#'+status).textContent=error.message;toast(error.message);}}
-  finally{if(client===mpClient){mpPeerBusy=false;$('#'+button).disabled=false;}}
-}
 async function mpCopy(id){
   const field=$('#'+id);if(!field.value)return;
   try{await navigator.clipboard.writeText(field.value);toast('Скопійовано — надішли другу');}
   catch{field.focus();field.select();toast('Текст виділено. Натисни Ctrl+C та надішли другу');}
-}
-function mpWirePeer(){
-  $('#mp-peer-invite').onclick=()=>mpPeerTask('mp-peer-invite','mp-peer-host-status',async client=>{
-    const text=await client.invite();if(client!==mpClient)return;
-    $('#mp-peer-invite-text').value=text;$('#mp-peer-accept-text').value='';$('#mp-peer-invite-panel').hidden=false;
-    $('#mp-peer-host-status').textContent='Надішли запрошення другу й встав його відповідь нижче.';
-  });
-  $('#mp-peer-accept').onclick=()=>mpPeerTask('mp-peer-accept','mp-peer-host-status',async client=>{
-    await client.accept($('#mp-peer-accept-text').value);if(client!==mpClient)return;
-    $('#mp-peer-host-status').textContent='Відповідь прийнято. Чекаємо на друга…';
-  });
-  $('#mp-peer-answer').onclick=()=>{
-    if(mpPeerBusy)return;
-    const text=$('#mp-peer-offer').value;
-    mpDisconnect(true);settings.mpNick=$('#mp-nick').value;save();
-    mpClient=createPeerClient(mpHandlers(mpEpoch));$('#mp-peer-cancel').hidden=false;
-    return mpPeerTask('mp-peer-answer','mp-peer-join-status',async client=>{
-      const answer=await client.answer(text,settings.mpNick);if(client!==mpClient)return;
-      $('#mp-peer-reply').value=answer;$('#mp-peer-reply-panel').hidden=false;
-      $('#mp-peer-join-status').textContent='Передай відповідь власнику та залишай цю вкладку відкритою.';
-    });
-  };
-  $('#mp-peer-cancel').onclick=()=>mpDisconnect();
-  $('#mp-peer-copy-invite').onclick=()=>mpCopy('mp-peer-invite-text');
-  $('#mp-peer-copy-reply').onclick=()=>mpCopy('mp-peer-reply');
 }
 function mpShowHome(){
   $('#mp-home').hidden=false;$('#mp-room').hidden=true;
@@ -598,11 +738,11 @@ function mpRenderRoom(){
   const m=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   const me=room.players.find(p=>p.id===mpMyId);
   $('#mp-room-title').textContent=`КІМНАТА · ${room.name}`;
-  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв · Усі 7 стволів доступні`;
-  $('#mp-peer-host').hidden=mpClient?.kind!=='peer'||room.hostId!==mpMyId;
-  $('#mp-peer-invite').disabled=room.phase!=='lobby'||room.players.length>=room.maxPlayers||mpPeerBusy;
-  if(mpClient?.kind==='peer'&&room.players.length>1)$('#mp-peer-host-status').textContent=`У кімнаті ${room.players.length} гравців. Позначте готовність для початку.`;
-  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА ЗАПРОШЕННЯМ':room.isPublic?'ПУБЛІЧНА — ВИДНО ВСІМ У СПИСКУ':`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  // Підпис як у balloon-catcher: скільки гравців і чи чекаємо ще.
+  const waiting=room.phase==='lobby'&&room.players.length<2?` · Чекаємо на друзів… Дай їм код ${room.code}`:'';
+  $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв${waiting}`;
+  $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА КОРОТКИМ КОДОМ':room.isPublic?`ПУБЛІЧНА · КОД ДЛЯ ДРУЗІВ: ${room.code}`:`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
+  const copyLink=$('#mp-copy-link');if(copyLink)copyLink.hidden=mpClient?.kind==='peer';
   $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'ВРТ':'РЙД'}</kbd>${escapeText(p.nick)}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
   $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
   const startBtn=$('#mp-start');
@@ -627,12 +767,12 @@ function mpStartMatch(room){
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
   for(const p of room.players){
     if(p.id===mpMyId)continue;
-    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
+    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
   }
   actors=[player,...mpRemotes.values()];
   state='playing';phase='mp';paused=false;modal='';mpMode=true;
   pitch=0;aiming=false;shootHeld=false;touchFire=false;nextShot=0;reload=0;reloadTotal=0;reloadStage=0;recoil=0;hitTime=0;hurtTime=0;keys.clear();
-  jump=0;jumpVelocity=0;resetGunMotion();
+  resetActorHeight(map,player);resetGunMotion();
   $('#overlay').hidden=true;$('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;
   $('#touch-controls').hidden=!touchDevice;
   resize();updateHUD();lock();
@@ -646,7 +786,7 @@ function mpApplySnapshot(snap){
     const wasAlive=player.hp>0;
     player.hp=me.hp;player.armor=me.armor||0;
     if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
-    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;jump=0;jumpVelocity=0;resetGunMotion();$('#game-message').textContent='';}
+    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;resetActorHeight(map,player);resetGunMotion();$('#game-message').textContent='';}
     if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
   }
   const seen=new Set();
@@ -654,8 +794,8 @@ function mpApplySnapshot(snap){
     if(p.id===mpMyId)continue;
     seen.add(p.id);
     let a=mpRemotes.get(p.id);
-    if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
-    a.tx=p.x;a.ty=p.y;a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
+    if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
+    a.tx=p.x;a.ty=p.y;a.tz=p.z??floorHeight(map,p.x,p.y);a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
     if((p.flashAt||0)>a.lastFlash){a.lastFlash=p.flashAt;a.pendingFlash=true;}
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
@@ -687,7 +827,7 @@ function mpUpdate(dt){
   }
   if(shootHeld||touchFire){if((WEAPONS[player.weapon]||{}).automatic)shoot();}
   for(const a of mpRemotes.values()){
-    a.x+=(a.tx-a.x)*Math.min(1,dt*12);a.y+=(a.ty-a.y)*Math.min(1,dt*12);a.angle=a.tAngle;
+    a.x+=(a.tx-a.x)*Math.min(1,dt*12);a.y+=(a.ty-a.y)*Math.min(1,dt*12);a.angle=a.tAngle;a.z+=(a.tz-a.z)*Math.min(1,dt*12);
     if(a.pendingFlash){a.pendingFlash=false;a.flash=.09;if(Math.hypot(a.x-player.x,a.y-player.y)<25)sound('shot',a.weapon);}
   }
 }
@@ -716,6 +856,7 @@ function mpShowLobby(){
 }
 
 mpAutoConnect();
+mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
 if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};

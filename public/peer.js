@@ -1,6 +1,6 @@
-// Browser-hosted matches. Signalling is exchanged manually; game traffic uses WebRTC.
+// Browser-hosted matches. Signalling may be manual or automatic; gameplay uses WebRTC.
 import { MP, C2S, S2C, createRoom, addPlayer, removePlayer, setReady, canStart, snapshotRoom, matchTick, teamScores, sanitizeNick, makeCode } from './net.js';
-import { MAPS, WEAPONS, clamp, canStand, lineOfSight, applyDamage } from './core.js';
+import { MAPS, WEAPONS, clamp, canStand, lineOfSight, applyDamage, actorHeight, resetActorHeight, jumpActor, stepActor } from './core.js';
 
 export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
   const room=createRoom({...options,id:'peer-room',code:'',isPublic:false,hostId:'host',mapId:clamp(Math.floor(Number(options.mapId)||0),0,MAPS.length-1)});
@@ -13,6 +13,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
     const positions=p.team?MAPS[room.mapId].red:MAPS[room.mapId].blue;
     const mates=Object.values(room.players).filter(q=>q.team===p.team);
     [p.x,p.y]=positions[mates.indexOf(p)%positions.length];
+    resetActorHeight(MAPS[room.mapId],p);
     p.angle=p.team?3.8:.72;p.hp=100;p.alive=true;p.moving=false;
     p.weapon='pistol';p.ammo=12;p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
   }
@@ -52,6 +53,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
           const x=Number(msg.x),y=Number(msg.y),angle=Number(msg.angle);
           if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)){
             p.x=x;p.y=y;p.angle=angle;p.moving=!!msg.moving;
+            if(msg.jump===true)jumpActor(MAPS[room.mapId],p);
           }
           if(Object.hasOwn(WEAPONS,msg.weapon)&&msg.weapon!==p.weapon){p.weapon=msg.weapon;p.ammo=WEAPONS[p.weapon].size;p.reloadingUntil=0;}
           break;
@@ -67,7 +69,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
           if(target&&target.alive&&target.team!==p.team){
             const distance=Math.hypot(target.x-p.x,target.y-p.y),angle=Math.atan2(target.y-p.y,target.x-p.x);
             const diff=Math.abs(Math.atan2(Math.sin(angle-p.angle),Math.cos(angle-p.angle)));
-            if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y)){
+            if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y,actorHeight(MAPS[room.mapId],p)+.5,actorHeight(MAPS[room.mapId],target)+.5)){
               const amount=w.damage*(msg.head?(w.headMult||2):1)*(p.weapon==='shotgun'?w.pellets*clamp(1-distance/14,.15,1):1);
               applyDamage(target,amount,!!msg.head);
               if(target.hp<=0){target.alive=false;target.deaths++;target.respawnIn=MP.RESPAWN_DELAY;p.kills++;events.push({t:'kill',source:id,target:target.id,sourceNick:p.nick,targetNick:target.nick});}
@@ -84,6 +86,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
     },
     tick(dt){
       if(room.phase!=='playing')return;
+      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt);
       const events=matchTick(room,dt);
       for(const event of events)if(event.t==='respawn')spawn(room.players[event.id]);
       for(const p of Object.values(room.players))if(p.reloadingUntil&&now()>=p.reloadingUntil){p.reloadingUntil=0;p.ammo=WEAPONS[p.weapon].size;}
@@ -118,18 +121,18 @@ export function createPeerClient(handlers, dependencies={}){
     try{peer.channel.send(JSON.stringify(msg));}catch{}
   };
   const fail=message=>{lastError=message;handlers.onError?.(message);};
-  function removePeer(id){
+  function removePeer(id,notifyClose=true){
     const peer=peers.get(id);if(!peer)return;
     peers.delete(id);clearTimeout(peer.timeout);clearTimeout(peer.disconnectTimer);
     peer.cancelGather?.();peer.pc.onconnectionstatechange=null;peer.pc.ondatachannel=null;
     if(peer.channel){peer.channel.onclose=null;peer.channel.onmessage=null;peer.channel.onopen=null;peer.channel.onerror=null;}
     peer.pc.close();if(pending===id)pending=null;
     if(host)host.leave(id);
-    else if(!closed){client.connected=false;handlers.onClose?.(lastError);}
+    else if(!closed){client.connected=false;if(notifyClose)handlers.onClose?.(lastError);}
   }
   function newPeer(id){
     if(!RTC)throw new Error('Цей браузер не підтримує гру напряму. Відкрий гру в сучасному Chrome або Firefox');
-    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const pc=new RTC({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]});
     const peer={pc,channel:null,id};peers.set(id,peer);
     pc.onconnectionstatechange=()=>{
       if(pc.connectionState==='failed'){fail('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером');removePeer(id);}
@@ -162,20 +165,36 @@ export function createPeerClient(handlers, dependencies={}){
     channel.onerror=()=>{fail('Зв’язок із гравцем перервано');removePeer(peer.id);};
   }
   async function gather(peer,description){
+    client.signalWarning='';
     await peer.pc.setLocalDescription(description);
     if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
-    if(peer.pc.iceGatheringState==='complete')return;
-    await new Promise((resolve,reject)=>{
-      const finish=error=>{clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);peer.cancelGather=null;error?reject(error):resolve();};
+    if(peer.pc.iceGatheringState!=='complete')await new Promise((resolve,reject)=>{
+      let finished=false;
+      const finish=error=>{
+        if(finished)return;finished=true;
+        clearTimeout(timeout);peer.pc.removeEventListener('icegatheringstatechange',check);
+        peer.pc.removeEventListener('icecandidate',candidate);peer.cancelGather=null;
+        error?reject(error):resolve();
+      };
       const check=()=>{if(peer.pc.iceGatheringState==='complete')finish();};
-      // Manual signalling must contain every candidate; never export a partial offer.
-      const timeout=setTimeout(()=>finish(new Error('Не вдалося підготувати запрошення. Перевір мережу й спробуй ще раз')),15000);
+      const candidate=event=>{if(event.candidate===null)finish();};
+      // A stalled STUN request must not discard usable candidates. Export a
+      // snapshot at the deadline; later candidates are not manually signalled.
+      const timeout=setTimeout(()=>finish(),dependencies.iceGatheringTimeoutMs??15000);
       peer.cancelGather=()=>finish(new Error('Запрошення скасовано'));
-      peer.pc.addEventListener('icegatheringstatechange',check);check();
+      peer.pc.addEventListener('icegatheringstatechange',check);
+      peer.pc.addEventListener('icecandidate',candidate);check();
     });
+    if(closed||!peers.has(peer.id))throw new Error('Запрошення скасовано');
+    const sdp=peer.pc.localDescription?.sdp||'';
+    const candidates=[...sdp.matchAll(/^a=candidate:[^\r\n]+\btyp (host|srflx|prflx|relay)\b/gm)];
+    if(!candidates.length)throw new Error('Браузер не знайшов жодної адреси для прямого зв’язку. Спробуй іншу мережу або режим із ігровим сервером.');
+    if(candidates.every(candidate=>candidate[1]==='host'))client.signalWarning='Знайдено лише локальні адреси. Спробуйте спільний Wi-Fi; між різними мережами може знадобитися ігровий сервер.';
+    else if(peer.pc.iceGatheringState!=='complete')client.signalWarning='Пошук адрес ще триває. Код містить уже знайдені адреси; якщо з’єднання не вдасться, створи нове запрошення.';
+    return sdp;
   }
   const client={
-    kind:'peer',connected:false,myId:null,
+    kind:'peer',connected:false,myId:null,signalWarning:'',
     host(options,nick){
       if(closed||host||peers.size)throw new Error('Кімнату вже створено');
       host=createPeerHost(options,nick,(id,msg)=>id==='host'?dispatch(msg):sendChannel(peers.get(id),msg));
@@ -184,16 +203,16 @@ export function createPeerClient(handlers, dependencies={}){
       let last=Date.now();timer=setInterval(()=>{const current=Date.now();host.tick(Math.min(2,(current-last)/1000));last=current;},1000/MP.TICK_HZ);
       return snapshotRoom(host.room);
     },
-    async invite(){
+    async invite({parallel=false}={}){
       if(closed||!host||host.room.phase!=='lobby')throw new Error('Запрошувати друзів можна в лобі кімнати');
       if(Object.keys(host.room.players).length>=host.room.maxPlayers)throw new Error('Кімната заповнена');
-      if(pending)removePeer(pending);
+      if(pending&&!parallel)removePeer(pending);
       const id='p'+(globalThis.crypto?.randomUUID?.()||makeCode()+Date.now().toString(36));
       const peer=newPeer(id);pending=id;wire(peer,peer.pc.createDataChannel('sector'));
       try{
-        await gather(peer,await peer.pc.createOffer());
+        const sdp=await gather(peer,await peer.pc.createOffer());
         if(closed||!peers.has(id))throw new Error('Запрошення скасовано');
-        return encodePeerSignal({type:'offer',id,sdp:peer.pc.localDescription.sdp});
+        return encodePeerSignal({type:'offer',id,sdp});
       }catch(error){removePeer(id);throw error;}
     },
     async answer(text,nick){
@@ -202,20 +221,23 @@ export function createPeerClient(handlers, dependencies={}){
       const peer=newPeer(signal.id);peer.pc.ondatachannel=event=>wire(peer,event.channel);
       try{
         await peer.pc.setRemoteDescription({type:'offer',sdp:signal.sdp});
-        await gather(peer,await peer.pc.createAnswer());
+        const sdp=await gather(peer,await peer.pc.createAnswer());
         if(closed||!peers.has(signal.id))throw new Error('Приєднання скасовано');
         if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Відповідь не прийнято або мережа блокує з’єднання. Спробуй нове запрошення');removePeer(signal.id);},180000);
-        return encodePeerSignal({type:'answer',id:signal.id,sdp:peer.pc.localDescription.sdp});
-      }catch(error){removePeer(signal.id);throw error;}
+        return encodePeerSignal({type:'answer',id:signal.id,sdp});
+      // Setup errors belong to the pending answer operation. A disconnect
+      // callback here would tear down the UI before it can display that error.
+      }catch(error){removePeer(signal.id,false);throw error;}
     },
     async accept(text){
       const signal=decodePeerSignal(text,'answer');
       const peer=peers.get(signal.id);
-      if(closed||!host||!peer||signal.id!==pending)throw new Error('Ця відповідь не відповідає поточному запрошенню');
+      if(closed||!host||!peer)throw new Error('Ця відповідь не відповідає поточному запрошенню');
       if(peer.pc.remoteDescription)throw new Error('Цю відповідь уже прийнято');
       await peer.pc.setRemoteDescription({type:'answer',sdp:signal.sdp});
       if(peer.channel?.readyState!=='open')peer.timeout=setTimeout(()=>{fail('Мережа блокує пряме з’єднання. Спробуйте іншу мережу або режим із сервером');removePeer(signal.id);},30000);
     },
+    cancelInvite(id){const peer=peers.get(id);if(host&&peer?.channel?.readyState!=='open')removePeer(id);},
     send(msg){if(closed)return;if(host)host.receive('host',msg);else sendChannel([...peers.values()][0],msg);},
     close(){
       if(closed)return;closed=true;client.connected=false;clearInterval(timer);

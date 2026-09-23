@@ -10,7 +10,7 @@ public = root / "public"
 html = (public / "index.html").read_text()
 css = (public / "style.css").read_text().replace("@import url('');\n", "")
 parts = []
-for filename in ("config.js", "core.js", "art.js", "terrain.js", "net.js", "peer.js", "game.js", "mp.js"):
+for filename in ("config.js", "core.js", "art.js", "terrain.js", "net.js", "peer.js", "room-code.js", "peer-code.js", "game.js", "mp.js"):
     source = (public / filename).read_text()
     source = re.sub(r"^import .+?;\s*$", "", source, flags=re.M)
     source = re.sub(r"^export ", "", source, flags=re.M)

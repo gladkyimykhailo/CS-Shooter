@@ -151,7 +151,7 @@ test('приватна кімната: вхід лише за кодом', async
 
     send(a, { t: C2S.CREATE, name: 'Секрет', isPublic: false, mapId: 1 });
     const joined = await la.next('joined');
-    assert.match(joined.room.code, /^[A-Z2-9]{6}$/);
+    assert.match(joined.room.code, /^[A-HJ-NP-Z2-9]{4}$/);
 
     send(c, { t: C2S.LIST });
     const list = await lc.next('rooms');
@@ -161,9 +161,13 @@ test('приватна кімната: вхід лише за кодом', async
     const errDirect = await lc.next('error');
     assert.match(errDirect.message, /приватна/i);
 
-    send(c, { t: C2S.JOIN_CODE, code: 'XXXXXX' });
+    send(c, { t: C2S.JOIN_CODE, code: 'ZZZZ' });
     const errCode = await lc.next('error');
-    assert.ok(errCode.message);
+    assert.match(errCode.message, /не знайдено/i);
+
+    send(c, { t: C2S.JOIN_CODE, code: 'ZZ' });
+    const errFormat = await lc.next('error');
+    assert.match(errFormat.message, /4 (символів|літер)/i);
 
     send(c, { t: C2S.JOIN_CODE, code: joined.room.code.toLowerCase() });
     const joinedC = await lc.next('joined');

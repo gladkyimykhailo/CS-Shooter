@@ -35,16 +35,24 @@ export function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep
   for(let x=0;x<w;x+=colStep){
     const camera=2*x/w-1,rx=ca-sa*fov*camera,ry=sa+ca*fov*camera;
     const surfaces=terrainColumn(map,view.x,view.y,rx,ry);
-    for(let i=surfaces.length-1;i>=0;i--){
+    // A height field forms a continuous silhouette from the bottom of a ray.
+    // Paint near-to-far, clipping everything behind the visible silhouette.
+    let uncovered=h;
+    const columnEnd=Math.min(w,x+colStep);
+    for(let i=0;i<surfaces.length;i++){
       const s=surfaces[i],near=Math.max(.001,s.near),isFloor=s.kind==='floor';
       if(isFloor&&s.z>=eye)continue;
       const top=isFloor?horizon+projection*(eye-s.z)/Math.max(.001,s.far):horizon+projection*(eye-s.high)/near;
       const bottom=horizon+projection*(eye-(isFloor?s.z:s.low))/near;
-      const start=Math.max(0,Math.ceil(top-.5)),end=Math.min(h,Math.ceil(bottom-.5));
+      const start=Math.max(0,Math.ceil(top-.5)),projectedEnd=Math.min(h,Math.ceil(bottom-.5));
+      // Keep the wall distance even when a nearer platform fully hides it;
+      // actor labels use this separate wall-only buffer.
+      if(s.kind==='wall'&&projectedEnd>start)for(let k=x;k<columnEnd;k++)zbuffer[k]=near;
+      const end=Math.min(uncovered,projectedEnd);
       if(end<=start)continue;
+      uncovered=start;
       if(s.kind==='wall'){
         ctx.drawImage(wallTextures[s.type]||wallTextures[1],s.tx,(start-top)*64/(bottom-top),1,(end-start)*64/(bottom-top),x,start,colStep,end-start);
-        for(let k=x;k<Math.min(w,x+colStep);k++)zbuffer[k]=near;
       }else{
         ctx.fillStyle=isFloor?floors[s.material]||floors[0]:s.side?'#94754e':'#ad8a5b';
         ctx.fillRect(x,start,colStep,end-start);
@@ -53,9 +61,11 @@ export function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep
       const distance=isFloor?(near+s.far)*.5:near;
       ctx.fillStyle=`rgba(12,20,20,${Math.min(.72,distance/48+(isFloor?s.checker*.045:s.side?.12:0))})`;
       ctx.fillRect(x,start,colStep,end-start);
+      const floorProjection=projection*(eye-s.z);
       for(let y=start;y<end;y++){
-        const depth=isFloor?projection*(eye-s.z)/(y+.5-horizon):near;
-        for(let k=x;k<Math.min(w,x+colStep);k++)depths[y*w+k]=depth;
+        const depth=isFloor?floorProjection/(y+.5-horizon):near;
+        const offset=y*w;
+        for(let k=x;k<columnEnd;k++)depths[offset+k]=depth;
       }
     }
   }

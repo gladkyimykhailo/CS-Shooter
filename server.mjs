@@ -3,12 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { WebSocketServer } from 'ws';
+import { createSignaling } from './signaling.mjs';
+import { normalizeRoomCode } from './public/room-code.js';
 import {
   MP, C2S, S2C, makeCode, sanitizeNick, sanitizeRoomName,
   createRoom, publicRoomInfo, addPlayer, removePlayer, setReady,
   canStart, teamScores, matchTick, snapshotRoom, assignTeam,
 } from './public/net.js';
-import { MAPS, WEAPONS, clamp, lineOfSight, applyDamage } from './public/core.js';
+import { MAPS, WEAPONS, clamp, lineOfSight, applyDamage, canStand, actorHeight, resetActorHeight, jumpActor, stepActor } from './public/core.js';
 
 const root = fileURLToPath(new URL('./public/', import.meta.url));
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png' };
@@ -43,7 +45,8 @@ export function startServer(port) {
     } catch { res.writeHead(404); res.end('Not found'); }
   });
 
-  const wss = new WebSocketServer({ server, path: MP.PATH, maxPayload: 16 * 1024 });
+  const wss = new WebSocketServer({ server, path: MP.PATH, maxPayload: 128 * 1024 });
+  const signaling=createSignaling(send);
 
   function send(ws, msg) {
     if (ws.readyState === 1) ws.send(JSON.stringify(msg));
@@ -94,6 +97,7 @@ export function startServer(port) {
     byTeam.forEach((list, team) => list.forEach((p, i) => {
       const s = spawnFor(map, team, i);
       p.x = s.x; p.y = s.y;
+      resetActorHeight(map, p);
       p.angle = team === 0 ? 0.72 : 3.8;
       p.hp = 100; p.alive = true; p.kills = 0; p.deaths = 0;
       p.weapon = 'pistol'; p.ammo = WEAPONS.pistol.size; p.reloadingUntil = 0;
@@ -111,6 +115,7 @@ export function startServer(port) {
     for (const room of rooms.values()) {
       if (room.phase !== 'playing') continue;
       const map = MAPS[validMapId(room.mapId)];
+      for (const p of Object.values(room.players)) if (p.alive) stepActor(map, p, 0, 0, 1 / MP.TICK_HZ);
       const events = matchTick(room, 1 / MP.TICK_HZ);
       for (const e of events) {
         if (e.t === 'respawn') {
@@ -119,6 +124,7 @@ export function startServer(port) {
             const mates = Object.values(room.players).filter(q => q.team === p.team);
             const s = spawnFor(map, p.team, mates.indexOf(p));
             p.x = s.x; p.y = s.y;
+            resetActorHeight(map, p);
             p.angle = p.team === 0 ? 0.72 : 3.8;
             p.weapon = 'pistol'; p.ammo = WEAPONS.pistol.size; p.reloadingUntil = 0;
           }
@@ -141,25 +147,30 @@ export function startServer(port) {
   }, 1000 / MP.TICK_HZ);
   timer.unref?.();
 
-  // Чистка мертвих з'єднань.
+  // Чистка мертвих з'єднань як у balloon-catcher: 8 секунд, а не хвилина —
+  // той, у кого обірвалась мережа, повертається в ту саму кімнату
+  // і має застати своє місце вже вільним.
   const heartbeat = setInterval(() => {
-    for (const [ws, c] of clients) {
-      if (c.dead) { try { ws.terminate(); } catch {} continue; }
-      c.dead = true;
+    signaling.sweep();
+    for (const [ws] of clients) {
+      if (!ws.isAlive) { try { ws.terminate(); } catch {} continue; }
+      ws.isAlive = false;
       try { ws.ping(); } catch {}
     }
-  }, 30000);
+  }, 8000);
   heartbeat.unref?.();
 
   wss.on('connection', ws => {
-    const client = { id: `c${++clientSeq}_${Math.random().toString(36).slice(2, 7)}`, nick: 'БОЄЦЬ', roomId: null, dead: false, stateAt: 0, stateN: 0 };
+    ws.isAlive = true;
+    const client = { id: `c${++clientSeq}_${Math.random().toString(36).slice(2, 7)}`, nick: 'БОЄЦЬ', roomId: null, stateAt: 0, stateN: 0 };
     clients.set(ws, client);
-    ws.on('pong', () => { client.dead = false; });
+    ws.on('pong', () => { ws.isAlive = true; });
 
     ws.on('message', raw => {
       let msg;
       try { msg = JSON.parse(String(raw)); } catch { return; }
       if (!msg || typeof msg.t !== 'string') return;
+      if(signaling.receive(ws,msg))return;
       const room = client.roomId ? rooms.get(client.roomId) : null;
 
       switch (msg.t) {
@@ -178,7 +189,7 @@ export function startServer(port) {
           let code = makeCode();
           while ([...rooms.values()].some(r => r.code === code)) code = makeCode();
           const newRoom = createRoom({
-            id, code, name: sanitizeRoomName(msg.name), isPublic: msg.isPublic !== false,
+            id, code, name: sanitizeRoomName(msg.name), isPublic: msg.isPublic === true,
             mapId: validMapId(msg.mapId), maxPlayers: msg.maxPlayers,
             killTarget: msg.killTarget, matchTime: msg.matchTime, hostId: client.id,
           });
@@ -191,13 +202,24 @@ export function startServer(port) {
         case C2S.JOIN:
         case C2S.JOIN_CODE: {
           if (client.roomId) leaveRoom(ws, client);
+          // Код як у balloon-catcher: 4 символи, приймаємо малі літери й схожі українські.
           const target = msg.t === C2S.JOIN_CODE
-            ? [...rooms.values()].find(r => r.code === String(msg.code || '').toUpperCase())
+            ? (() => {
+                const code = normalizeRoomCode(msg.code);
+                if (!/^[A-Z0-9]{4}$/.test(code)) { send(ws, { t: S2C.ERROR, message: 'Введи код кімнати з 4 літер або цифр' }); return null; }
+                const found = [...rooms.values()].find(r => r.code === code);
+                if (!found) send(ws, { t: S2C.ERROR, message: 'Кімнату не знайдено. Перевір код.' });
+                return found || null;
+              })()
             : rooms.get(msg.id);
-          if (!target) { send(ws, { t: S2C.ERROR, message: 'Кімнату не знайдено' }); break; }
+          if (!target) { if (msg.t === C2S.JOIN) send(ws, { t: S2C.ERROR, message: 'Кімнату не знайдено' }); break; }
           if (!target.isPublic && msg.t === C2S.JOIN) { send(ws, { t: S2C.ERROR, message: 'Кімната приватна — потрібен код' }); break; }
           const res = addPlayer(target, client.id, client.nick);
-          if (!res.ok) { send(ws, { t: S2C.ERROR, message: res.message }); break; }
+          if (!res.ok) {
+            const full = /заповнена/i.test(res.message || '');
+            send(ws, { t: S2C.ERROR, message: full ? `У цій кімнаті вже ${target.maxPlayers} гравці` : (/триває/i.test(res.message || '') ? 'Матч уже триває. Дочекайся наступного.' : res.message) });
+            break;
+          }
           client.roomId = target.id;
           send(ws, { t: S2C.JOINED, room: snapshotRoom(target) });
           broadcastRoom(target);
@@ -227,10 +249,11 @@ export function startServer(port) {
           if (++client.stateN > 45) break;
           const map = MAPS[validMapId(room.mapId)];
           const x = Number(msg.x), y = Number(msg.y), angle = Number(msg.angle);
-          if ([x, y, angle].every(Number.isFinite)) {
+          if ([x, y, angle].every(Number.isFinite) && canStand(map, x, y)) {
             p.x = clamp(x, 0.3, map.size - 0.3); p.y = clamp(y, 0.3, map.size - 0.3);
             p.angle = angle;
             p.moving = !!msg.moving;
+            if (msg.jump === true) jumpActor(map, p);
           }
           if (msg.weapon && WEAPONS[msg.weapon] && msg.weapon !== p.weapon) {
             p.weapon = msg.weapon;
@@ -253,7 +276,7 @@ export function startServer(port) {
           if (!target || target.team === shooter.team || !target.alive) break;
           const dx = target.x - shooter.x, dy = target.y - shooter.y;
           const dist = Math.hypot(dx, dy);
-          if (dist > 32 || !lineOfSight(map, shooter.x, shooter.y, target.x, target.y)) break;
+          if (dist > 32 || !lineOfSight(map, shooter.x, shooter.y, target.x, target.y, actorHeight(map, shooter) + .5, actorHeight(map, target) + .5)) break;
           const want = Math.atan2(dy, dx);
           const diff = Math.abs(Math.atan2(Math.sin(want - shooter.angle), Math.cos(want - shooter.angle)));
           if (diff > 0.4) break;
@@ -298,6 +321,7 @@ export function startServer(port) {
     });
 
     ws.on('close', () => {
+      signaling.disconnect(ws);
       if (client.roomId) leaveRoom(ws, client);
       clients.delete(ws);
     });
