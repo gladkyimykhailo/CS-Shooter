@@ -74,7 +74,7 @@ test('меню запускає гру, закупівля має категор
   const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,10);assert.equal(f.document.querySelectorAll('[data-category]').length,7);
   f.game.setPlayer({money:2550});f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,2);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));
   f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='smg').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smg').onclick();f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='gear').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='armor').onclick();assert.equal(f.game.get().player.money,650);assert.equal(f.game.get().player.armor,100);
-  f.document.querySelector('#shop-ready').onclick();assert.equal(f.game.get().phase,'countdown');f.game.step(5);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');f.game.openShop();assert.equal(f.game.get().modal,'');f.game.step(.016);assert.ok(f.drawCalls()>1000,'renderer executes');
+  f.document.querySelector('#shop-ready').onclick();assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');f.game.openShop();assert.equal(f.game.get().modal,'');f.game.step(.016);assert.ok(f.drawCalls()>1000,'renderer executes');
 });
 
 test('HUD показує числове здоровʼя і помітну смугу HP',()=>{
@@ -206,7 +206,7 @@ test('перемога дає нагороду, наступний раунд з
 });
 
 test('смерть прибирає основну зброю у наступному раунді, таймер магазину починає бій',()=>{
-  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.setClock(.01);f.game.step(.02);assert.equal(f.game.get().phase,'countdown');f.game.step(5);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.step(5.1);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');
 });
 
 test('обрана мапа та вигляд зберігаються; усі мапи запускають і відмальовують бій',()=>{
@@ -620,23 +620,21 @@ test('після 12 раундів сторони та рахунок міняю
 });
 
 
-test('закупівля триває 30 секунд, після неї 5 секунд відліку без руху й стрільби',()=>{
-  const f=fixture();f.game.start();assert.equal(f.game.get().clock,30);
-  f.tick(29.9);assert.equal(f.game.get().phase,'buy');f.tick(.11);
-  assert.equal(f.game.get().phase,'countdown');assert.equal(f.game.get().clock,5);assert.equal(f.game.get().modal,'');
+test('паралельно з закупівлею йде 5-секундний відлік без руху й стрільби, потім бій',()=>{
+  const f=fixture();f.game.start();assert.equal(f.game.get().clock,30);assert.equal(f.game.get().fightIn,5);
+  f.tick(4.9);assert.equal(f.game.get().phase,'buy');
   const {player,actors}=f.game.get(),x=player.x,y=player.y,positions=actors.map(a=>[a.x,a.y,a.hp]);
-  f.key('KeyW');f.key('Space');f.game.shoot();f.tick(4.9);
+  f.key('KeyW');f.key('Space');f.game.shoot();f.tick(.05);
   assert.equal(player.x,x);assert.equal(player.y,y);assert.equal(player.inventory.pistol.ammo,12);
-  assert.deepEqual(actors.map(a=>[a.x,a.y,a.hp]),positions);assert.equal(f.game.get().phase,'countdown');
-  f.tick(.11);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().clock,115);
+  assert.deepEqual(actors.map(a=>[a.x,a.y,a.hp]),positions);assert.equal(f.game.get().phase,'buy');
+  f.tick(.1);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().clock,115);assert.equal(f.game.get().modal,'');
 });
 
-test('кнопка готовності запускає 5-секундний відлік, пауза його зупиняє',()=>{
-  const f=fixture();f.game.start();f.document.querySelector('#shop-ready').onclick();f.tick(2);
-  assert.equal(f.game.get().phase,'countdown');assert.equal(f.game.get().clock,3);
-  f.game.openShop();assert.equal(f.game.get().modal,'');
-  f.key('Escape');f.tick(10);assert.equal(f.game.get().clock,3);
-  f.key('Escape');f.tick(3);assert.equal(f.game.get().phase,'fight');
+test('кнопка готовності одразу починає бій, пауза зупиняє таймер раунду',()=>{
+  const f=fixture();f.game.start();f.document.querySelector('#shop-ready').onclick();
+  assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().clock,115);assert.equal(f.game.get().modal,'');
+  const t=f.game.get().clock;f.key('Escape');f.tick(10);assert.equal(f.game.get().clock,t);
+  f.key('Escape');f.tick(3);assert.ok(f.game.get().clock<t);
 });
 
 test('сенсорна кнопка прицілу вмикає оптику, вимикається повторним натисканням і при перезаряджанні',()=>{
