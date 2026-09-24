@@ -276,7 +276,7 @@ test('Space і сенсорна кнопка підіймають тіло на�
   const velocity=p.vz;f.key('Space','keyup');f.key('Space');assert.equal(p.vz,velocity);
   f.key('Escape');const height=p.z;f.tick(.2);assert.equal(p.z,height);
   f.key('Escape');f.tick(.6);assert.equal(p.z,0);assert.equal(p.grounded,true);
-  f.document.querySelector('#touch-jump').onclick();f.tick(.2);assert.ok(p.z>.5);
+  const jumpButton=f.document.querySelector('#touch-jump');jumpButton.events.pointerdown[0]({preventDefault(){},currentTarget:jumpButton,pointerId:7});f.tick(.2);assert.ok(p.z>.5);
   f.game.endRound(0);f.game.step(3.6);assert.equal(p.z,0);assert.equal(p.vz,0);assert.equal(p.grounded,true);
 });
 
@@ -639,9 +639,22 @@ test('кнопка готовності одразу починає бій, па
 
 test('сенсорна кнопка прицілу вмикає оптику, вимикається повторним натисканням і при перезаряджанні',()=>{
   const f=fixture({motion:false});f.game.start();const button=f.document.querySelector('#touch-aim');
-  button.onclick();assert.equal(f.game.get().aiming,false);
+  const tap=id=>{button.events.pointerdown[0]({preventDefault(){},currentTarget:button,pointerId:id});button.events.pointerup[0]({pointerId:id});};
+  tap(1);assert.equal(f.game.get().aiming,false);
   f.game.setPlayer({money:5000});f.game.purchase('sniper');f.game.beginFight();
-  button.onclick();assert.equal(f.game.get().aiming,true);assert.equal(button.ariaPressed,'true');assert.equal(f.game.get().fov,.25);
-  button.onclick();assert.equal(f.game.get().aiming,false);
-  button.onclick();f.game.shoot();f.game.reload();button.onclick();assert.equal(f.game.get().aiming,false);
+  tap(2);assert.equal(f.game.get().aiming,true);assert.equal(button.ariaPressed,'true');assert.equal(f.game.get().fov,.25);
+  tap(3);assert.equal(f.game.get().aiming,false);
+  tap(4);f.game.shoot();f.game.reload();tap(5);assert.equal(f.game.get().aiming,false);
+});
+test('кнопки тримаються незалежно: два пальці на вогні, третій тисне стрибок і приціл',()=>{
+  const f=fixture({motion:false});f.game.start();f.game.beginFight();
+  const fire=f.document.querySelector('#touch-fire'),jump=f.document.querySelector('#touch-jump'),aim=f.document.querySelector('#touch-aim');
+  const down=(el,id)=>el.events.pointerdown[0]({preventDefault(){},currentTarget:el,pointerId:id});
+  const up=(el,id)=>el.events.pointerup[0]({pointerId:id});
+  down(fire,11);down(fire,12);down(jump,13);down(aim,14);
+  assert.equal(f.game.get().touchFire,true);assert.equal(f.game.get().aiming,true);
+  up(fire,11);f.game.step(.016);
+  assert.equal(f.game.get().touchFire,true,'другий палець далі тримає вогонь');
+  up(fire,12);up(jump,13);up(aim,14);f.game.step(.016);
+  assert.equal(f.game.get().touchFire,false);
 });

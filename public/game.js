@@ -516,15 +516,38 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 $('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focusables=[...$('#dialog').querySelectorAll('button:not(:disabled),a[href],input,select')];if(!focusables.length)return;const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 const joy=$('#joystick');let joyId;
 joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect(),radius=r.width*.4,travel=r.width*.25;stick.x=clamp((e.clientX-r.left-r.width/2)/radius,-1,1);stick.y=clamp((e.clientY-r.top-r.height/2)/radius,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*travel}px,${stick.y*travel}px)`;});
-function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
-$('#touch-aim').onclick=()=>{
+function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',e=>{if(e.pointerId===joyId)releaseJoy();});joy.addEventListener('pointercancel',e=>{if(e.pointerId===joyId)releaseJoy();});
+// Multi-touch: every finger drives its own button independently, so holding
+// the joystick (or fire) never blocks jump, reload, aim, shop or C4.
+// Momentary buttons fire on pointerdown and ignore extra concurrent touches
+// (no double toggle from two fingers); hold buttons track all pointers.
+function capturePress(el,e){e.preventDefault();try{el.setPointerCapture(e.pointerId);}catch{}}
+function tapButton(el,action){
+  let active=null;
+  el.addEventListener('pointerdown',e=>{capturePress(el,e);if(active!==null)return;active=e.pointerId;action();});
+  const clear=e=>{if(!e||e.pointerId===active)active=null;};
+  el.addEventListener('pointerup',clear);el.addEventListener('pointercancel',clear);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+function holdButton(el,on,off){
+  const held=new Set();
+  el.addEventListener('pointerdown',e=>{capturePress(el,e);held.add(e.pointerId);if(held.size===1)on();});
+  const release=e=>{if(e&&e.pointerId!==undefined)held.delete(e.pointerId);else held.clear();if(!held.size)off();};
+  el.addEventListener('pointerup',release);el.addEventListener('pointercancel',release);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+$('#touch-controls').addEventListener('contextmenu',e=>e.preventDefault());
+function toggleAim(){
   if(state!=='playing'||paused||modal||player.hp<=0||reload>0||mpReloadT>0||(!mpMode&&phase!=='fight'))return;
   aiming=!aiming;updateHUD();
-};
+}
+tapButton($('#touch-aim'),toggleAim);
 const useButton=$('#touch-use');
-useButton.addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchUse=true;});
-useButton.addEventListener('pointerup',()=>touchUse=false);useButton.addEventListener('pointercancel',()=>touchUse=false);
-$('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-jump').onclick=requestJump;$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
+holdButton(useButton,()=>{touchUse=true;},()=>{touchUse=false;});
+holdButton($('#touch-fire'),()=>{touchFire=true;shoot();},()=>{touchFire=false;});
+tapButton($('#touch-jump'),()=>requestJump());
+tapButton($('#touch-reload'),()=>reloadWeapon());
+tapButton($('#touch-shop'),()=>modal==='shop'?closeDialog():openShop());
 canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.004*settings.sensitivity*(aiming?.5:1);pitch=clamp(pitch-(t.clientY-lookTouch.y)*.003*settings.sensitivity*(aiming?.5:1),-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
 // ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
@@ -944,4 +967,4 @@ mpAutoConnect();
 mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,beginCountdown,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,fightIn,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,beginCountdown,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,fightIn,touchFire,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
