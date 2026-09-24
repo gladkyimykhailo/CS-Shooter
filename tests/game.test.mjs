@@ -589,7 +589,7 @@ test('пістолетний раунд: $800, 5v5, закупівля та за
 test('гравець T встановлює C4 через E; пауза і рух переривають взаємодію',()=>{
   const f=fixture({map:0,motion:false});f.document.querySelector('#team-select').value='1';f.game.start();f.game.beginFight();
   const {player,bomb,actors}=f.game.get();assert.equal(player.team,1);assert.equal(bomb.carrier,player);
-  actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
+  actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];if(a!==player){a.x=37;a.y=36+a.slot*0.5;}});
   const [x,y]=MAPS[0].sites.a.point;f.game.setPlayer({x,y});f.key('KeyE');f.tick(1);
   assert.equal(bomb.progress,1);f.game.shoot();assert.equal(player.inventory.glock.ammo,20);
   f.key('Escape');f.tick(5);assert.equal(bomb.progress,1);f.key('Escape');f.tick(.01);assert.equal(bomb.progress,0);
@@ -664,4 +664,29 @@ test('кнопки тримаються незалежно: два пальці 
   assert.equal(f.game.get().touchFire,true,'другий палець далі тримає вогонь');
   up(fire,12);up(jump,13);up(aim,14);f.game.step(.016);
   assert.equal(f.game.get().touchFire,false);
+});
+test('боти не таборяться: дійшовши на точку, блукають випадковими позиціями',()=>{
+  const f=fixture({map:0,motion:false});f.game.start();f.game.beginFight();
+  const {actors,player}=f.game.get();
+  actors.forEach(a=>{a.cooldown=999;if(a!==player){a.x=37;a.y=30+a.slot;}});
+  const bot=actors.find(a=>a.team===0&&!a.isPlayer);
+  const site=MAPS[0].sites[bot.slot%2?'b':'a'].point;
+  Object.assign(bot,{x:site[0],y:site[1]});
+  f.game.step(.05);
+  assert.ok(bot.patrol,'прийшовши на точку, бот обирає патруль');
+  const sx=bot.x,sy=bot.y;
+  for(let i=0;i<60;i++)f.tick(.05);
+  assert.ok(bot.hp>0,'одинокий бот не підпадає під проріджування');
+  assert.ok(Math.hypot(bot.x-sx,bot.y-sy)>.5,'бот рухається, а не стоїть');
+});
+test('купа понад трьох ботів рідшає: зайві гинуть, лишається троє',()=>{
+  const f=fixture({map:0,motion:false});f.game.start();f.game.beginFight();
+  const {actors}=f.game.get();
+  actors.forEach(a=>{a.cooldown=999;});
+  const point=MAPS[0].sites.a.point;
+  const foes=actors.filter(a=>a.team===1&&!a.isPlayer);
+  assert.equal(foes.length,5);
+  foes.forEach(a=>{a.x=point[0];a.y=point[1];});
+  f.game.step(.05);
+  assert.equal(actors.filter(a=>a.team===1&&a.hp>0).length,3);
 });

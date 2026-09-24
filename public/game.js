@@ -1,4 +1,4 @@
-import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase } from './core.js';
+import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, canStand, moveActor, lineOfSight, findPath, applyDamage, purchase } from './core.js';
 import { createWeaponMotion, kickWeaponMotion, stepWeaponMotion, weaponWallProximity } from './core.js';
 import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './core.js';
 import { drawTerrain } from './terrain.js';
@@ -30,7 +30,7 @@ let map=MAPS[settings.map],wallTextures=[];
   let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=MATCH.freezeTime,fightIn=MATCH.countdownTime,kills=0,deaths=0;
 let bomb=null,losses=[0,0],touchUse=false;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
-let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
+let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false,thinT=0;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
 let mpEpoch=0;
 let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
@@ -111,10 +111,9 @@ $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
   round++;
   if(round===MATCH.halfRounds+1){score.reverse();losses=[0,0];for(const a of actors){a.team=1-a.team;a.hp=0;a.money=MATCH.startMoney;}}
-  phase='buy';clock=MATCH.freezeTime;fightIn=MATCH.countdownTime;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;keys.clear();
+  phase='buy';clock=MATCH.freezeTime;fightIn=MATCH.countdownTime;thinT=0;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;keys.clear();
   const spawns=[teamSpawns(map,0),teamSpawns(map,1)];
-  actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;
-    if(a.hp<=0){a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,sidearmKit(a.team));}
+  actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;a.patrol=null;a.patrolT=0;a.destination='';    if(a.hp<=0){a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,sidearmKit(a.team));}
     a.hp=100;a.moving=false;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
     for(const id of [spawnSidearm(a.team),a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){const want=a.team===1?['kalash','galil','sg553','mac10']:['rifle','m4a1','famas','aug','smg'];const pick=want.find(id=>a.money>=WEAPONS[id].price);if(pick)purchase(a,pick);if(a.armor<100)purchase(a,'armor');if(a.team===0&&!a.kit)purchase(a,'kit');}
@@ -300,6 +299,37 @@ function updatePlayer(dt){
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(player.landingSpeed>1)sound('step');
 }
+// Дійшов до точки — блукай околицями замість табору: випадкова досяжна
+// позиція в радіусі 8 клітинок. Носій C4 і той, хто знешкоджує, не блукають.
+function patrolTarget(a){
+  for(let i=0;i<8;i++){
+    const x=a.x+(Math.random()*2-1)*8,y=a.y+(Math.random()*2-1)*8;
+    if(x<1||y<1||x>=map.size-1||y>=map.size-1||!canStand(map,x,y))continue;
+    if(!findPath(map,a.x,a.y,x,y).length)continue;
+    return {x,y};
+  }
+  return null;
+}
+// Купа однієї команди більша за трьох — зайві гинуть, лишається троє.
+// Фраг записується найближчому ворогу; гравець під правило не підпадає.
+function thinBunch(){
+  for(const team of [0,1]){
+    const bots=actors.filter(a=>!a.isPlayer&&a.team===team&&a.hp>0);
+    const claimed=new Set();
+    for(const a of bots){
+      if(claimed.has(a)||a.hp<=0)continue;
+      const bunch=bots.filter(b=>b.hp>0&&!claimed.has(b)&&Math.hypot(b.x-a.x,b.y-a.y)<=2.5);
+      if(bunch.length>3){
+        bunch.sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));
+        for(const extra of bunch.slice(3)){
+          const foes=actors.filter(e=>e.team!==extra.team&&e.hp>0).sort((p,q)=>Math.hypot(p.x-extra.x,p.y-extra.y)-Math.hypot(q.x-extra.x,q.y-extra.y));
+          damage(extra,9999,foes[0]||extra);
+        }
+      }
+      bunch.forEach(b=>claimed.add(b));
+    }
+  }
+}
 function updateBots(dt){
   const level=settings.difficulty==='easy'?.55:settings.difficulty==='hard'?1.35:1;
   const defuser=bomb.planted?actors.filter(a=>a.team===0&&a.hp>0&&!a.isPlayer).sort((a,b)=>Math.hypot(a.x-bomb.x,a.y-bomb.y)-Math.hypot(b.x-bomb.x,b.y-bomb.y))[0]:null;
@@ -324,8 +354,15 @@ function updateBots(dt){
     if(bomb.planted){target={x:bomb.x,y:bomb.y};stop=a===defuser?1:3;}
     else if(a.team===1){const point=map.sites[bomb.site].point;target=bomb.dropped?bomb:{x:point[0],y:point[1]};stop=(a===bomb.carrier||bomb.dropped)? .7:3;}
     else {const point=map.sites[a.slot%2?'b':'a'].point;target={x:point[0],y:point[1]};stop=2;}
-    const distance=Math.hypot(target.x-a.x,target.y-a.y);
-    if(distance<=stop&&lineOfSight(map,a.x,a.y,target.x,target.y))continue;
+    let distance=Math.hypot(target.x-a.x,target.y-a.y);
+    if(distance<=stop&&lineOfSight(map,a.x,a.y,target.x,target.y)){
+      if(a===bomb.carrier||a===defuser)continue;
+      a.patrolT=(a.patrolT??0)-dt;
+      if(!a.patrol||Math.hypot(a.patrol.x-a.x,a.patrol.y-a.y)<.6||a.patrolT<=0){a.patrol=patrolTarget(a);a.patrolT=4+Math.random()*3;}
+      if(!a.patrol)continue;
+      target=a.patrol;stop=.5;distance=Math.hypot(target.x-a.x,target.y-a.y);
+      if(distance<=stop)continue;
+    }
     const destination=`${Math.floor(target.x)},${Math.floor(target.y)}`;
     if(a.pathTimer<=0||(a.destination&&a.destination!==destination)){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;a.destination=destination;}
     if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);
@@ -335,6 +372,7 @@ function updateBots(dt){
       }
     }
   }
+  thinT-=dt;if(thinT<=0){thinT=1;thinBunch();}
 }
 function update(dt){
   if(state!=='playing'||paused||phase==='finished')return;
