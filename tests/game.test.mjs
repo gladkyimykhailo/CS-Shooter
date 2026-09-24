@@ -528,6 +528,60 @@ test('серверна кімната автоматично підключає�
   sockets[1].close();assert.equal(f.game.get().state,'lobby','disconnect returns from the match');
 });
 
+function multiplayerFixture(team=1){
+  const sockets=[];
+  class Socket{
+    constructor(){this.readyState=0;this.sent=[];sockets.push(this);}
+    send(text){this.sent.push(JSON.parse(text));}
+    close(){this.readyState=3;this.onclose?.();}
+    receive(msg){this.onmessage?.({data:JSON.stringify(msg)});}
+  }
+  const f=fixture({}, {WebSocket:Socket}, 'https://game.example'),socket=sockets[0];
+  socket.readyState=1;socket.onopen();socket.receive({t:'welcome',id:'me',rooms:[]});
+  const body=(id,team,x)=>({id,team,x,y:8.5,nick:id,hp:100,armor:0,alive:true,ammo:12,angle:0,weapon:'pistol'});
+  const room={mapId:1,score:[0,0],timeLeft:300,killTarget:20,players:[body('me',0,19.5),body('other',team,22.5)]};
+  socket.receive({t:'matchStart',room});
+  return {...f,room,socket,snapshot:()=>socket.receive({t:'snapshot',snap:room})};
+}
+
+test('затримані знімки й перетин з мережевим гравцем не телепортують локального бійця',()=>{
+  for(const team of [0,1]){
+    const f=multiplayerFixture(team),p=f.game.get().player;
+    f.key('KeyW');f.tick(.2);f.key('KeyW','keyup');
+    const x=p.x,y=p.y;
+    assert.ok(x>f.room.players[0].x+.5);
+    // The remote player's interpolated body arrives inside our current position;
+    // our own snapshot still contains the position from before the movement.
+    f.room.players[1].x=x+.2;f.snapshot();f.tick(.1);
+    for(let i=0;i<5;i++){
+      f.snapshot();
+      assert.equal(p.x,x,'a delayed position must not rewind local movement');
+      assert.equal(p.y,y);
+      f.tick(1/60);
+    }
+    f.key('KeyW');f.tick(.1);f.key('KeyW','keyup');
+    assert.equal(p.x,x,'overlap still blocks movement further into the other body');
+    f.key('KeyS');f.tick(.2);f.key('KeyS','keyup');
+    assert.ok(p.x<x-.5,'the player can walk out of the overlap');
+    f.snapshot();
+    assert.equal(f.socket.sent.filter(m=>m.t==='state').at(-1).x,+p.x.toFixed(2));
+  }
+});
+
+test('мережеві здоровʼя, смерть і відродження оновлюються без відкату живого гравця',()=>{
+  const f=multiplayerFixture(),p=f.game.get().player,me=f.room.players[0];
+  f.key('KeyW');f.tick(.2);f.key('KeyW','keyup');
+  const x=p.x;
+  Object.assign(me,{hp:40,armor:25});f.snapshot();
+  assert.equal(p.hp,40);assert.equal(p.armor,25);assert.equal(p.x,x);
+  Object.assign(me,{hp:0,alive:false,respawnIn:3});f.snapshot();
+  assert.equal(p.hp,0);assert.equal(p.x,x);
+  f.key('KeyW');f.tick(.2);f.key('KeyW','keyup');assert.equal(p.x,x);
+  Object.assign(me,{hp:100,alive:true,respawnIn:0,x:21.5,y:8.5,angle:1});f.snapshot();
+  assert.equal(p.hp,100);assert.equal(p.x,21.5);assert.equal(p.y,8.5);assert.equal(p.angle,1);
+  assert.equal(p.grounded,true);assert.equal(p.vz,0);
+});
+
 test('гра підключається до налаштованого сервера одразу після запуску',()=>{
   const sockets=[];
   class Socket{

@@ -1,6 +1,6 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, canStand, moveActor, lineOfSight, findPath, applyDamage, purchase } from './core.js';
 import { createWeaponMotion, kickWeaponMotion, stepWeaponMotion, weaponWallProximity } from './core.js';
-import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './core.js';
+import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor } from './core.js';
 import { drawTerrain } from './terrain.js';
 import { drawOperators, hitOperator } from './operators.js';
 import { mapArt, drawOperator, textures, hex, tint, WEAPON_FILES, drawHeldWeapon, drawWeaponSights, drawScopeOverlay, WEAPON_MUZZLES } from './art.js';
@@ -986,7 +986,9 @@ function mpApplySnapshot(snap){
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
   actors=[player,...mpRemotes.values()];
-  if(me?.alive&&!actorPathClear(map,player,player.x,player.y,actors)){player.x=me.x;player.y=me.y;}
+  // Snapshots echo older local coordinates. Remote interpolation can overlap us;
+  // let stepActor block/allow separation instead of rewinding to that stale echo.
+  // Only respawning above should replace the local player's position.
   updateHUD();
 }
 function mpHandleEvents(events){

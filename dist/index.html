@@ -2988,7 +2988,9 @@ function mpApplySnapshot(snap){
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
   actors=[player,...mpRemotes.values()];
-  if(me?.alive&&!actorPathClear(map,player,player.x,player.y,actors)){player.x=me.x;player.y=me.y;}
+  // Snapshots echo older local coordinates. Remote interpolation can overlap us;
+  // let stepActor block/allow separation instead of rewinding to that stale echo.
+  // Only respawning above should replace the local player's position.
   updateHUD();
 }
 function mpHandleEvents(events){
