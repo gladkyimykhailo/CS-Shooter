@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { MAPS, WEAPONS, canStand, findPath, purchase, applyDamage } from '../public/core.js';
-import { MATCH, teamSpawns, createBomb, bombAction, stepBomb, bombRoundWinner, rewardRound } from '../public/tactical.js';
+import { MATCH, teamSpawns, createBomb, bombAction, stepBomb, bombRoundWinner, rewardRound, assignBotRoutes } from '../public/tactical.js';
 
 function scenario() {
   const map=MAPS[0], [x,y]=map.sites.a.point;
@@ -97,4 +97,28 @@ test('pistol budget, helmet damage, CT kit restriction and primary replacement',
   assert.equal(s.ct.inventory.rifle,undefined);assert.ok(s.ct.inventory.pistol);assert.ok(s.ct.inventory.m4a1);
   assert.equal(purchase(s.ct,'kalash').ok,false,'CT не купить AK-47');
   assert.equal(purchase(s.t,'rifle').ok,false,'T не купить M4A4');
+});
+
+function seededRandom(seed){return ()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);}
+
+test('random bot plans cover A, B and mid with reachable separate positions on every map',()=>{
+  for(const map of MAPS)for(const playerTeam of [0,1])for(const seed of [1,42,2026]){
+    const actors=[0,1].flatMap(team=>teamSpawns(map,team).map(([x,y],slot)=>({x,y,team,hp:100,isPlayer:team===playerTeam&&slot===0})));
+    const bomb=createBomb(actors,seed%2?'a':'b');
+    assignBotRoutes(map,actors,bomb,seededRandom(seed));
+    assert.equal(actors.find(a=>a.isPlayer).route,undefined,'only bots receive plans');
+    for(const team of [0,1]){
+      const bots=actors.filter(a=>a.team===team&&!a.isPlayer);
+      assert.deepEqual([...new Set(bots.map(a=>a.route.lane))].sort(),['a','b','mid']);
+      for(const lane of ['a','b','mid'])assert.ok(bots.filter(a=>a.route.lane===lane).length<=2);
+      assert.equal(new Set(bots.map(a=>a.route.x+','+a.route.y)).size,bots.length);
+      for(const a of bots)assert.ok(findPath(map,a.x,a.y,a.route.x,a.route.y).length,`${map.id}: route is reachable`);
+    }
+    if(!bomb.carrier.isPlayer)assert.equal(bomb.carrier.route.lane,bomb.site);
+    const first=JSON.stringify(actors.map(a=>a.route));
+    assignBotRoutes(map,actors,bomb,seededRandom(seed));
+    assert.equal(JSON.stringify(actors.map(a=>a.route)),first,'seed determines the plan');
+    assignBotRoutes(map,actors,bomb,seededRandom(seed+1));
+    assert.notEqual(JSON.stringify(actors.map(a=>a.route)),first,'a new random draw changes the plan');
+  }
 });

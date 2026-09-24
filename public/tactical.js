@@ -22,6 +22,37 @@ export function createBomb(actors, targetSite='a') {
   return {carrier:terrorists.find(a=>a.isPlayer)||terrorists[0]||null, dropped:false, planted:false, x:0, y:0, site:targetSite, timeLeft:MATCH.bombTime, progress:0, user:null, action:null, resolved:null};
 }
 
+// Balance directions before choosing individual positions, so randomness cannot
+// send the whole team down one lane. Plans remain stable until the next round.
+export function assignBotRoutes(map, actors, bomb, random=Math.random) {
+  const areas={a:map.sites.a.point,b:map.sites.b.point,mid:map.mid.point};
+  for(const team of [0,1]) {
+    const bots=actors.filter(a=>a.team===team&&!a.isPlayer&&a.hp>0);
+    for(let i=bots.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[bots[i],bots[j]]=[bots[j],bots[i]];}
+    const counts={a:0,b:0,mid:0},used=[];
+    if(bots.includes(bomb.carrier)) {
+      const [x,y]=areas[bomb.site];
+      bomb.carrier.route={lane:bomb.site,x,y};counts[bomb.site]++;used.push({x,y});
+    }
+    for(const a of bots) {
+      if(a===bomb.carrier)continue;
+      const lanes=Object.keys(areas).filter(lane=>counts[lane]===Math.min(...Object.values(counts)));
+      const lane=lanes[Math.floor(random()*lanes.length)],[cx,cy]=areas[lane];
+      const candidates=[];
+      for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++) {
+        const x=cx+dx,y=cy+dy;
+        if(canStand(map,x,y)&&!used.some(p=>Math.hypot(x-p.x,y-p.y)<1)&&lineOfSight(map,cx,cy,x,y))candidates.push({x,y});
+      }
+      let point={x:cx,y:cy};
+      while(candidates.length) {
+        const candidate=candidates.splice(Math.floor(random()*candidates.length),1)[0];
+        if(findPath(map,a.x,a.y,candidate.x,candidate.y).length){point=candidate;break;}
+      }
+      a.route={lane,...point};counts[lane]++;used.push(point);
+    }
+  }
+}
+
 function nearObjective(map,a,x,y,radius) {
   return Math.hypot(a.x-x,a.y-y)<=radius&&Math.abs(floorHeight(map,a.x,a.y)-floorHeight(map,x,y))<.25&&lineOfSight(map,a.x,a.y,x,y);
 }

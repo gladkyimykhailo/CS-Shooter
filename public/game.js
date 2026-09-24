@@ -8,7 +8,7 @@ import { MP, C2S, canStart } from './net.js';
 import { defaultMpUrl, createMpClient, findSharedServer, inviteLink, isTunnelUrl, serverUrlFromQuery, setSharedServerUrl } from './mp.js';
 import { createPeerCodeClient } from './peer-code.js';
 import { normalizeRoomCode, validRoomCode } from './room-code.js';
-import { MATCH, teamSpawns, createBomb, bombAction, stepBomb, bombRoundWinner, rewardRound } from './tactical.js';
+import { MATCH, teamSpawns, createBomb, bombAction, stepBomb, bombRoundWinner, rewardRound, assignBotRoutes } from './tactical.js';
 import { SERVER_URL } from './config.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -30,7 +30,7 @@ let map=MAPS[settings.map],wallTextures=[];
   let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=MATCH.countdownTime,buyRemaining=MATCH.buyTime,fightIn=MATCH.countdownTime,kills=0,deaths=0;
 let bomb=null,losses=[0,0],touchUse=false;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
-let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false,thinT=0;
+let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
 let mpEpoch=0;
 let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
@@ -111,14 +111,14 @@ $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
   round++;
   if(round===MATCH.halfRounds+1){score.reverse();losses=[0,0];for(const a of actors){a.team=1-a.team;a.hp=0;a.money=MATCH.startMoney;}}
-  phase='buy';clock=MATCH.countdownTime;buyRemaining=MATCH.buyTime;fightIn=MATCH.countdownTime;thinT=0;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;keys.clear();
+  phase='buy';clock=MATCH.countdownTime;buyRemaining=MATCH.buyTime;fightIn=MATCH.countdownTime;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;keys.clear();
   const spawns=[teamSpawns(map,0),teamSpawns(map,1)];
   actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;a.patrol=null;a.patrolT=0;a.destination='';    if(a.hp<=0){a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,sidearmKit(a.team));}
     a.hp=100;a.moving=false;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
     for(const id of [spawnSidearm(a.team),a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
     if(!a.isPlayer){const want=a.team===1?['kalash','galil','sg553','mac10']:['rifle','m4a1','famas','aug','smg'];const pick=want.find(id=>a.money>=WEAPONS[id].price);if(pick)purchase(a,pick);if(a.armor<100)purchase(a,'armor');if(a.team===0&&!a.kit)purchase(a,'kit');}
   });
-  bomb=createBomb(actors,round%2?'a':'b');touchUse=false;
+  bomb=createBomb(actors,Math.random()<.5?'a':'b');assignBotRoutes(map,actors,bomb);touchUse=false;
   resetGunMotion();$('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(fightIn)}`;$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
 }
 function beginCountdown(){
@@ -313,29 +313,10 @@ function patrolTarget(a){
   }
   return null;
 }
-// Купа однієї команди більша за трьох — зайві гинуть, лишається троє.
-// Фраг записується найближчому ворогу; гравець під правило не підпадає.
-function thinBunch(){
-  for(const team of [0,1]){
-    const bots=actors.filter(a=>!a.isPlayer&&a.team===team&&a.hp>0);
-    const claimed=new Set();
-    for(const a of bots){
-      if(claimed.has(a)||a.hp<=0)continue;
-      const bunch=bots.filter(b=>b.hp>0&&!claimed.has(b)&&Math.hypot(b.x-a.x,b.y-a.y)<=2.5);
-      if(bunch.length>3){
-        bunch.sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));
-        for(const extra of bunch.slice(3)){
-          const foes=actors.filter(e=>e.team!==extra.team&&e.hp>0).sort((p,q)=>Math.hypot(p.x-extra.x,p.y-extra.y)-Math.hypot(q.x-extra.x,q.y-extra.y));
-          damage(extra,9999,foes[0]||extra);
-        }
-      }
-      bunch.forEach(b=>claimed.add(b));
-    }
-  }
-}
 function updateBots(dt){
   const level=settings.difficulty==='easy'?.55:settings.difficulty==='hard'?1.35:1;
   const defuser=bomb.planted?actors.filter(a=>a.team===0&&a.hp>0&&!a.isPlayer).sort((a,b)=>Math.hypot(a.x-bomb.x,a.y-bomb.y)-Math.hypot(b.x-bomb.x,b.y-bomb.y))[0]:null;
+  const retriever=bomb.dropped?actors.filter(a=>a.team===1&&a.hp>0&&!a.isPlayer).sort((a,b)=>Math.hypot(a.x-bomb.x,a.y-bomb.y)-Math.hypot(b.x-bomb.x,b.y-bomb.y))[0]:null;
   for(const a of actors){
     if(a.isPlayer||a.hp<=0)continue;
     a.moving=false;a.flash=Math.max(0,a.flash-dt);a.cooldown-=dt;a.pathTimer-=dt;
@@ -351,15 +332,16 @@ function updateBots(dt){
         if(Math.random()<chance)damage(visible,WEAPONS[a.weapon].damage*.65,a);
         if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}
       }
-      if(a!==bomb.carrier&&a!==defuser)continue;
+      if(a!==bomb.carrier&&a!==defuser&&a!==retriever)continue;
     }else a.seen=0;
     let target,stop=1;
     if(bomb.planted){target={x:bomb.x,y:bomb.y};stop=a===defuser?1:3;}
-    else if(a.team===1){const point=map.sites[bomb.site].point;target=bomb.dropped?bomb:{x:point[0],y:point[1]};stop=(a===bomb.carrier||bomb.dropped)? .7:3;}
-    else {const point=map.sites[a.slot%2?'b':'a'].point;target={x:point[0],y:point[1]};stop=2;}
+    else if(a===retriever){target=bomb;stop=.7;}
+    else if(a===bomb.carrier){const [x,y]=map.sites[bomb.site].point;target={x,y};stop=.7;}
+    else {target=a.route;stop=1;}
     let distance=Math.hypot(target.x-a.x,target.y-a.y);
     if(distance<=stop&&lineOfSight(map,a.x,a.y,target.x,target.y)){
-      if(a===bomb.carrier||a===defuser)continue;
+      if(a===bomb.carrier||a===defuser||a===retriever)continue;
       a.patrolT=(a.patrolT??0)-dt;
       if(!a.patrol||Math.hypot(a.patrol.x-a.x,a.patrol.y-a.y)<.6||a.patrolT<=0){a.patrol=patrolTarget(a);a.patrolT=4+Math.random()*3;}
       if(!a.patrol)continue;
@@ -375,7 +357,6 @@ function updateBots(dt){
       }
     }
   }
-  thinT-=dt;if(thinT<=0){thinT=1;thinBunch();}
 }
 function update(dt){
   if(state!=='playing'||paused||phase==='finished')return;

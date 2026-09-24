@@ -751,24 +751,26 @@ test('боти не таборяться: дійшовши на точку, бл
   const f=fixture({map:0,motion:false});f.game.start();f.game.beginFight();
   const {actors,player}=f.game.get();
   actors.forEach(a=>{a.cooldown=999;if(a!==player){a.x=37;a.y=30+a.slot;}});
-  const bot=actors.find(a=>a.team===0&&!a.isPlayer);
-  const site=MAPS[0].sites[bot.slot%2?'b':'a'].point;
-  Object.assign(bot,{x:site[0],y:site[1]});
+  const bot=actors.find(a=>a.team===0&&!a.isPlayer&&a.route.lane==='a');
+  Object.assign(bot,{x:bot.route.x,y:bot.route.y});
   f.game.step(.05);
   assert.ok(bot.patrol,'прийшовши на точку, бот обирає патруль');
   const sx=bot.x,sy=bot.y;
   for(let i=0;i<60;i++)f.tick(.05);
-  assert.ok(bot.hp>0,'одинокий бот не підпадає під проріджування');
+  assert.ok(bot.hp>0,'патрулювання не завдає шкоди');
   assert.ok(Math.hypot(bot.x-sx,bot.y-sy)>.5,'бот рухається, а не стоїть');
 });
-test('купа понад трьох ботів рідшає: зайві гинуть, лишається троє',()=>{
+test('боти розходяться різними напрямками зі старту без втрат від скупчення',()=>{
   const f=fixture({map:0,motion:false});f.game.start();f.game.beginFight();
-  const {actors}=f.game.get();
-  actors.forEach(a=>{a.cooldown=999;});
-  const point=MAPS[0].sites.a.point;
-  const foes=actors.filter(a=>a.team===1&&!a.isPlayer);
+  const {actors}=f.game.get();actors.forEach(a=>a.cooldown=999);
+  const foes=actors.filter(a=>a.team===1&&!a.isPlayer),starts=foes.map(a=>[a.x,a.y]);
   assert.equal(foes.length,5);
-  foes.forEach(a=>{a.x=point[0];a.y=point[1];});
-  f.game.step(.05);
-  assert.equal(actors.filter(a=>a.team===1&&a.hp>0).length,3);
+  const plans=JSON.stringify(foes.map(a=>a.route));
+  for(let i=0;i<120;i++)f.tick(.05);
+  assert.equal(foes.filter(a=>a.hp>0).length,5,'bots survive the crowded spawn');
+  assert.ok(foes.filter((a,i)=>Math.hypot(a.x-starts[i][0],a.y-starts[i][1])>1).length>=3,'bots leave spawn');
+  assert.ok(new Set(foes.map(a=>a.destination)).size>=3,'the actual pathfinder uses different targets');
+  assert.equal(JSON.stringify(foes.map(a=>a.route)),plans,'plans do not reroll every frame');
+  f.game.endRound(0);f.tick(3.6);
+  assert.notEqual(JSON.stringify(foes.map(a=>a.route)),plans,'a new round assigns fresh positions');
 });
