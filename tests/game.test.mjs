@@ -206,7 +206,7 @@ test('перемога дає нагороду, наступний раунд з
 });
 
 test('смерть прибирає основну зброю у наступному раунді, таймер магазину починає бій',()=>{
-  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.step(10);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.step(10);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'shop');
 });
 
 test('обрана мапа та вигляд зберігаються; усі мапи запускають і відмальовують бій',()=>{
@@ -678,15 +678,19 @@ test('бій починається через 10 секунд, закупівл
   const f=fixture();f.game.start();assert.equal(f.game.get().buyRemaining,30);assert.equal(f.game.get().fightIn,10);
   f.game.step(9);assert.equal(f.game.get().phase,'buy');
   assert.equal(Number(f.document.querySelector('#shop-timer').textContent),21);
+  assert.equal(f.document.querySelector('#shop-round-status').textContent,'РАУНД ЧЕРЕЗ 1 С');
   f.key('KeyB');
   const {player,actors}=f.game.get(),x=player.x,y=player.y,positions=actors.map(a=>[a.x,a.y,a.hp]);
   f.key('KeyW');f.key('Space');f.game.shoot();f.tick(.5);
   assert.equal(player.x,x);assert.equal(player.y,y);assert.equal(player.inventory.pistol.ammo,12);
   assert.deepEqual(actors.map(a=>[a.x,a.y,a.hp]),positions);assert.equal(f.game.get().phase,'buy');
-  f.tick(.5);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().clock,115);assert.equal(f.game.get().modal,'');
+  f.key('KeyB');
+  f.tick(.5);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().clock,115);assert.equal(f.game.get().modal,'shop');
+  assert.equal(f.document.querySelector('#shop-round-status').textContent,'РАУНД РОЗПОЧАВСЯ');
+  assert.equal(Number(f.document.querySelector('#shop-timer').textContent),20);
   assert.equal(f.game.get().buyRemaining,20);
   actors.forEach(a=>a.cooldown=999);
-  f.game.setPlayer({money:5000});f.key('KeyB');
+  f.game.setPlayer({money:5000});
   assert.equal(f.game.get().modal,'shop');
   f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='rifle').onclick();
   assert.equal(player.primary,'rifle');
