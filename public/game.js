@@ -374,6 +374,8 @@ function updateHUD(){
   const aimButton=$('#touch-aim');aimButton.ariaPressed=String(aiming);aimButton.classList.toggle('active',aiming);
   aimButton.hidden=player.hp<=0||(!mpMode&&phase!=='fight');
   $('#touch-shop').hidden=mpMode||phase!=='buy';
+  $('#touch-reload').hidden=!!mpMode;
+  $('#touch-weapon').hidden=!mpMode;
   const areas=[map.sites.a,map.sites.b,map.mid,...(map.callouts||[])];
   let area=null,distance=Infinity;
   for(const candidate of areas){const d=Math.hypot(player.x-candidate.point[0],player.y-candidate.point[1]);if(d<distance){distance=d;area=candidate;}}
@@ -574,6 +576,15 @@ holdButton(useButton,()=>{touchUse=true;},()=>{touchUse=false;});
 holdButton($('#touch-fire'),()=>{touchFire=true;shoot();},()=>{touchFire=false;});
 tapButton($('#touch-jump'),()=>requestJump());
 tapButton($('#touch-reload'),()=>reloadWeapon());
+// Мережевий бій на сенсорі: клавіш 1–7 нема, тож зброя міняється кнопкою ⇄
+// (той самий набір, що й на цифрах). Перезаряджання в мережі автоматичне,
+// тому в mpMode кнопка R ховається й поступається місцем ⇄.
+const MP_TOUCH_GUNS=['pistol','smg','rifle','shotgun','kalash','marksman','sniper'];
+tapButton($('#touch-weapon'),()=>{
+  if(!mpMode||!player||player.hp<=0)return;
+  const next=MP_TOUCH_GUNS[(MP_TOUCH_GUNS.indexOf(player.weapon)+1+MP_TOUCH_GUNS.length)%MP_TOUCH_GUNS.length];
+  mpSwitchWeapon(next);toast(WEAPONS[player.weapon].name);
+});
 tapButton($('#touch-shop'),()=>modal==='shop'?closeDialog():openShop());
 canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.004*settings.sensitivity*(aiming?.5:1);pitch=clamp(pitch-(t.clientY-lookTouch.y)*.003*settings.sensitivity*(aiming?.5:1),-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
@@ -768,7 +779,10 @@ async function mpCopyInvite(){
     if(btn){btn.textContent='Скопійовано ✓';setTimeout(()=>{btn.textContent='КОПІЮВАТИ ПОСИЛАННЯ';},1600);}
     toast('Посилання скопійовано — надішли другу');
   }catch{
-    toast(link);
+    // Без HTTPS navigator.clipboard недоступний (типово на мобілці через http):
+    // показуємо посилання текстом, щоб його можна було затиснути й скопіювати.
+    const st=$('#mp-code-status');if(st)st.textContent=link;
+    toast('Не вдалося скопіювати автоматично — затисни посилання вище');
   }
 }
 // Запрошення ?room=КОД (&ws=адреса) як у balloon-catcher: відкриває вкладку

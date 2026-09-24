@@ -65,7 +65,7 @@
           </div>
           <div id="mp-code-join" class="launch-bar online-block" style="flex-wrap:wrap">
             <div class="mode-info" style="flex:1;min-width:220px"><b>ПРИВАТНА КІМНАТА</b><span>Введи код від друга</span></div>
-            <input id="mp-join-code" type="text" maxlength="4" placeholder="КОД" autocomplete="off" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
+            <input id="mp-join-code" type="text" maxlength="4" placeholder="КОД" autocomplete="off" autocapitalize="characters" spellcheck="false" style="background:#18221c;border:1px solid #3d4b3e;color:var(--text);padding:12px;text-transform:uppercase;width:120px;text-align:center;letter-spacing:2px">
             <button id="mp-join-btn" class="secondary">ПРИЄДНАТИСЬ</button>
           </div>
           <div id="mp-public" class="online-block" hidden><div class="section-heading"><div><span class="eyebrow">ВІДКРИТІ КІМНАТИ</span><h2>ПУБЛІЧНІ</h2></div></div>
@@ -115,7 +115,7 @@
     <div id="game-message" class="game-message"></div>
     <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПІДГОТОВКА ДО БОЮ</span></div>
     <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ <kbd>E</kbd> C4</div><div class="weapon-info"><small id="weapon-name">USP-S</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">$ 800</b></div></div>
-    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-aim" aria-label="Прицілювання" aria-pressed="false">⌖</button><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-use" aria-label="Утримуй для взаємодії з C4">E</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-aim" aria-label="Прицілювання" aria-pressed="false">⌖</button><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-use" aria-label="Утримуй для взаємодії з C4">E</button><button id="touch-reload">R</button><button id="touch-weapon" aria-label="Змінити зброю">⇄</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
   <div id="toast" class="toast" role="status" hidden></div>

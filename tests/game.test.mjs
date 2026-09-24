@@ -646,6 +646,13 @@ test('сенсорна кнопка прицілу вмикає оптику, в
   tap(3);assert.equal(f.game.get().aiming,false);
   tap(4);f.game.shoot();f.game.reload();tap(5);assert.equal(f.game.get().aiming,false);
 });
+test('сенсорна кнопка ⇄ ховається в одиночній грі й не міняє зброю поза мережею',()=>{
+  const f=fixture();f.game.start();f.game.beginFight();f.game.step(.016);
+  const w=f.document.querySelector('#touch-weapon');
+  assert.equal(w.hidden,true);assert.equal(f.document.querySelector('#touch-reload').hidden,false);
+  w.events.pointerdown[0]({preventDefault(){},currentTarget:w,pointerId:21});
+  assert.equal(f.game.get().player.weapon,'pistol');
+});
 test('кнопки тримаються незалежно: два пальці на вогні, третій тисне стрибок і приціл',()=>{
   const f=fixture({motion:false});f.game.start();f.game.beginFight();
   const fire=f.document.querySelector('#touch-fire'),jump=f.document.querySelector('#touch-jump'),aim=f.document.querySelector('#touch-aim');
