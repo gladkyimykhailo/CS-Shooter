@@ -37,7 +37,7 @@ function fixture(saved={},browser={},serverUrl=''){
 
 test('ПКМ вирівнює приціл, прибирає хрестик і повертає стрільбу від стегна після відпускання',()=>{
   for(const id of ['pistol','smg','rifle','shotgun','kalash']){
-    const f=fixture({map:1});f.game.start();f.game.setPlayer({money:5000});if(id!=='pistol')f.game.purchase(id);f.game.beginFight();
+    const f=fixture({map:1});f.game.start();f.game.setPlayer({money:5000});if(id==='kalash')f.game.setPlayer({weapon:'kalash',primary:'kalash',inventory:{kalash:{ammo:30,reserve:90}}});else if(id!=='pistol')f.game.purchase(id);f.game.beginFight();
     f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
     f.game.get().actors.forEach(a=>a.cooldown=999);
     f.mouse(2);f.game.step(.03);
@@ -72,7 +72,7 @@ test('прицілювання працює без анімацій; перез�
 
 test('меню запускає гру, закупівля має категорії та купує зброю й броню',()=>{
   const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,10);assert.equal(f.document.querySelectorAll('[data-category]').length,7);
-  f.game.setPlayer({money:2550});f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,2);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));
+  f.game.setPlayer({money:2550});  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,3);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='scar20'));
   f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='smg').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smg').onclick();f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='gear').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='armor').onclick();assert.equal(f.game.get().player.money,650);assert.equal(f.game.get().player.armor,100);
   f.document.querySelector('#shop-ready').onclick();assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');f.game.openShop();assert.equal(f.game.get().modal,'');f.game.step(.016);assert.ok(f.drawCalls()>1000,'renderer executes');
 });
@@ -134,7 +134,7 @@ test('ціль на верхній платформі вимагає приці�
   Object.assign(target,{x:25.5,y:36.5,hp:100,armor:0});
   f.game.shoot();assert.equal(target.hp,100,'level shot hits below the elevated target');
   f.tick(.31);Object.assign(target,{x:25.5,y:36.5});f.game.setPitch(.15);
-  f.game.shoot();assert.equal(target.hp,75,'aiming up reaches the target');
+  f.game.shoot();assert.equal(target.hp,65,'aiming up reaches the target');
 });
 
 test('снайперські гвинтівки купуються, звужують поле зору та стріляють через оптику',()=>{
@@ -149,20 +149,20 @@ test('снайперські гвинтівки купуються, звужую
 test('рух, постріли, стіни та перезаряджання працюють у реальному ігровому циклі',()=>{
   const f=fixture({map:1});f.game.start();f.game.beginFight();f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});const p=f.game.get().player;
   f.key('KeyW');f.game.step(.04);f.key('KeyW','keyup');assert.ok(p.y>8.5);
-  const enemies=f.game.get().actors.filter(a=>a.team===1);enemies[0].x=20.5;enemies[0].y=11.5;enemies[0].armor=0;enemies[0].cooldown=999;f.game.shoot();assert.equal(p.inventory.pistol.ammo,11);assert.equal(enemies[0].hp,75);
-  f.game.step(.31);f.game.setPlayer({x:8.5,y:9.5,angle:0});enemies[0].x=10.5;enemies[0].y=9.5;f.game.shoot();assert.equal(enemies[0].hp,75,'wall blocks shot');
-  f.game.reload();f.game.step(1.5);assert.equal(p.inventory.pistol.ammo,12);assert.equal(p.inventory.pistol.reserve,34);f.key('Escape');assert.equal(f.game.get().paused,true);const y=p.y;f.key('KeyW');f.game.step(.2);assert.equal(p.y,y);f.document.querySelector('#resume').onclick();assert.equal(f.game.get().paused,false);
+  const enemies=f.game.get().actors.filter(a=>a.team===1);enemies[0].x=20.5;enemies[0].y=11.5;enemies[0].armor=0;enemies[0].cooldown=999;f.game.shoot();assert.equal(p.inventory.pistol.ammo,11);assert.equal(enemies[0].hp,65);
+  f.game.step(.31);f.game.setPlayer({x:8.5,y:9.5,angle:0});enemies[0].x=10.5;enemies[0].y=9.5;f.game.shoot();assert.equal(enemies[0].hp,65,'wall blocks shot');
+  f.game.reload();f.game.step(2.3);assert.equal(p.inventory.pistol.ammo,12);assert.equal(p.inventory.pistol.reserve,34);f.key('Escape');assert.equal(f.game.get().paused,true);const y=p.y;f.key('KeyW');f.game.step(.2);assert.equal(p.y,y);f.document.querySelector('#resume').onclick();assert.equal(f.game.get().paused,false);
 });
 
 test('калаш: покупка, стрільба зі спреєм і довге перезаряджання',()=>{
-  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('kalash');f.game.beginFight();
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000,team:1});f.game.purchase('kalash');f.game.beginFight();
   const p=f.game.get().player;
-  assert.equal(p.weapon,'kalash');assert.equal(p.money,2300);
+  assert.equal(p.weapon,'kalash');assert.equal(p.money,2500);
   f.game.shoot();assert.equal(p.inventory.kalash.ammo,29);
   assert.ok(p.spray>0,'черга розкидає спрей');
   const s1=p.spray;f.game.step(.5);assert.ok(p.spray<s1,'спрей гасне без стрільби');
   f.game.setPlayer({inventory:{kalash:{ammo:5,reserve:90}}});
-  f.game.reload();f.game.step(2.3);
+  f.game.reload();f.game.step(2.6);
   assert.equal(p.inventory.kalash.ammo,30);assert.equal(p.inventory.kalash.reserve,65);
 });
 
@@ -591,7 +591,7 @@ test('гравець T встановлює C4 через E; пауза і ру�
   const {player,bomb,actors}=f.game.get();assert.equal(player.team,1);assert.equal(bomb.carrier,player);
   actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
   const [x,y]=MAPS[0].sites.a.point;f.game.setPlayer({x,y});f.key('KeyE');f.tick(1);
-  assert.equal(bomb.progress,1);f.game.shoot();assert.equal(player.inventory.pistol.ammo,12);
+  assert.equal(bomb.progress,1);f.game.shoot();assert.equal(player.inventory.glock.ammo,20);
   f.key('Escape');f.tick(5);assert.equal(bomb.progress,1);f.key('Escape');f.tick(.01);assert.equal(bomb.progress,0);
   f.key('KeyE');f.tick(1);f.key('KeyW');f.tick(.04);assert.equal(bomb.progress,0);f.key('KeyW','keyup');
   f.game.setPlayer({x,y});for(let i=0;i<65;i++)f.tick(.05);f.key('KeyE','keyup');f.game.step(.01);

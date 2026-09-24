@@ -70,7 +70,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
             const distance=Math.hypot(target.x-p.x,target.y-p.y),angle=Math.atan2(target.y-p.y,target.x-p.x);
             const diff=Math.abs(Math.atan2(Math.sin(angle-p.angle),Math.cos(angle-p.angle)));
             if(distance<=32&&diff<=.4&&lineOfSight(MAPS[room.mapId],p.x,p.y,target.x,target.y,actorHeight(MAPS[room.mapId],p)+.5,actorHeight(MAPS[room.mapId],target)+.5)){
-              const amount=w.damage*(msg.head?(w.headMult||2):1)*(p.weapon==='shotgun'?w.pellets*clamp(1-distance/14,.15,1):1);
+              const amount=w.damage*(msg.head?(w.headMult||2):1)*(w.pellets>1?w.pellets*clamp(1-distance/14,.15,1):1);
               applyDamage(target,amount,!!msg.head);
               if(target.hp<=0){target.alive=false;target.deaths++;target.respawnIn=MP.RESPAWN_DELAY;p.kills++;events.push({t:'kill',source:id,target:target.id,sourceNick:p.nick,targetNick:target.nick});}
             }

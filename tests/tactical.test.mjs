@@ -22,7 +22,7 @@ test('all nine maps have five distinct reachable spawns per side',()=>{
 });
 
 test('arsenal uses Counter-Strike names across shared client/server definitions',()=>{
-  assert.deepEqual(Object.values(WEAPONS).map(w=>w.name),['USP-S','MP9','M4A4','Nova','AK-47','SSG 08','AWP']);
+  assert.deepEqual(Object.values(WEAPONS).map(w=>w.name),['USP-S','Glock-18','P250','Dual Berettas','Desert Eagle','Five-SeveN','Tec-9','CZ75-Auto','MP9','MAC-10','MP5-SD','MP7','UMP-45','P90','PP-Bizon','M4A4','AK-47','FAMAS','Galil AR','M4A1-S','AUG','SG 553','SSG 08','AWP','G3SG1','SCAR-20','Nova','XM1014','MAG-7','Sawed-Off','Negev','M249']);
 });
 
 test('plant requires the carrier on a site; releasing, moving, or jumping resets progress',()=>{
@@ -93,6 +93,8 @@ test('pistol budget, helmet damage, CT kit restriction and primary replacement',
   assert.equal(purchase(s.ct,'kit').ok,false);assert.equal(purchase(s.t,'kit').ok,false);
   s.ct.money=1000;assert.equal(purchase(s.ct,'helmet').ok,true);applyDamage(s.ct,60,true);
   assert.equal(s.ct.hp,70);assert.equal(s.ct.armor,70);
-  s.ct.money=10000;purchase(s.ct,'rifle');purchase(s.ct,'kalash');
-  assert.equal(s.ct.inventory.rifle,undefined);assert.ok(s.ct.inventory.pistol);assert.ok(s.ct.inventory.kalash);
+  s.ct.money=10000;purchase(s.ct,'rifle');purchase(s.ct,'m4a1');
+  assert.equal(s.ct.inventory.rifle,undefined);assert.ok(s.ct.inventory.pistol);assert.ok(s.ct.inventory.m4a1);
+  assert.equal(purchase(s.ct,'kalash').ok,false,'CT не купить AK-47');
+  assert.equal(purchase(s.t,'rifle').ok,false,'T не купить M4A4');
 });

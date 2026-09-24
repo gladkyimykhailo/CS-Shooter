@@ -150,10 +150,11 @@ export function loadWeaponSprites(){
   return out;
 }
 export function weaponSpriteReady(img){return !!img&&img.complete&&img.naturalWidth>0;}
-export const WEAPON_MUZZLES={pistol:155,smg:215,rifle:290,shotgun:315,kalash:290,marksman:345,sniper:385};
+export const WEAPON_MUZZLES={pistol:155,glock:160,p250:160,dualies:165,deagle:175,fiveseven:160,tec9:160,cz75:155,smg:215,mac10:210,mp5:215,mp7:215,ump45:220,p90:225,bizon:220,rifle:290,kalash:290,famas:285,galil:290,m4a1:285,aug:295,sg553:295,shotgun:315,xm1014:310,mag7:300,sawedoff:295,marksman:345,sniper:385,g3sg1:360,scar20:360,negev:310,m249:315};
+const SCOPED_OVERLAY=new Set(['marksman','sniper','aug','sg553','g3sg1','scar20']);
 export function drawScopeOverlay(c,w,h,id,alpha=1){
-  if((id!=='marksman'&&id!=='sniper')||alpha<=0)return;
-  const cx=w*.5,cy=h*.5,r=Math.min(w,h)*(id==='sniper'?.45:.42);
+  if(!SCOPED_OVERLAY.has(id)||alpha<=0)return;
+  const cx=w*.5,cy=h*.5,r=Math.min(w,h)*(id==='sniper'?.45:id==='marksman'?.42:.36);
   c.save();c.globalAlpha=alpha;c.fillStyle='#020506';c.beginPath();c.rect(0,0,w,h);c.arc(cx,cy,r,0,Math.PI*2,true);c.fill('evenodd');
   c.strokeStyle='#303b3b';c.lineWidth=Math.max(5,Math.round(r*.045));c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
   c.strokeStyle='#a7c58b';c.lineWidth=1;c.globalAlpha=alpha*.72;

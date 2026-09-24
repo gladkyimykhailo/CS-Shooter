@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MAPS, WEAPONS, canStand, canTraverse, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from '../public/core.js';
+import { MAPS, WEAPONS, WEAPON_PHYSICS, canStand, canTraverse, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from '../public/core.js';
+import { WEAPON_MUZZLES } from '../public/art.js';
 
 test('pathfinding respects edits to custom maps and never returns shared mutable routes',()=>{
   const map={size:5,grid:Array.from({length:5},(_,y)=>Array.from({length:5},(_,x)=>x===0||y===0||x===4||y===4?1:0))};
@@ -159,7 +160,7 @@ test('броня поглинає шкоду, вичерпується, голо
   const a={hp:100,armor:10};applyDamage(a,30);assert.equal(a.armor,0);assert.equal(a.hp,80);applyDamage(a,30);assert.equal(a.hp,50);
   const b={hp:100,armor:50};applyDamage(b,60,true);assert.equal(b.hp,40);assert.equal(b.armor,50);applyDamage(b,500);assert.equal(b.hp,0);
 });
-const buyer=()=>({money:2500,armor:0,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}}});
+const buyer=(team=0)=>({team,money:2500,armor:0,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}}});
 test('покупка атомарна, повторення не списує гроші, недостатній баланс не видає зброю',()=>{
   const p=buyer();p.money=3200;assert.equal(purchase(p,'rifle').ok,true);assert.equal(p.money,100);assert.equal(p.weapon,'rifle');assert.deepEqual(p.inventory.rifle,{ammo:30,reserve:90});
   assert.equal(purchase(p,'rifle').ok,false);assert.equal(p.money,100);assert.equal(purchase(p,'armor').ok,false);assert.equal(p.armor,0);assert.equal(purchase(p,'unknown').ok,false);assert.equal(p.money,100);
@@ -173,6 +174,18 @@ test('раунд завершується за усуненням, часом, �
   assert.equal(roundWinner([{team:0,hp:1},{team:0,hp:1},{team:1,hp:100}],true),0);
 });
 test('зброя має скінченні параметри й осмислений запас патронів',()=>{for(const w of Object.values(WEAPONS)){assert.ok(w.damage>0&&w.size>0&&w.reload>0&&w.rate>0);assert.ok(w.pellets>=1);}});
+test('кожен ствол має фізику, валідну сторону й ціну як у CS',()=>{
+  const prices={glock:0,pistol:0,p250:300,dualies:300,deagle:700,fiveseven:500,tec9:500,cz75:500,mac10:1050,smg:1250,ump45:1200,bizon:1400,mp5:1500,mp7:1500,p90:1500,galil:1800,famas:2050,kalash:2500,m4a1:2900,rifle:3100,aug:3000,sg553:3000,mag7:1300,sawedoff:1100,shotgun:1050,marksman:1700,xm1014:2000,negev:1700,sniper:4750,m249:5200,g3sg1:5000,scar20:5000};
+  assert.deepEqual(Object.keys(prices).sort(),Object.keys(WEAPONS).sort());
+  for(const [id,price] of Object.entries(prices)){
+    const w=WEAPONS[id];
+    assert.equal(w.price,price,`${id}: ціна як у CS`);
+    assert.ok(!w.side||['ct','t'].includes(w.side),`${id}: валідна сторона`);
+    assert.ok(WEAPON_PHYSICS[id],`${id}: є фізика віддачі`);
+    assert.ok(WEAPON_MUZZLES[id]>0,`${id}: є позиція дула для рендера`);
+  }
+  assert.equal(WEAPONS.pistol.side,'ct');assert.equal(WEAPONS.glock.side,'t');
+});
 test('дві снайперські гвинтівки мають оптику, різну ціну й запас патронів',()=>{
   const light=WEAPONS.marksman,heavy=WEAPONS.sniper;
   assert.ok(light.scope<.5&&heavy.scope<light.scope);assert.ok(heavy.damage>light.damage);assert.ok(heavy.price>light.price);
@@ -181,8 +194,10 @@ test('дві снайперські гвинтівки мають оптику, 
 });
 test('калаш: ціна й ваншот у голову без броні',()=>{
   const k=WEAPONS.kalash;
-  assert.equal(k.price,2700);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);
-  assert.ok(k.damage*(k.headMult||2)>=100,'34 × 3 = 102: ваншот у голову');
-  const p=buyer();p.money=2700;assert.equal(purchase(p,'kalash').ok,true);assert.equal(p.money,0);assert.equal(p.weapon,'kalash');
+  assert.equal(k.price,2500);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);assert.equal(k.side,'t');
+  assert.ok(k.damage*(k.headMult||2)>=100,'36 × 3 = 108: ваншот у голову');
+  const p=buyer(1);p.money=2500;assert.equal(purchase(p,'kalash').ok,true);assert.equal(p.money,0);assert.equal(p.weapon,'kalash');
   assert.deepEqual(p.inventory.kalash,{ammo:30,reserve:90});
+  assert.equal(purchase(buyer(0),'kalash').ok,false,'CT не купить калаш');
+  assert.equal(purchase(buyer(1),'rifle').ok,false,'T не купить M4');
 });

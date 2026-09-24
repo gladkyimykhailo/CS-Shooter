@@ -62,7 +62,7 @@ test('browser combat: misses consume ammo, reload, hit validation, death and res
   const a=f.host.room.players.host,b=f.host.room.players.p123456;
   for(let i=0;i<12;i++){f.host.receive('host',{t:C2S.SHOOT,weapon:'pistol',target:null});f.advance(.3);}
   assert.equal(a.ammo,0);assert.ok(a.reloadingUntil>0);
-  f.advance(1.5);assert.equal(a.ammo,12);assert.equal(a.reloadingUntil,0);
+  f.advance(2.3);assert.equal(a.ammo,12);assert.equal(a.reloadingUntil,0);
   Object.assign(a,{x:20.5,y:8.5,angle:Math.PI/2});Object.assign(b,{x:20.5,y:11.5});
   for(let i=0;i<4;i++){f.host.receive('host',{t:C2S.SHOOT,weapon:'pistol',target:b.id});f.advance(.3);}
   assert.equal(b.alive,false);assert.equal(a.kills,1);assert.equal(b.deaths,1);

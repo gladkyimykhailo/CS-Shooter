@@ -1,11 +1,37 @@
 export const WEAPONS = {
-  pistol: { name: 'USP-S', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
-  smg: { name: 'MP9', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1250, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
-  rifle: { name: 'M4A4', type: 'ШТУРМОВИЙ АВТОМАТ', price: 3100, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
-  shotgun: { name: 'Nova', type: 'ДРОБОВИК', price: 1050, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
-  kalash: { name: 'AK-47', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2700, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' },
-  marksman: { name: 'SSG 08', type: 'ТОЧНА ГВИНТІВКА', price: 1700, damage: 70, size: 10, rate: .68, reload: 2.35, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
-  sniper: { name: 'AWP', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 4750, damage: 110, size: 5, rate: 1.12, reload: 3.05, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' }
+  // Spawn pistols are issued for free, like in Counter-Strike.
+  pistol: { name: 'USP-S', type: 'ПІСТОЛЕТ', side: 'ct', price: 0, damage: 35, size: 12, rate: .17, reload: 2.2, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Штатний CT. 35 шкоди · 12 патронів' },
+  glock: { name: 'Glock-18', type: 'ПІСТОЛЕТ', side: 't', price: 0, damage: 28, size: 20, rate: .15, reload: 2.2, spread: .014, pellets: 1, automatic: false, icon: '▸━', description: 'Штатний T. 28 шкоди · 20 патронів' },
+  p250: { name: 'P250', type: 'ПІСТОЛЕТ', price: 300, damage: 35, size: 13, rate: .15, reload: 2.2, spread: .014, pellets: 1, automatic: false, icon: '▰▸', description: 'Дешевий і точний. 35 шкоди · 13 патронів' },
+  dualies: { name: 'Dual Berettas', type: 'ПІСТОЛЕТ', price: 300, damage: 36, size: 30, rate: .12, reload: 2.5, spread: .02, pellets: 1, automatic: false, icon: '▰▰', description: 'Два стволи. 36 шкоди · 30 патронів' },
+  deagle: { name: 'Desert Eagle', type: 'ПІСТОЛЕТ', price: 700, damage: 53, size: 7, rate: .27, reload: 2.2, spread: .01, pellets: 1, automatic: false, headMult: 4, icon: '█══', description: 'Ручна гармата. 53 шкоди · ×4 у голову · 7 патронів' },
+  fiveseven: { name: 'Five-SeveN', type: 'ПІСТОЛЕТ', side: 'ct', price: 500, damage: 32, size: 20, rate: .15, reload: 2.2, spread: .013, pellets: 1, automatic: false, icon: '▰─', description: 'Точний CT. 32 шкоди · 20 патронів' },
+  tec9: { name: 'Tec-9', type: 'ПІСТОЛЕТ', side: 't', price: 500, damage: 32, size: 18, rate: .12, reload: 2.3, spread: .015, pellets: 1, automatic: false, icon: '▸▸─', description: 'Швидкий T. 32 шкоди · 18 патронів' },
+  cz75: { name: 'CZ75-Auto', type: 'ПІСТОЛЕТ', price: 500, damage: 31, size: 12, rate: .1, reload: 2.7, spread: .02, pellets: 1, automatic: true, icon: '▪▪━', description: 'Автоматичний. 31 шкоди · 12 патронів' },
+  smg: { name: 'MP9', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', side: 'ct', price: 1250, damage: 26, size: 30, rate: .07, reload: 2.1, spread: .027, pellets: 1, automatic: true, award: 600, icon: '▰▰━━', description: 'Швидкі черги CT. 26 шкоди · 30 патронів' },
+  mac10: { name: 'MAC-10', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', side: 't', price: 1050, damage: 29, size: 30, rate: .075, reload: 2, spread: .028, pellets: 1, automatic: true, award: 600, icon: '▪▪──', description: 'Дешевий rush T. 29 шкоди · 30 патронів' },
+  mp5: { name: 'MP5-SD', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1500, damage: 27, size: 30, rate: .08, reload: 2.4, spread: .02, pellets: 1, automatic: true, award: 600, icon: '▰▪──', description: 'Тихий і точний. 27 шкоди · 30 патронів' },
+  mp7: { name: 'MP7', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1500, damage: 29, size: 30, rate: .08, reload: 2.1, spread: .021, pellets: 1, automatic: true, award: 600, icon: '▰▪─', description: 'Універсальний. 29 шкоди · 30 патронів' },
+  ump45: { name: 'UMP-45', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 35, size: 25, rate: .09, reload: 2.3, spread: .019, pellets: 1, automatic: true, award: 600, icon: '▰▰─', description: 'Важкі кулі. 35 шкоди · 25 патронів' },
+  p90: { name: 'P90', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1500, damage: 26, size: 50, rate: .07, reload: 2.3, spread: .03, pellets: 1, automatic: true, award: 600, icon: '▰▰▪', description: 'Поливай свинцем. 26 шкоди · 50 патронів' },
+  bizon: { name: 'PP-Bizon', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1400, damage: 27, size: 64, rate: .08, reload: 2.4, spread: .028, pellets: 1, automatic: true, award: 600, icon: '▪▪▪─', description: 'Шнек на 64. 27 шкоди · 64 патрони' },
+  rifle: { name: 'M4A4', type: 'ШТУРМОВИЙ АВТОМАТ', side: 'ct', price: 3100, damage: 33, size: 30, rate: .09, reload: 3.1, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 33 шкоди · 30 патронів' },
+  kalash: { name: 'AK-47', type: 'ШТУРМОВИЙ АВТОМАТ', side: 't', price: 2500, damage: 36, size: 30, rate: .1, reload: 2.5, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 36 шкоди · ×3 у голову · 30 патронів' },
+  famas: { name: 'FAMAS', type: 'ШТУРМОВИЙ АВТОМАТ', side: 'ct', price: 2050, damage: 30, size: 25, rate: .1, reload: 3.3, spread: .018, pellets: 1, automatic: true, icon: '▰▸━━', description: 'Бюджетний CT. 30 шкоди · 25 патронів' },
+  galil: { name: 'Galil AR', type: 'ШТУРМОВИЙ АВТОМАТ', side: 't', price: 1800, damage: 30, size: 35, rate: .09, reload: 3, spread: .019, pellets: 1, automatic: true, icon: '▰━━▸', description: 'Бюджетний T. 30 шкоди · 35 патронів' },
+  m4a1: { name: 'M4A1-S', type: 'ШТУРМОВИЙ АВТОМАТ', side: 'ct', price: 2900, damage: 38, size: 25, rate: .1, reload: 3, spread: .015, pellets: 1, automatic: true, icon: '▰▰━', description: 'Тихий і точний. 38 шкоди · 25 патронів' },
+  aug: { name: 'AUG', type: 'АВТОМАТ З ОПТИКОЮ', side: 'ct', price: 3000, damage: 28, size: 30, rate: .1, reload: 2.8, spread: .014, pellets: 1, automatic: true, scope: .45, icon: '▰◉━', description: 'Оптика ×2. 28 шкоди · 30 патронів' },
+  sg553: { name: 'SG 553', type: 'АВТОМАТ З ОПТИКОЮ', side: 't', price: 3000, damage: 30, size: 30, rate: .1, reload: 2.9, spread: .015, pellets: 1, automatic: true, scope: .45, icon: '▰◉━━', description: 'Оптика ×2. 30 шкоди · 30 патронів' },
+  marksman: { name: 'SSG 08', type: 'ТОЧНА ГВИНТІВКА', price: 1700, damage: 88, size: 10, rate: .68, reload: 3.7, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, award: 100, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
+  sniper: { name: 'AWP', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 4750, damage: 115, size: 5, rate: 1.4, reload: 3.2, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, award: 100, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' },
+  g3sg1: { name: 'G3SG1', type: 'СНАЙПЕРСЬКА АВТОМАТИЧНА', side: 't', price: 5000, damage: 80, size: 20, rate: .25, reload: 4, spread: .02, pellets: 1, automatic: true, headMult: 2, scope: .4, award: 100, icon: '◄═══⊙', description: 'Автоснайпер T. 80 шкоди · 20 патронів' },
+  scar20: { name: 'SCAR-20', type: 'СНАЙПЕРСЬКА АВТОМАТИЧНА', side: 'ct', price: 5000, damage: 80, size: 20, rate: .25, reload: 4, spread: .02, pellets: 1, automatic: true, headMult: 2, scope: .4, award: 100, icon: '◄═══⊙', description: 'Автоснайпер CT. 80 шкоди · 20 патронів' },
+  shotgun: { name: 'Nova', type: 'ДРОБОВИК', price: 1050, damage: 8, size: 6, rate: .85, reload: 2.5, spread: .11, pellets: 10, automatic: false, award: 900, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
+  xm1014: { name: 'XM1014', type: 'ДРОБОВИК', price: 2000, damage: 6, size: 7, rate: .3, reload: 2.8, spread: .09, pellets: 12, automatic: false, award: 900, icon: '▰━━━━', description: 'Напівавтомат. 12 дробин × 6 · 7 патронів' },
+  mag7: { name: 'MAG-7', type: 'ДРОБОВИК', side: 'ct', price: 1300, damage: 8, size: 5, rate: .8, reload: 2.4, spread: .1, pellets: 8, automatic: false, award: 900, icon: '▰━━', description: 'Компактний CT. 8 дробин × 8 · 5 патронів' },
+  sawedoff: { name: 'Sawed-Off', type: 'ДРОБОВИК', side: 't', price: 1100, damage: 8, size: 7, rate: .85, reload: 2.6, spread: .11, pellets: 8, automatic: false, award: 900, icon: '▰━', description: 'Обріз T. 8 дробин × 8 · 7 патронів' },
+  negev: { name: 'Negev', type: 'КУЛЕМЕТ', price: 1700, damage: 25, size: 150, rate: .08, reload: 5.5, spread: .03, pellets: 1, automatic: true, icon: '▰▪▪▪', description: 'Стіна свинцю. 25 шкоди · 150 патронів' },
+  m249: { name: 'M249', type: 'КУЛЕМЕТ', price: 5200, damage: 25, size: 100, rate: .08, reload: 4.5, spread: .028, pellets: 1, automatic: true, icon: '▰▰▪▪', description: 'Точний кулемет. 25 шкоди · 100 патронів' }
 };
 // A tile-based adaptation of the supplied Mirage floor-plan reference.
 // Rooms are carved from solid masonry, so routes cannot bypass the buildings.
@@ -326,12 +352,37 @@ export const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 // Viewmodel mass, spring response, recoil impulse and barrel reach (map units).
 export const WEAPON_PHYSICS = {
   pistol: { mass:.8, frequency:20, kick:1, reach:.55 },
+  glock: { mass:.8, frequency:20, kick:1, reach:.55 },
+  p250: { mass:.8, frequency:20, kick:1.1, reach:.55 },
+  dualies: { mass:.9, frequency:19, kick:1.2, reach:.55 },
+  deagle: { mass:1, frequency:18, kick:1.9, reach:.6 },
+  fiveseven: { mass:.8, frequency:20, kick:1, reach:.55 },
+  tec9: { mass:.8, frequency:20, kick:1, reach:.55 },
+  cz75: { mass:.9, frequency:19, kick:1, reach:.55 },
   smg: { mass:1.1, frequency:19, kick:.65, reach:.7 },
+  mac10: { mass:1.1, frequency:19, kick:.7, reach:.7 },
+  mp5: { mass:1.1, frequency:19, kick:.65, reach:.7 },
+  mp7: { mass:1.1, frequency:19, kick:.65, reach:.7 },
+  ump45: { mass:1.2, frequency:18, kick:.8, reach:.72 },
+  p90: { mass:1.2, frequency:18, kick:.7, reach:.72 },
+  bizon: { mass:1.2, frequency:18, kick:.7, reach:.72 },
   rifle: { mass:1.6, frequency:17, kick:1.1, reach:.95 },
-  shotgun: { mass:2, frequency:15, kick:2.1, reach:1.05 },
   kalash: { mass:1.8, frequency:16, kick:1.4, reach:1 },
+  famas: { mass:1.6, frequency:17, kick:1.1, reach:.95 },
+  galil: { mass:1.6, frequency:17, kick:1.15, reach:.95 },
+  m4a1: { mass:1.6, frequency:17, kick:1, reach:.95 },
+  aug: { mass:1.7, frequency:16, kick:1.1, reach:1 },
+  sg553: { mass:1.7, frequency:16, kick:1.15, reach:1 },
+  shotgun: { mass:2, frequency:15, kick:2.1, reach:1.05 },
+  xm1014: { mass:2, frequency:15, kick:1.9, reach:1.05 },
+  mag7: { mass:1.8, frequency:16, kick:2, reach:1 },
+  sawedoff: { mass:1.8, frequency:16, kick:2.2, reach:1 },
   marksman: { mass:2.1, frequency:14, kick:2.25, reach:1.22 },
-  sniper: { mass:2.7, frequency:14, kick:3.1, reach:1.42 }
+  sniper: { mass:2.7, frequency:14, kick:3.1, reach:1.42 },
+  g3sg1: { mass:2.3, frequency:14, kick:2.4, reach:1.25 },
+  scar20: { mass:2.3, frequency:14, kick:2.4, reach:1.25 },
+  negev: { mass:2.6, frequency:14, kick:1.2, reach:1.2 },
+  m249: { mass:2.6, frequency:14, kick:1.2, reach:1.2 }
 };
 export function createWeaponMotion(){
   return Object.fromEntries(['x','y','roll','kick','aim','wall'].map(key=>[key,{value:0,velocity:0}]));
@@ -345,13 +396,13 @@ function weaponSpring(axis,target,frequency,dt){
   axis.velocity=decay*((-damping*offset+omega*b)*cos+(-damping*b-omega*offset)*sin);
 }
 export function kickWeaponMotion(motion,id,aiming=false){
-  const force=WEAPON_PHYSICS[id].kick*(aiming?.6:1);
+  const force=(WEAPON_PHYSICS[id]||WEAPON_PHYSICS.rifle).kick*(aiming?.6:1);
   motion.kick.velocity=Math.min(600,motion.kick.velocity+force*220);
   motion.roll.velocity=Math.max(-3,motion.roll.velocity-force*.85);
 }
 export function stepWeaponMotion(motion,id,input,dt){
   if(!Number.isFinite(dt)||dt<=0)return;
-  const profile=WEAPON_PHYSICS[id],steady=input.aiming?.35:1;
+  const profile=WEAPON_PHYSICS[id]||WEAPON_PHYSICS.rifle,steady=input.aiming?.35:1;
   const turn=clamp(input.turn||0,-6,6),look=clamp(input.look||0,-3,3);
   const side=clamp(input.side||0,-1,1),forward=clamp(input.forward||0,-1,1);
   const bob=input.moving?Math.sin(input.walk||0):0;
@@ -365,7 +416,7 @@ export function stepWeaponMotion(motion,id,input,dt){
   for(const key of Object.keys(targets))weaponSpring(motion[key],targets[key],profile.frequency,dt);
 }
 export function weaponWallProximity(map,x,y,angle,id){
-  const reach=WEAPON_PHYSICS[id].reach;
+  const reach=(WEAPON_PHYSICS[id]||WEAPON_PHYSICS.rifle).reach;
   for(let distance=.1;distance<=reach;distance+=.05){
     // A narrow barrel volume catches corners as well as walls directly ahead.
     for(const side of [-.08,0,.08]){
@@ -518,6 +569,7 @@ export function purchase(player,id){
     return {ok:true};
   }
   const w=WEAPONS[id];if(!w||!w.price)return {ok:false,message:'Недоступна зброя'};
+  if(w.side==='ct'&&player.team!==0||w.side==='t'&&player.team!==1)return {ok:false,message:'Зброя іншої сторони'};
   if(player.primary===id)return {ok:false,message:'Уже в спорядженні'};
   if(player.money<w.price)return {ok:false,message:'Недостатньо грошей'};
   if(player.primary)delete player.inventory[player.primary];
