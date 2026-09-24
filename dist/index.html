@@ -34,8 +34,8 @@
   .score{position:absolute;left:50%;top:7px;transform:translateX(-50%);gap:10px;padding:5px 12px}
   .score>b{font-size:20px}.score strong{font-size:16px}.score small{font-size:7px;letter-spacing:.5px}
   .hud-button{width:34px;height:34px;padding:0;font-size:14px}
-  #minimap{top:43px;left:10px;width:68px;height:68px;opacity:.85}
-  .hud-bottom{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));display:flex;gap:8px}
+  #minimap{top:48px;left:10px;width:64px;height:64px;opacity:.85}
+  .hud-bottom{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;gap:8px;pointer-events:none}
   .vitals{display:flex;min-width:0;width:auto;gap:7px;padding:5px 8px;background:#08100db3}
   .vitals>.health-bar,.health-readout small,.health-readout em{display:none}
   .vitals>.health-readout{gap:4px}.health-icon{font-size:18px}.health-readout strong{font-size:18px}
@@ -43,22 +43,22 @@
   .weapon-info{padding:0;text-shadow:0 1px 3px #000}.weapon-info small{font-size:7px;letter-spacing:.5px}
   .weapon-info strong{font-size:22px}.weapon-info span,.weapon-info> b{font-size:9px}.weapon-info div{margin:1px 0}
   .hud-help{display:none}
-  .objective{top:55px;width:auto;max-width:56vw;min-width:130px;padding:5px 8px;font-size:8px;gap:3px;background:#0d171d9c}
+  .objective{top:118px;width:auto;max-width:56vw;min-width:130px;padding:5px 8px;font-size:8px;gap:3px;background:#0d171d9c}
   .objective span,.objective-track{display:none}
   .objective.interacting span,.objective.available span{display:block;font-size:7px}
   .objective.interacting .objective-track{display:block}
-  .game-message{top:117px;max-width:80vw;font-size:11px;letter-spacing:.5px;white-space:normal}
-  .kill-feed{top:49px;right:10px;max-width:30%;font-size:7px}.kill-feed div{padding:4px 6px}
-  .buy-tip{bottom:45px;font-size:8px}.buy-tip span{display:none}
-  #joystick{width:76px;height:76px;left:18px;bottom:58px;border-width:1px;background:#09161020}
-  #joystick span{width:30px;height:30px;left:22px;top:22px;background:#d2ee9c44}
-  #touch-fire,#touch-jump,#touch-reload,#touch-shop,#touch-use,#touch-aim{width:44px;height:44px;border-width:1px;background:#17271f88;font-size:18px}
-  #touch-fire{width:58px;height:58px;right:18px;bottom:67px;font-size:27px}
-  #touch-jump{right:25px;bottom:135px}
-  #touch-reload{right:88px;bottom:59px}
-  #touch-aim{right:88px;bottom:113px;font-size:25px}
-  #touch-use{right:142px;bottom:59px}
-  #touch-shop{left:108px;right:auto;bottom:59px}
+  .game-message{top:178px;max-width:80vw;font-size:11px;letter-spacing:.5px;white-space:normal}
+  .kill-feed{top:48px;right:10px;max-width:34vw;font-size:7px}.kill-feed div{padding:4px 6px}
+  .buy-tip{bottom:244px;font-size:8px}.buy-tip span{display:none}
+  #joystick{width:80px;height:80px;left:16px;bottom:110px;border-width:1px;background:#09161020}
+  #joystick span{width:32px;height:32px;left:23px;top:23px;background:#d2ee9c44}
+  #touch-fire,#touch-jump,#touch-reload,#touch-shop,#touch-use,#touch-aim{width:46px;height:46px;border-width:1px;background:#17271f88;font-size:18px}
+  #touch-fire{width:62px;height:62px;right:16px;bottom:110px;font-size:27px}
+  #touch-jump{right:24px;bottom:182px}
+  #touch-reload{right:90px;bottom:102px}
+  #touch-aim{right:90px;bottom:156px;font-size:25px}
+  #touch-use{right:152px;bottom:102px}
+  #touch-shop{left:108px;right:auto;bottom:110px}
   #touch-aim.active{background:#9ebc57bb}
   .toast{max-width:70vw;padding:8px 12px;font-size:10px}
   .overlay{padding:8px}
@@ -90,6 +90,23 @@
 @media (pointer:coarse) and (max-width:440px){
   .buy-layout{grid-template-columns:70px minmax(0,1fr)}
   .buy-category{font-size:7px}.buy-content{padding:6px}.buy-grid{gap:5px}.buy-item{padding:6px}
+}
+/* Landscape phones: short screen, keep controls clear of the bottom panel. */
+@media (pointer:coarse) and (orientation:landscape){
+  #minimap{top:40px;left:10px;width:56px;height:56px}
+  .objective{top:96px}
+  .game-message{top:148px}
+  .kill-feed{top:44px;max-width:26vw}
+  .buy-tip{bottom:150px}
+  #joystick{width:68px;height:68px;left:14px;bottom:86px}
+  #joystick span{width:28px;height:28px;left:19px;top:19px}
+  #touch-fire{width:56px;height:56px;right:14px;bottom:86px}
+  #touch-jump{right:20px;bottom:150px}
+  #touch-reload{right:80px;bottom:82px}
+  #touch-aim{right:80px;bottom:136px}
+  #touch-use{right:134px;bottom:82px}
+  #touch-shop{left:94px;bottom:86px}
+  .hud-bottom{bottom:6px}
 }
 </style>
   <style>
