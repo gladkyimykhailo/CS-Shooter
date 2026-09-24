@@ -28,7 +28,7 @@ function fixture(saved={},browser={},serverUrl=''){
   const document=new Element('document');document.innerHTML=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');document.createElement=tag=>new Element(tag);document.exitPointerLock=()=>document.pointerLockElement=null;document.hidden=false;
   const sandbox={document,console,URL,URLSearchParams,location:{search:'?test=1'},innerWidth:320,innerHeight:200,performance:{now:()=>0},matchMedia:()=>({matches:false}),localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},requestAnimationFrame(fn){sandbox.frame=fn;},addEventListener(name,fn){(listeners[name]??=[]).push(fn);}};
   Object.assign(sandbox,browser);sandbox.window=sandbox;const context=vm.createContext(sandbox);
-  const source=['config.js','core.js','art.js','terrain.js','operators.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
+  const source=['config.js','core.js','tactical.js','art.js','terrain.js','operators.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
   vm.runInContext(source,context,{timeout:10000});
   const key=(code,type='keydown')=>{for(const fn of listeners[type]||[])fn({code,repeat:false,preventDefault(){}});};
   const mouse=(button,type='mousedown')=>{const handlers=type==='mousedown'?document.querySelector('#game').events[type]:listeners[type];for(const fn of handlers||[])fn({button});};
@@ -37,7 +37,7 @@ function fixture(saved={},browser={},serverUrl=''){
 
 test('ПКМ вирівнює приціл, прибирає хрестик і повертає стрільбу від стегна після відпускання',()=>{
   for(const id of ['pistol','smg','rifle','shotgun','kalash']){
-    const f=fixture({map:1});f.game.start();if(id!=='pistol')f.game.purchase(id);f.game.beginFight();
+    const f=fixture({map:1});f.game.start();f.game.setPlayer({money:5000});if(id!=='pistol')f.game.purchase(id);f.game.beginFight();
     f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
     f.game.get().actors.forEach(a=>a.cooldown=999);
     f.mouse(2);f.game.step(.03);
@@ -71,9 +71,9 @@ test('прицілювання працює без анімацій; перез�
 });
 
 test('меню запускає гру, закупівля має категорії та купує зброю й броню',()=>{
-  const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,6);assert.equal(f.document.querySelectorAll('[data-category]').length,7);
-  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,2);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));
-  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='smg').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smg').onclick();f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='gear').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='armor').onclick();assert.equal(f.game.get().player.money,650);assert.equal(f.game.get().player.armor,50);
+  const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,10);assert.equal(f.document.querySelectorAll('[data-category]').length,7);
+  f.game.setPlayer({money:2550});f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,2);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));
+  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='smg').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smg').onclick();f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='gear').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='armor').onclick();assert.equal(f.game.get().player.money,650);assert.equal(f.game.get().player.armor,100);
   f.document.querySelector('#shop-ready').onclick();assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');f.game.openShop();assert.equal(f.game.get().modal,'');f.game.step(.016);assert.ok(f.drawCalls()>1000,'renderer executes');
 });
 
@@ -155,9 +155,9 @@ test('рух, постріли, стіни та перезаряджання п�
 });
 
 test('калаш: покупка, стрільба зі спреєм і довге перезаряджання',()=>{
-  const f=fixture();f.game.start();f.game.purchase('kalash');f.game.beginFight();
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('kalash');f.game.beginFight();
   const p=f.game.get().player;
-  assert.equal(p.weapon,'kalash');assert.equal(p.money,0);
+  assert.equal(p.weapon,'kalash');assert.equal(p.money,2300);
   f.game.shoot();assert.equal(p.inventory.kalash.ammo,29);
   assert.ok(p.spray>0,'черга розкидає спрей');
   const s1=p.spray;f.game.step(.5);assert.ok(p.spray<s1,'спрей гасне без стрільби');
@@ -191,7 +191,7 @@ test('вимкнення руху зброї прибирає фізичні к�
 });
 
 test('зміна зброї підіймає новий ствол, а рух у стіну не спричиняє кроків',()=>{
-  const f=fixture();f.game.start();f.game.purchase('smg');f.game.beginFight();f.game.step(.02);
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('smg');f.game.beginFight();f.game.step(.02);
   f.key('Digit2');f.game.step(.02);
   assert.equal(f.game.get().player.weapon,'pistol');
   assert.ok(f.game.get().gunMotion.y.value>30);
@@ -200,13 +200,13 @@ test('зміна зброї підіймає новий ствол, а рух у
 });
 
 test('перемога дає нагороду, наступний раунд зберігає зброю, завершення матчу має повтор',()=>{
-  const f=fixture();f.game.start();f.game.purchase('smg');f.game.beginFight();const p=f.game.get().player;
-  f.game.get().actors.filter(a=>a.team===1).forEach(a=>a.hp=0);f.game.step(.01);assert.equal(f.game.get().score[0],1);assert.equal(p.money,2800);assert.equal(f.game.get().phase,'intermission');f.game.step(3.6);assert.equal(f.game.get().round,2);assert.equal(p.primary,'smg');assert.equal(p.inventory.smg.ammo,30);
-  for(let i=0;i<4;i++){f.game.beginFight();f.game.endRound(0);f.game.step(3.6);}assert.equal(f.game.get().phase,'finished');assert.equal(f.game.get().score[0],5);assert.ok(f.document.querySelector('#again'));f.document.querySelector('#menu').onclick();assert.equal(f.game.get().state,'lobby');
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('smg');f.game.beginFight();const p=f.game.get().player;
+  f.game.get().actors.filter(a=>a.team===1).forEach(a=>a.hp=0);f.game.step(.01);assert.equal(f.game.get().score[0],1);assert.equal(p.money,7000);assert.equal(f.game.get().phase,'intermission');f.game.step(3.6);assert.equal(f.game.get().round,2);assert.equal(p.primary,'smg');assert.equal(p.inventory.smg.ammo,30);
+  for(let i=0;i<12;i++){f.game.beginFight();f.game.endRound(p.team);f.game.step(3.6);}assert.equal(f.game.get().phase,'finished');assert.equal(f.game.get().score[p.team],13);assert.ok(f.document.querySelector('#again'));f.document.querySelector('#menu').onclick();assert.equal(f.game.get().state,'lobby');
 });
 
 test('смерть прибирає основну зброю у наступному раунді, таймер магазину починає бій',()=>{
-  const f=fixture();f.game.start();f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.setClock(.01);f.game.step(.02);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');
+  const f=fixture();f.game.start();f.game.setPlayer({money:5000});f.game.purchase('rifle');f.game.setPlayer({hp:0,armor:20});f.game.endRound(1);f.game.step(3.6);assert.equal(f.game.get().player.primary,null);assert.equal(f.game.get().player.armor,0);assert.equal(f.game.get().player.hp,100);f.game.setClock(.01);f.game.step(.02);assert.equal(f.game.get().phase,'fight');assert.equal(f.game.get().modal,'');
 });
 
 test('обрана мапа та вигляд зберігаються; усі мапи запускають і відмальовують бій',()=>{
@@ -554,7 +554,7 @@ test('боти на всіх мапах знаходять бій і завер�
   for(let i=0;i<MAPS.length;i++){
     const f=fixture({map:i});f.game.start();f.game.beginFight();
     let exchangedFire=false;
-    for(let t=0;t<2450&&f.game.get().phase==='fight';t++){
+    for(let t=0;t<3200&&f.game.get().phase==='fight';t++){
       f.tick(.05);if(f.game.get().actors.some(a=>a.hp<100))exchangedFire=true;
     }
     assert.ok(exchangedFire,`map ${i}: bots must reach and attack opponents`);
@@ -567,7 +567,7 @@ test('живий союзник блокує рух і постріл гравц
   const f=fixture({map:1,motion:false});f.game.start();f.game.beginFight();
   const {player,actors}=f.game.get();
   f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
-  const ally=actors[1],enemy=actors[3];
+  const ally=actors.find(a=>!a.isPlayer&&a.team===player.team),enemy=actors.find(a=>a.team!==player.team);
   actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
   Object.assign(ally,{x:20.5,y:9.5,z:0,angle:-Math.PI/2});
   Object.assign(enemy,{x:20.5,y:11.5,z:0,hp:100,armor:0});
@@ -576,4 +576,45 @@ test('живий союзник блокує рух і постріл гравц
   assert.ok(player.y<9.03,'body blocks forward movement');
   ally.hp=0;for(let i=0;i<20;i++)f.tick(.016);
   assert.ok(player.y>9.5,'dead actor frees the passage');
+});
+
+test('пістолетний раунд: $800, 5v5, закупівля та заморожений рух',()=>{
+  const f=fixture();f.game.start();const {player,actors}=f.game.get();
+  assert.equal(player.money,800);assert.equal(actors.filter(a=>a.team===0).length,5);assert.equal(actors.filter(a=>a.team===1).length,5);
+  assert.equal(f.game.purchase('rifle').ok,false);
+  f.key('KeyB');const x=player.x,y=player.y;f.key('KeyW');f.tick(.5);f.key('Space');
+  assert.equal(player.x,x);assert.equal(player.y,y);assert.equal(player.grounded,true);
+});
+
+test('гравець T встановлює C4 через E; пауза і рух переривають взаємодію',()=>{
+  const f=fixture({map:0,motion:false});f.document.querySelector('#team-select').value='1';f.game.start();f.game.beginFight();
+  const {player,bomb,actors}=f.game.get();assert.equal(player.team,1);assert.equal(bomb.carrier,player);
+  actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
+  const [x,y]=MAPS[0].sites.a.point;f.game.setPlayer({x,y});f.key('KeyE');f.tick(1);
+  assert.equal(bomb.progress,1);f.game.shoot();assert.equal(player.inventory.pistol.ammo,12);
+  f.key('Escape');f.tick(5);assert.equal(bomb.progress,1);f.key('Escape');f.tick(.01);assert.equal(bomb.progress,0);
+  f.key('KeyE');f.tick(1);f.key('KeyW');f.tick(.04);assert.equal(bomb.progress,0);f.key('KeyW','keyup');
+  f.game.setPlayer({x,y});for(let i=0;i<65;i++)f.tick(.05);f.key('KeyE','keyup');f.game.step(.01);
+  assert.equal(bomb.planted,true);assert.equal(player.money,1100);assert.match(f.document.querySelector('#objective-title').textContent,/C4 · A/);
+  f.game.setClock(0);f.tick(.1);assert.equal(f.game.get().phase,'fight');
+});
+
+test('CT знешкоджує C4 сенсорною кнопкою E з набором за 5 секунд',()=>{
+  const f=fixture({motion:false});f.game.start();assert.equal(f.game.purchase('kit').ok,true);f.game.beginFight();
+  const {player,bomb,actors}=f.game.get();actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
+  const [x,y]=MAPS[0].sites.a.point;f.game.setPlayer({x,y});Object.assign(bomb,{planted:true,carrier:null,x,y,timeLeft:40});
+  const button=f.document.querySelector('#touch-use');button.events.pointerdown[0]({preventDefault(){},currentTarget:button,pointerId:1});
+  for(let i=0;i<99;i++)f.tick(.05);assert.equal(bomb.resolved,null);f.tick(.05);
+  assert.equal(bomb.resolved,'defused');assert.equal(f.game.get().phase,'intermission');assert.equal(f.game.get().score[0],1);
+  button.events.pointerup[0]();assert.equal(player.kit,true);
+});
+
+test('після 12 раундів сторони та рахунок міняються, спорядження й гроші скидаються',()=>{
+  const f=fixture();f.game.start();
+  for(let i=0;i<12;i++){f.game.beginFight();f.game.endRound(i<8?0:1);f.tick(3.6);}
+  const state=f.game.get();assert.equal(state.round,13);assert.equal(state.player.team,1);
+  assert.deepEqual([...state.score],[4,8]);assert.equal(state.player.money,800);assert.equal(state.player.primary,null);
+  assert.equal(state.player.armor,0);assert.equal(state.bomb.carrier,state.player);
+  for(const a of state.actors.filter(a=>!a.isPlayer))assert.ok(a.name.startsWith(a.team?'T · ':'CT · '));
+  const [x,y]=MAPS[0].red[0];assert.equal(state.player.x,x);assert.equal(state.player.y,y);
 });

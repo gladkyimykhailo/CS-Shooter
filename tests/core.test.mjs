@@ -161,12 +161,12 @@ test('броня поглинає шкоду, вичерпується, голо
 });
 const buyer=()=>({money:2500,armor:0,primary:null,weapon:'pistol',inventory:{pistol:{ammo:12,reserve:36}}});
 test('покупка атомарна, повторення не списує гроші, недостатній баланс не видає зброю',()=>{
-  const p=buyer();assert.equal(purchase(p,'rifle').ok,true);assert.equal(p.money,100);assert.equal(p.weapon,'rifle');assert.deepEqual(p.inventory.rifle,{ammo:30,reserve:90});
+  const p=buyer();p.money=3200;assert.equal(purchase(p,'rifle').ok,true);assert.equal(p.money,100);assert.equal(p.weapon,'rifle');assert.deepEqual(p.inventory.rifle,{ammo:30,reserve:90});
   assert.equal(purchase(p,'rifle').ok,false);assert.equal(p.money,100);assert.equal(purchase(p,'armor').ok,false);assert.equal(p.armor,0);assert.equal(purchase(p,'unknown').ok,false);assert.equal(p.money,100);
 });
-test('броня відновлюється до 50, не накопичується; заміна зброї коштує повну ціну',()=>{
-  const p=buyer();purchase(p,'smg');purchase(p,'armor');assert.equal(p.money,650);assert.equal(p.armor,50);assert.equal(purchase(p,'armor').ok,false);assert.equal(p.money,650);
-  p.armor=10;purchase(p,'armor');assert.equal(p.armor,50);assert.equal(p.money,0);p.money=3000;purchase(p,'shotgun');assert.equal(p.money,1200);assert.equal(p.primary,'shotgun');
+test('броня відновлюється до 100, не накопичується; заміна зброї коштує повну ціну',()=>{
+  const p=buyer();p.money=2550;purchase(p,'smg');purchase(p,'armor');assert.equal(p.money,650);assert.equal(p.armor,100);assert.equal(purchase(p,'armor').ok,false);assert.equal(p.money,650);
+  p.armor=10;purchase(p,'armor');assert.equal(p.armor,100);assert.equal(p.money,0);p.money=3000;purchase(p,'shotgun');assert.equal(p.money,1950);assert.equal(p.primary,'shotgun');
 });
 test('раунд завершується за усуненням, часом, кількістю живих і здоров’ям',()=>{
   const a=[{team:0,hp:100},{team:1,hp:100}];assert.equal(roundWinner(a),null);assert.equal(roundWinner(a,true),-1);a[1].hp=50;assert.equal(roundWinner(a,true),0);a[0].hp=0;assert.equal(roundWinner(a),1);a[1].hp=0;assert.equal(roundWinner(a),-1);
@@ -181,8 +181,8 @@ test('дві снайперські гвинтівки мають оптику, 
 });
 test('калаш: ціна й ваншот у голову без броні',()=>{
   const k=WEAPONS.kalash;
-  assert.equal(k.price,2500);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);
+  assert.equal(k.price,2700);assert.equal(k.size,30);assert.equal(k.automatic,true);assert.equal(k.headMult,3);
   assert.ok(k.damage*(k.headMult||2)>=100,'34 × 3 = 102: ваншот у голову');
-  const p=buyer();assert.equal(purchase(p,'kalash').ok,true);assert.equal(p.money,0);assert.equal(p.weapon,'kalash');
+  const p=buyer();p.money=2700;assert.equal(purchase(p,'kalash').ok,true);assert.equal(p.money,0);assert.equal(p.weapon,'kalash');
   assert.deepEqual(p.inventory.kalash,{ammo:30,reserve:90});
 });

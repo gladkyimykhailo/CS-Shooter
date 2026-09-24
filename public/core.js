@@ -1,11 +1,11 @@
 export const WEAPONS = {
-  pistol: { name: 'P-12', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
-  smg: { name: 'VIPER', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1200, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
-  rifle: { name: 'RANGER', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2400, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
-  shotgun: { name: 'HAMMER', type: 'ДРОБОВИК', price: 1800, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
-  kalash: { name: 'KALASH', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2500, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' },
-  marksman: { name: 'LOOKOUT M7', type: 'ТОЧНА ГВИНТІВКА', price: 1900, damage: 70, size: 10, rate: .68, reload: 2.35, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
-  sniper: { name: 'NORTHSTAR', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 3900, damage: 110, size: 5, rate: 1.12, reload: 3.05, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' }
+  pistol: { name: 'USP-S', type: 'ПІСТОЛЕТ', price: 0, damage: 25, size: 12, rate: .29, reload: 1.35, spread: .012, pellets: 1, automatic: false, icon: '▰━', description: 'Надійний запасний. 25 шкоди · 12 патронів' },
+  smg: { name: 'MP9', type: 'ПІСТОЛЕТ-КУЛЕМЕТ', price: 1250, damage: 18, size: 30, rate: .09, reload: 1.65, spread: .027, pellets: 1, automatic: true, icon: '▰▰━━', description: 'Швидкі черги. 18 шкоди · 30 патронів' },
+  rifle: { name: 'M4A4', type: 'ШТУРМОВИЙ АВТОМАТ', price: 3100, damage: 30, size: 30, rate: .14, reload: 2, spread: .016, pellets: 1, automatic: true, icon: '▰▰━━━━', description: 'Контроль дистанції. 30 шкоди · 30 патронів' },
+  shotgun: { name: 'Nova', type: 'ДРОБОВИК', price: 1050, damage: 8, size: 6, rate: .85, reload: 2.1, spread: .11, pellets: 10, automatic: false, icon: '▰━━━━━', description: 'Близький контакт. 10 дробин × 8 · 6 патронів' },
+  kalash: { name: 'AK-47', type: 'ШТУРМОВИЙ АВТОМАТ', price: 2700, damage: 34, size: 30, rate: .11, reload: 2.2, spread: .02, pellets: 1, automatic: true, headMult: 3, icon: '▰▰━━━', description: 'Легенда штурмових. 34 шкоди · ×3 у голову · 30 патронів' },
+  marksman: { name: 'SSG 08', type: 'ТОЧНА ГВИНТІВКА', price: 1700, damage: 70, size: 10, rate: .68, reload: 2.35, spread: .004, pellets: 1, automatic: false, headMult: 2, scope: .38, icon: '◄══════⊙', description: 'Швидкий точний постріл. Оптика ×2 · 10 патронів' },
+  sniper: { name: 'AWP', type: 'ВАЖКА СНАЙПЕРСЬКА', price: 4750, damage: 110, size: 5, rate: 1.12, reload: 3.05, spread: .0015, pellets: 1, automatic: false, headMult: 2, scope: .25, icon: '◄════════⊙', description: 'Один влучний постріл. Оптика ×4 · 5 патронів' }
 };
 // A tile-based adaptation of the supplied Mirage floor-plan reference.
 // Rooms are carved from solid masonry, so routes cannot bypass the buildings.
@@ -505,12 +505,22 @@ export function findPath(map,sx,sy,tx,ty){
     }
   }return [];
 }
-export function applyDamage(actor,damage,head=false){const absorbed=head?0:Math.min(actor.armor,damage*.5);actor.armor-=absorbed;actor.hp=Math.max(0,actor.hp-damage+absorbed);return actor.hp;}
+export function applyDamage(actor,damage,head=false){const absorbed=head&&!actor.helmet?0:Math.min(actor.armor,damage*.5);actor.armor-=absorbed;actor.hp=Math.max(0,actor.hp-damage+absorbed);return actor.hp;}
 export function purchase(player,id){
-  if(id==='armor'){if(player.armor>=50)return {ok:false,message:'Броня вже повна'};if(player.money<650)return {ok:false,message:'Недостатньо кредитів'};player.money-=650;player.armor=50;return {ok:true};}
+  if(['armor','helmet','kit'].includes(id)){
+    if(id==='kit'&&player.team!==0)return {ok:false,message:'Набір доступний лише CT'};
+    const owned=id==='kit'?player.kit:id==='helmet'?player.helmet&&player.armor>=100:player.armor>=100;
+    if(owned)return {ok:false,message:'Уже в спорядженні'};
+    const price=id==='kit'?400:id==='helmet'?1000:650;
+    if(player.money<price)return {ok:false,message:'Недостатньо грошей'};
+    player.money-=price;
+    if(id==='kit')player.kit=true;else {player.armor=100;if(id==='helmet')player.helmet=true;}
+    return {ok:true};
+  }
   const w=WEAPONS[id];if(!w||!w.price)return {ok:false,message:'Недоступна зброя'};
   if(player.primary===id)return {ok:false,message:'Уже в спорядженні'};
-  if(player.money<w.price)return {ok:false,message:'Недостатньо кредитів'};
+  if(player.money<w.price)return {ok:false,message:'Недостатньо грошей'};
+  if(player.primary)delete player.inventory[player.primary];
   player.money-=w.price;player.primary=id;player.weapon=id;player.inventory[id]={ammo:w.size,reserve:w.size*3};return {ok:true};
 }
 export function roundWinner(actors,timedOut=false){
