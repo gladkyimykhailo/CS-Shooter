@@ -22,6 +22,92 @@
 
 /* Round objective remains visible while the player watches a teammate. */
 .objective{position:absolute;top:100px;left:50%;transform:translateX(-50%);width:min(400px,48vw);padding:12px 16px;background:#0d171de8;border:1px solid #8c783f;display:flex;flex-direction:column;gap:7px;text-align:center;font:11px var(--mono);color:#e1b75e}.objective span{font-size:9px;color:#d2d8d5}.objective.planted{border-color:#ed7659}.objective-track{height:3px;background:#35413d}.objective-track i{display:block;height:100%;width:0;background:#e1b75e}#touch-use{position:absolute;right:185px;bottom:150px;width:52px;height:52px;border-radius:50%;border:2px solid #e1b75e;background:#51421ecc;color:#fff;pointer-events:auto;touch-action:none;font:22px var(--mono)}.launch-bar{flex-wrap:wrap}@media(max-width:720px){.objective{top:180px;width:min(340px,85vw);padding:8px;font-size:10px}.objective span{font-size:8px}}
+
+#touch-aim{position:absolute;right:180px;bottom:220px;width:48px;height:48px;border-radius:50%;border:1px solid #e5ffc077;background:#14201999;color:#e5ffc0;font-size:24px;pointer-events:auto;touch-action:none}
+#touch-aim.active{background:#9ebc57bb;color:#101615;border-color:#e1f7b5}
+/* Keep the middle of the phone screen clear in both orientations. */
+@media (pointer:coarse), (max-width:720px){
+  .hud-top{padding:8px 10px}
+  .hud-map{max-width:105px;font-size:8px;letter-spacing:.5px}
+  .hud-map small{font-size:7px;margin-top:3px}
+  #map-location{display:none}
+  .score{position:absolute;left:50%;top:7px;transform:translateX(-50%);gap:10px;padding:5px 12px}
+  .score>b{font-size:20px}.score strong{font-size:16px}.score small{font-size:7px;letter-spacing:.5px}
+  .hud-button{width:34px;height:34px;padding:0;font-size:14px}
+  #minimap{top:48px;left:10px;width:64px;height:64px;opacity:.85}
+  .hud-bottom{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;gap:8px;pointer-events:none}
+  .vitals{display:flex;min-width:0;width:auto;gap:7px;padding:5px 8px;background:#08100db3}
+  .vitals>.health-bar,.health-readout small,.health-readout em{display:none}
+  .vitals>.health-readout{gap:4px}.health-icon{font-size:18px}.health-readout strong{font-size:18px}
+  .vitals>.armor-readout{padding-left:7px!important;gap:1px}.armor-readout small{font-size:6px}.armor-readout b{font-size:13px}
+  .weapon-info{padding:0;text-shadow:0 1px 3px #000}.weapon-info small{font-size:7px;letter-spacing:.5px}
+  .weapon-info strong{font-size:22px}.weapon-info span,.weapon-info> b{font-size:9px}.weapon-info div{margin:1px 0}
+  .hud-help{display:none}
+  .objective{top:118px;width:auto;max-width:56vw;min-width:130px;padding:5px 8px;font-size:8px;gap:3px;background:#0d171d9c}
+  .objective span,.objective-track{display:none}
+  .objective.interacting span,.objective.available span{display:block;font-size:7px}
+  .objective.interacting .objective-track{display:block}
+  .game-message{top:178px;max-width:80vw;font-size:11px;letter-spacing:.5px;white-space:normal}
+  .kill-feed{top:48px;right:10px;max-width:34vw;font-size:7px}.kill-feed div{padding:4px 6px}
+  .buy-tip{bottom:244px;font-size:8px}.buy-tip span{display:none}
+  #joystick{width:80px;height:80px;left:16px;bottom:110px;border-width:1px;background:#09161020}
+  #joystick span{width:32px;height:32px;left:23px;top:23px;background:#d2ee9c44}
+  #touch-fire,#touch-jump,#touch-reload,#touch-shop,#touch-use,#touch-aim{width:46px;height:46px;border-width:1px;background:#17271f88;font-size:18px}
+  #touch-fire{width:62px;height:62px;right:16px;bottom:110px;font-size:27px}
+  #touch-jump{right:24px;bottom:182px}
+  #touch-reload{right:90px;bottom:102px}
+  #touch-aim{right:90px;bottom:156px;font-size:25px}
+  #touch-use{right:152px;bottom:102px}
+  #touch-shop{left:108px;right:auto;bottom:110px}
+  #touch-aim.active{background:#9ebc57bb}
+  .toast{max-width:70vw;padding:8px 12px;font-size:10px}
+  .overlay{padding:8px}
+  .dialog-shop{max-height:calc(100dvh - 16px);overflow:hidden}
+  .buy-terminal{display:flex;flex-direction:column;max-height:calc(100dvh - 16px)}
+  .buy-topbar{min-height:56px;padding:10px 12px;gap:10px;flex-shrink:0}
+  .buy-topbar .eyebrow{font-size:7px}.buy-topbar h2{font-size:15px;margin-top:4px}
+  .buy-status{font-size:8px;gap:3px}.buy-status strong{font-size:16px}.buy-close{width:30px;height:30px;font-size:22px}
+  .buy-layout{display:grid;grid-template-columns:86px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;min-height:0}
+  .buy-categories{display:flex;flex-direction:column;gap:2px;overflow:auto;padding:7px 4px;margin:0;border-bottom:0}
+  .buy-categories>span{font-size:6px;padding:0 3px 4px}
+  .buy-category{display:flex;gap:4px;min-height:39px;padding:4px;font-size:8px;letter-spacing:0;flex-shrink:0}
+  .buy-category b,.buy-category i{display:none}
+  .buy-content{padding:8px;overflow:auto;overscroll-behavior:contain}
+  .buy-content-head{margin-bottom:7px;padding-bottom:6px;gap:4px}.buy-content-head .eyebrow{font-size:8px}
+  .buy-content-head p,.buy-count{display:none}
+  .buy-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .buy-item{min-height:0;padding:8px}.buy-item h3{font-size:13px;margin-top:5px}
+  .buy-item-top{font-size:6px;letter-spacing:0}.buy-item-top span{display:none}
+  .buy-item-visual{height:40px}.buy-item .gun-sprite{height:36px;width:95px}.buy-item .gun-icon{font-size:25px;letter-spacing:-4px}
+  .buy-item p{display:none}.buy-item-stats{font-size:7px;letter-spacing:0;margin:5px 0;padding-top:5px}
+  .buy-item button{min-height:38px;flex-wrap:wrap;gap:3px;padding:6px;font-size:8px;letter-spacing:0}.buy-item button strong{font-size:10px}
+  .buy-issued{font-size:7px;padding:7px 3px;letter-spacing:0}
+  .buy-loadout{grid-column:1/-1;display:flex;flex-direction:row;justify-content:flex-end;align-items:center;gap:12px;padding:8px 10px;border-top:1px solid var(--buy-line)}
+  .buy-loadout>div,.buy-loadout>span,.buy-loadout p{display:none}
+  .buy-loadout .primary{width:auto;min-height:40px;padding:10px 16px;font-size:10px;gap:25px}
+  .buy-loadout .text-button{align-self:center;font-size:9px}
+}
+@media (pointer:coarse) and (max-width:440px){
+  .buy-layout{grid-template-columns:70px minmax(0,1fr)}
+  .buy-category{font-size:7px}.buy-content{padding:6px}.buy-grid{gap:5px}.buy-item{padding:6px}
+}
+/* Landscape phones: short screen, keep controls clear of the bottom panel. */
+@media (pointer:coarse) and (orientation:landscape){
+  #minimap{top:40px;left:10px;width:56px;height:56px}
+  .objective{top:96px}
+  .game-message{top:148px}
+  .kill-feed{top:44px;max-width:26vw}
+  .buy-tip{bottom:150px}
+  #joystick{width:68px;height:68px;left:14px;bottom:86px}
+  #joystick span{width:28px;height:28px;left:19px;top:19px}
+  #touch-fire{width:56px;height:56px;right:14px;bottom:86px}
+  #touch-jump{right:20px;bottom:150px}
+  #touch-reload{right:80px;bottom:82px}
+  #touch-aim{right:80px;bottom:136px}
+  #touch-use{right:134px;bottom:82px}
+  #touch-shop{left:94px;bottom:86px}
+  .hud-bottom{bottom:6px}
+}
 </style>
   <style>
     body.no-online .online-block { display: none !important; }
@@ -130,7 +216,7 @@
     <div id="game-message" class="game-message"></div>
     <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПІДГОТОВКА ДО БОЮ</span></div>
     <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ <kbd>E</kbd> C4</div><div class="weapon-info"><small id="weapon-name">USP-S</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">$ 800</b></div></div>
-    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-use" aria-label="Утримуй для взаємодії з C4">E</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
+    <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-aim" aria-label="Прицілювання" aria-pressed="false">⌖</button><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-use" aria-label="Утримуй для взаємодії з C4">E</button><button id="touch-reload">R</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
   <div id="toast" class="toast" role="status" hidden></div>
@@ -674,7 +760,7 @@ function roundWinner(actors,timedOut=false){
 }
 
 
-const MATCH = { startMoney:800, maxMoney:16000, freezeTime:15, roundTime:115, bombTime:40, plantTime:3.2, defuseTime:10, kitTime:5, winScore:13, halfRounds:12 };
+const MATCH = { startMoney:800, maxMoney:16000, freezeTime:30, countdownTime:5, roundTime:115, bombTime:40, plantTime:3.2, defuseTime:10, kitTime:5, winScore:13, halfRounds:12 };
 
 function teamSpawns(map, team) {
   const positions=(team?map.red:map.blue).map(p=>[...p]);
@@ -1885,7 +1971,7 @@ try{
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[];
-let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
+let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=MATCH.freezeTime,kills=0,deaths=0;
 let bomb=null,losses=[0,0],touchUse=false;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
@@ -1948,7 +2034,7 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, стрибка ↑ та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
@@ -1977,6 +2063,12 @@ function nextRound(){
   });
   bomb=createBomb(actors,round%2?'a':'b');touchUse=false;
   resetGunMotion();$('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
+}
+function beginCountdown(){
+  if(phase!=='buy')return;
+  closeDialog(false);paused=false;phase='countdown';clock=MATCH.countdownTime;aiming=false;
+  keys.clear();shootHeld=false;touchFire=false;touchUse=false;stick={x:0,y:0};
+  $('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(clock)}`;updateHUD();
 }
 function beginFight(){closeDialog(false);paused=false;phase='fight';clock=MATCH.roundTime;keys.clear();shootHeld=false;touchFire=false;$('#game-message').textContent=player.team?'T · ВСТАНОВИ C4 НА A АБО B':'CT · ЗАХИЩАЙ ТОЧКИ A / B';setTimeout(()=>{if(state==='playing'&&phase==='fight'&&player.hp>0)$('#game-message').textContent='';},1800);sound('win');updateHUD();}
 function inBuyZone(){return Math.hypot(player.x-(player.team?map.red:map.blue)[0][0],player.y-(player.team?map.red:map.blue)[0][1])<4;}
@@ -2021,7 +2113,7 @@ function openShop(category='all'){
     if(WEAPONS[id]&&player.primary&&player.primary!==id){const oldName=WEAPONS[player.primary].name;b.innerHTML=`ЗАМІНИТИ ${oldName}? НАТИСНИ ЩЕ РАЗ`;if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';return;}}
     const result=purchase(player,id);if(result.ok){sound('buy');openShop(category);updateHUD();}else toast(result.message);
   });
-  $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();$('#shop-close-icon').onclick=()=>closeDialog();
+  $('#shop-ready').onclick=()=>{beginCountdown();lock();};$('#shop-close').onclick=()=>closeDialog();$('#shop-close-icon').onclick=()=>closeDialog();
 }
 function pause(){if(state!=='playing'||phase==='finished')return;if(mpMode)return mpPause();paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
 $('#pause-button').onclick=pause;
@@ -2166,8 +2258,9 @@ function update(dt){
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);if(player)player.spray=Math.max(0,(player.spray||0)-dt*1.8);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=MATCH.winScore)||round>=MATCH.halfRounds*2)endMatch();else nextRound();}return;}
-  clock-=dt;if(phase!=='buy')updatePlayer(dt);updateGunMotion(dt);
-  if(phase==='buy'){if(clock<=0)beginFight();return;}
+  clock-=dt;if(phase==='fight')updatePlayer(dt);updateGunMotion(dt);
+  if(phase==='buy'){if(clock<=0)beginCountdown();return;}
+  if(phase==='countdown'){if(clock<=0)beginFight();else $('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(clock)}`;return;}
   if(reload>0){reload-=dt;const p=reloadProgress();if(reloadStage===0&&p>=.38){reloadStage=1;sound('reload');}else if(reloadStage===1&&p>=.72){reloadStage=2;sound('reload');}if(reload<=0){reload=0;reloadTotal=0;reloadStage=0;const inv=player.inventory[player.weapon],take=Math.min(currentWeapon().size-inv.ammo,inv.reserve);inv.ammo+=take;inv.reserve-=take;sound('reload');updateHUD();}}
   if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
   updateBots(dt);
@@ -2179,11 +2272,11 @@ function update(dt){
 }
 function updateObjectiveHUD(){
   const panel=$('#objective');panel.hidden=phase!=='fight';
-  $('#touch-use').hidden=phase!=='fight'||player.hp<=0;
+  $('#touch-use').hidden=phase!=='fight'||!bombAction(map,bomb,player);
   if(phase!=='fight')return;
   const action=bombAction(map,bomb,player);
   const acting=bomb.user===player&&bomb.action;
-  panel.classList.toggle('planted',bomb.planted);
+  panel.classList.toggle('planted',bomb.planted);panel.classList.toggle('interacting',!!acting);panel.classList.toggle('available',!!action);
   $('#objective-title').textContent=bomb.planted?`C4 · ${bomb.site.toUpperCase()} · ${Math.ceil(bomb.timeLeft)} С`:bomb.carrier===player?'У ТЕБЕ C4 · ТОЧКИ A / B':bomb.dropped?'C4 НА ЗЕМЛІ':player.team?'СУПРОВОДЖУЙ C4':'ЗАХИЩАЙ A / B';
   $('#objective-hint').textContent=acting?`${bomb.action==='plant'?'ВСТАНОВЛЕННЯ':'ЗНЕШКОДЖЕННЯ'} · ${Math.floor(bomb.progress/action.duration*100)}%`:action?`ТРИМАЙ E · ${action.type==='plant'?'ВСТАНОВИТИ C4':'ЗНЕШКОДИТИ'} (${action.duration} С)`:bomb.planted?player.team?'ЗАХИЩАЙ C4 ДО ВИБУХУ':'ЗНАЙДИ C4 НА МІНІМАПІ · ТРИМАЙ E ПОРУЧ':player.team?'ВСТАНОВИ C4 АБО УСУНЬ CT':'НЕ ДАЙ T ВСТАНОВИТИ C4';
   $('#objective-progress').style.width=acting?`${Math.min(100,bomb.progress/action.duration*100)}%`:'0%';
@@ -2195,6 +2288,9 @@ function updateVitals(){
 }
 function updateHUD(){
   if(!player)return;
+  const aimButton=$('#touch-aim');aimButton.ariaPressed=String(aiming);aimButton.classList.toggle('active',aiming);
+  aimButton.hidden=player.hp<=0||(!mpMode&&phase!=='fight');
+  $('#touch-shop').hidden=mpMode||phase!=='buy';
   const areas=[map.sites.a,map.sites.b,map.mid,...(map.callouts||[])];
   let area=null,distance=Infinity;
   for(const candidate of areas){const d=Math.hypot(player.x-candidate.point[0],player.y-candidate.point[1]);if(d<distance){distance=d;area=candidate;}}
@@ -2219,7 +2315,7 @@ function updateHUD(){
     return;
   }
   updateObjectiveHUD();
-  const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`$ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)/60)}:${String(Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 24`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} CT / ${actors.filter(a=>a.team===1&&a.hp>0).length} T`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+  const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`$ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)/60)}:${String(Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 24`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ЗАКУПІВЛЯ':phase==='countdown'?'ПОЧАТОК БОЮ':`${actors.filter(a=>a.team===0&&a.hp>0).length} CT / ${actors.filter(a=>a.team===1&&a.hp>0).length} T`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
 function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);terrainDepth=new Float32Array(canvas.width*canvas.height);}
 addEventListener('resize',resize);
@@ -2288,14 +2384,14 @@ function drawGun(w,h){
   const cockJerk=p>.72&&p<.92?Math.sin((p-.72)/.2*Math.PI):0;
   const dropY=downHold*105+dip*18-cockJerk*22;
   const tilt=downHold*.5-cockJerk*.09;
-  ctx.save();const scale=Math.min(w/900,h/560);
+  ctx.save();const scale=Math.min(w/900,h/560)*(touchDevice?.62:1);
   const physical=settings.motion,ads=aimProgress(),scoped=!!currentWeapon().scope;
   const wall=physical?clamp(gunMotion.wall.value,0,1):0;
   const gx=physical?gunMotion.x.value:0,gy=physical?gunMotion.y.value+gunMotion.kick.value:0;
   const angle=.48+ads*.85,muzzle=WEAPON_MUZZLES[player.weapon];
   const aimX=w*.5+(muzzle*Math.cos(angle)-24*Math.sin(angle))*scale;
   const aimY=h*.5+(120+muzzle*Math.sin(angle)+24*Math.cos(angle))*scale;
-  const originX=w*(pistol?.64:.78)*(1-ads)+aimX*ads;
+  const originX=w*(touchDevice?.8:pistol?.64:.78)*(1-ads)+aimX*ads;
   const originY=h*(1-ads)+aimY*ads;
   ctx.translate(originX+(sway+gx-wall*25)*scale,originY+(dropY+gy+wall*90)*scale);
   ctx.scale(scale*(1-wall*.12),scale*(1-wall*.12));ctx.rotate(-tilt*.55+(physical?gunMotion.roll.value:0)-wall*.28);
@@ -2311,7 +2407,7 @@ function drawGun(w,h){
   }
   if(scoped&&ads>0)drawScopeOverlay(ctx,w,h,player.weapon,ads);
   // Шкала прогресу перезаряджання під прицілом.
-  if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
+  if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*(touchDevice?.86:.56);ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
   const s=160/map.size;
@@ -2363,13 +2459,17 @@ addEventListener('blur',()=>{keys.clear();shootHeld=false;touchFire=false;aiming
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing'&&phase!=='finished'&&modal!=='pause')pause();});
 $('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focusables=[...$('#dialog').querySelectorAll('button:not(:disabled),a[href],input,select')];if(!focusables.length)return;const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 const joy=$('#joystick');let joyId;
-joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect();stick.x=clamp((e.clientX-r.left-50)/40,-1,1);stick.y=clamp((e.clientY-r.top-50)/40,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*25}px,${stick.y*25}px)`;});
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect(),radius=r.width*.4,travel=r.width*.25;stick.x=clamp((e.clientX-r.left-r.width/2)/radius,-1,1);stick.y=clamp((e.clientY-r.top-r.height/2)/radius,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*travel}px,${stick.y*travel}px)`;});
 function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
+$('#touch-aim').onclick=()=>{
+  if(state!=='playing'||paused||modal||player.hp<=0||reload>0||mpReloadT>0||(!mpMode&&phase!=='fight'))return;
+  aiming=!aiming;updateHUD();
+};
 const useButton=$('#touch-use');
 useButton.addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchUse=true;});
 useButton.addEventListener('pointerup',()=>touchUse=false);useButton.addEventListener('pointercancel',()=>touchUse=false);
 $('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-jump').onclick=requestJump;$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
-canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
+canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.004*settings.sensitivity*(aiming?.5:1);pitch=clamp(pitch-(t.clientY-lookTouch.y)*.003*settings.sensitivity*(aiming?.5:1),-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
 // ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
 function mpMe(){return mpRoom&&mpMyId?mpRoom.players.find(p=>p.id===mpMyId):null;}
@@ -2788,7 +2888,7 @@ mpAutoConnect();
 mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,beginCountdown,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
 
 // Клієнт мультиплеєра: з'єднання, лобі, кімнати. Без прямого доступу до DOM гри:
 // вся інтеграція — через handlers, які передає game.js.
