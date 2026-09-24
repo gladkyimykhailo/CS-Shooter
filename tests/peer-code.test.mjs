@@ -83,3 +83,44 @@ test('broker prevents cross-room signalling, expires abandoned joins, and bounds
   broker.receive('collision',{t:'peer:create'});assert.match(messages.at(-1).message,/вільного коду/);
   broker.disconnect('host');broker.receive('gone',{t:'peer:join',code:'938A'});assert.match(messages.at(-1).message,/не знайдено/);
 });
+
+test('a stale warm socket reconnects once and creates the room on the fresh connection',t=>{
+  const sockets=[],codes=[],closed=[];
+  class WS{
+    readyState=0;sent=[];
+    constructor(){sockets.push(this);}
+    send(text){this.sent.push(JSON.parse(text));}
+    close(){this.readyState=3;this.onclose?.();}
+  }
+  const warm=new WS();warm.readyState=1;
+  const client=createPeerCodeClient('ws://test/mp',{onCode:code=>codes.push(code),onClose:reason=>closed.push(reason)},{WS,socket:warm});
+  t.after(()=>client.close());
+  client.host({maxPlayers:2},'Host');
+  const staleClose=warm.onclose;
+  warm.onerror();
+  assert.equal(sockets.length,2);
+  assert.equal(warm.readyState,3);
+  const fresh=sockets[1];fresh.readyState=1;fresh.onopen();
+  staleClose();
+  assert.deepEqual(fresh.sent,[{t:'peer:create',maxPlayers:2}]);
+  fresh.onmessage({data:JSON.stringify({t:'peer:created',code:'938A'})});
+  assert.equal(client.connected,true);
+  assert.deepEqual(codes,['938A']);assert.deepEqual(closed,[]);
+});
+
+test('failed warm-socket recovery stops after one retry and reports the server address',t=>{
+  const sockets=[],closed=[];
+  class WS{
+    readyState=0;
+    constructor(){sockets.push(this);}
+    send(){}
+    close(){this.readyState=3;this.onclose?.();}
+  }
+  const warm=new WS();warm.readyState=1;
+  const client=createPeerCodeClient('ws://test/mp',{onClose:reason=>closed.push(reason)},{WS,socket:warm});
+  t.after(()=>client.close());client.join('938A','Guest');
+  warm.onerror();sockets[1].onerror();
+  assert.equal(sockets.length,2);assert.equal(closed.length,1);
+  assert.match(closed[0],/ws:\/\/test\/mp/);
+  assert.equal(client.connected,false);assert.equal(client.shortCode,'');
+});

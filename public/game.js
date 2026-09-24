@@ -1,8 +1,9 @@
 import { MAPS, WEAPONS, SKINS, GLOVES, clamp, blocked, moveActor, lineOfSight, findPath, applyDamage, purchase, roundWinner } from './core.js';
 import { createWeaponMotion, kickWeaponMotion, stepWeaponMotion, weaponWallProximity } from './core.js';
-import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor } from './core.js';
+import { floorHeight, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './core.js';
 import { drawTerrain } from './terrain.js';
-import { mapArt, makeOperator, drawOperator, textures, hex, tint, WEAPON_FILES, drawHeldWeapon, drawWeaponSights, drawScopeOverlay, WEAPON_MUZZLES } from './art.js';
+import { drawOperators, hitOperator } from './operators.js';
+import { mapArt, drawOperator, textures, hex, tint, WEAPON_FILES, drawHeldWeapon, drawWeaponSights, drawScopeOverlay, WEAPON_MUZZLES } from './art.js';
 import { MP, C2S, canStart } from './net.js';
 import { defaultMpUrl, createMpClient, findSharedServer, inviteLink, isTunnelUrl, serverUrlFromQuery, setSharedServerUrl } from './mp.js';
 import { createPeerCodeClient } from './peer-code.js';
@@ -24,7 +25,7 @@ try{
 }catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
-let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
+let map=MAPS[settings.map],wallTextures=[];
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
@@ -95,7 +96,7 @@ function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Ma
 function start(){
   if(mpClient)mpDisconnect(true);
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
-  wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
+  wallTextures=textures(map);
   player=actor(...map.blue[0],0,'ТИ');player.isPlayer=true;actors=[player,actor(...map.blue[1],0,'РИСЬ'),actor(...map.blue[2],0,'СОКІЛ'),...map.red.map((p,i)=>actor(...p,1,['КВАРЦ','ТІНЬ','ГРІМ'][i]))];
   $('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;$('#touch-controls').hidden=!touchDevice;resize();nextRound();
 }
@@ -199,6 +200,17 @@ function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inv
 function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
 function reloadWeapon(){if(mpMode||state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
+function shotCollision(angle){
+  const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+  const origin={x:player.x,y:player.y,z:actorHeight(map,player)+.5};
+  const direction={x:Math.cos(angle),y:Math.sin(angle),z:(horizon-canvas.height*.5)*Math.cos(angle-player.angle)/projection};
+  const hits=actors.filter(a=>a!==player&&a.hp>0).map(a=>({a,hit:hitOperator(map,a,origin,direction,elapsed,settings.motion)})).filter(o=>o.hit).sort((a,b)=>a.hit.distance-b.hit.distance);
+  const first=hits[0];
+  if(!first)return null;
+  const {a,hit}=first,d=hit.distance;
+  if(a.team===player.team||!lineOfSight(map,origin.x,origin.y,origin.x+direction.x*d,origin.y+direction.y*d,origin.z,origin.z+direction.z*d))return null;
+  return {a,d,head:hit.head};
+}
 function shoot(){
   if(state!=='playing'||(phase!=='fight'&&!mpMode)||paused||modal||player.hp<=0||reload>0||nextShot>0)return;
   const w=currentWeapon();
@@ -210,14 +222,8 @@ function shoot(){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
     let shotTarget=null,shotHead=false;
-    const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
-    for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
-      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
-      if(a.team===player.team)break;
-      shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
-    }
+    const collision=shotCollision(mAngle);
+    if(collision){shotTarget=collision.a.mpId;shotHead=collision.head;hitTime=.15;sound('hit');}
     if(mpClient)mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
     mpClient?.send({t:C2S.SHOOT,weapon:player.weapon,target:shotTarget,head:shotHead});
     updateHUD();return;
@@ -227,13 +233,9 @@ function shoot(){
   if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
-    const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
-    for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
-      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
-      const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
-    }
+    const collision=shotCollision(angle);
+    if(collision){const {a,d,head}=collision,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;}
+
   }
   if(anyHit){hitTime=.15;sound('hit');}updateHUD();
 }
@@ -248,7 +250,7 @@ function updatePlayer(dt){
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
-  stepActor(map,player,dx,dy,dt);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
+  stepActor(map,player,dx,dy,dt,actors);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
   if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(player.landingSpeed>1)sound('step');
@@ -261,7 +263,7 @@ function updateBots(dt){
     if(visible){a.angle=Math.atan2(target.y-a.y,target.x-a.x);a.seen+=dt;const skill=a.team===0?.85:level;
       if(a.cooldown<=0&&a.seen>.45){a.cooldown=(.58+Math.random()*.65)/skill;a.flash=.09;a.shots++;const chance=clamp(.85-distance*.04,.15,.75)*skill;if(Math.random()<chance)damage(target,WEAPONS[a.weapon].damage*.65,a);if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}}
     }else a.seen=0;
-    if(!visible||distance>7){if(a.pathTimer<=0){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;}if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);if(d<.12)a.path.shift();else{const s=Math.min(d,dt*(a.team===0?1.5:1.35));moveActor(map,a,dx/d*s,dy/d*s);a.moving=true;if(!visible)a.angle=Math.atan2(dy,dx);}}}
+    if(!visible||distance>7){if(a.pathTimer<=0){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;}if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);if(d<.12)a.path.shift();else{const s=Math.min(d,dt*(a.team===0?1.5:1.35));moveActor(map,a,dx/d*s,dy/d*s,actors);a.moving=true;if(!visible)a.angle=Math.atan2(dy,dx);}}}
   }
 }
 function update(dt){
@@ -342,20 +344,13 @@ function render(){
     zbuffer[x]=dist;if(colStep===2)zbuffer[x+1]=dist;
   }
   }
-  const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
-  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-actorHeight(map,a))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
-    for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){
-      const tx=clamp(Math.floor((sx-x)/sw*128),0,127);
-      if(!map.heights){if(depth<zbuffer[sx])ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);continue;}
-      // Clip each vertical sprite run against the physical steps and platforms.
-      const end=Math.min(h,Math.ceil(y+sh));let run=-1;
-      for(let sy=Math.max(0,Math.ceil(y));sy<=end;sy++){
-        const visible=sy<end&&depth<Math.min(terrainDepth[sy*w+sx],terrainDepth[sy*w+Math.min(w-1,sx+1)]);
-        if(visible&&run<0)run=sy;
-        if(!visible&&run>=0){ctx.drawImage(sprite,tx,(run-y)/sh*256,1,(sy-run)/sh*256,sx,run,2,sy-run);run=-1;}
-      }
+  if(!map.heights)for(let y=0;y<h;y++)for(let x=0;x<w;x++)terrainDepth[y*w+x]=zbuffer[x];
+  const labels=drawOperators(ctx,map,actors,view,{w,h,projection,horizon,eye,depths:terrainDepth,time:elapsed,motion:settings.motion,skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color});
+  for(const {a,depth,x,y,bodyY} of labels){
+    const sx=Math.round(x),sy=Math.floor(clamp(bodyY,0,h-1));
+    if((a.team===0||mpMode)&&sx>=0&&sx<w&&y>0&&y<h&&depth<terrainDepth[sy*w+sx]+.4){
+      ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,projection/depth*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x,y);ctx.textAlign='left';
     }
-    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]&&(!map.heights||depth<terrainDepth[Math.floor(clamp(y+sh*.4,0,h-1))*w+center])){if(a.team===0||mpMode){ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
   }
   const vignette=ctx.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.5,w*.75);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04100b99');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
   if(player.hp>0)drawGun(w,h);
@@ -458,12 +453,13 @@ function mpSetup(){
   if(!mpWired){
     mpWired=true;
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
-    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
+    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(settings.mpServer||SERVER_URL||'').trim();
     if(!$('#mp-transport').value)$('#mp-transport').value='server';
     // Усі кімнати — приватні за кодом, як у balloon-catcher. Публічний список
     // лишається лише для тих, хто явно обере «Публічна».
     if($('#mp-room-visibility')&&!$('#mp-room-visibility').value)$('#mp-room-visibility').value='private';
     $('#mp-connect').onclick=()=>mpConnect();
+    $('#mp-server').onchange=()=>{settings.mpServer=$('#mp-server').value.trim();save();mpWarmUp();};
     $('#mp-transport').onchange=()=>{mpManualOff=false;mpDisconnect(true);mpTransportChanged();};
     $('#mp-disconnect').onclick=()=>{mpManualOff=true;mpDisconnect();};
     $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
@@ -535,18 +531,21 @@ function mpTransportChanged(){
 // миттєво: з'єднання вже відкрите, чекати нема чого.
 function mpWarmUp(){
   try{
-    if(!mpUsesCode()||mpClient||mpRoom||mpMode)return;
+    if(!mpUsesCode()||mpClient||mpRoom||mpMode){
+      try{mpWarmSocket?.close?.();}catch{}
+      mpWarmSocket=null;return;
+    }
     const WS=globalThis.WebSocket;
     if(!WS)return;
     const url=defaultMpUrl($('#mp-server').value);
-    if(!url)return;
+    if(!url){try{mpWarmSocket?.close?.();}catch{}mpWarmSocket=null;return;}
     if(mpWarmSocket&&(mpWarmSocket.readyState===1||mpWarmSocket.readyState===0)&&mpWarmUrl===url)return;
     try{mpWarmSocket?.close?.();}catch{}
     mpWarmUrl=url;
     const s=new WS(url);
     mpWarmSocket=s;
     s.onclose=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
-    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;try{s.close();}catch{}};
   }catch{}
 }
 function mpTakeWarm(url){
@@ -558,7 +557,7 @@ function mpTakeWarm(url){
 function mpCodeAction(code,options){
   mpDisconnect(true);settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
   const url=defaultMpUrl(settings.mpServer);
-  if(!url){const message='Для коротких кодів потрібен сервіс кімнат. Відкрий гру за адресою запущеного сервера або вкажи його адресу.';$('#mp-code-status').textContent=message;toast(message);return;}
+  if(!url){const message=settings.mpServer.trim()?'Невірна адреса сервера. Приклад для локальної гри: http://localhost:4173.':'Для коротких кодів потрібен сервіс кімнат. Запусти npm start і відкрий http://localhost:4173 або вкажи адресу запущеного сервера.';$('#mp-code-status').textContent=message;toast(message);return;}
   mpClient=createPeerCodeClient(url,mpHandlers(mpEpoch),{socket:mpTakeWarm(url)});
   try{if(code)mpClient.join(code,settings.mpNick);else mpClient.host(options,settings.mpNick);}
   catch(error){mpDisconnect(true);$('#mp-code-status').textContent=error.message;toast(error.message);}
@@ -679,14 +678,18 @@ function mpConnect(action=null,automatic=false){
 function mpAutoConnect(){
   mpSetup();
   if(mpUsesPeer())return;
-  const shared=String(SERVER_URL||'').trim();
+  const shared=String(settings.mpServer||SERVER_URL||'').trim();
   if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
   if(!defaultMpUrl($('#mp-server').value)){
     mpSetStatus('СЕРВЕР КІМНАТ ЗАРАЗ НЕ ПІДКЛЮЧЕНИЙ. З БОТАМИ МОЖНА ГРАТИ ОДРАЗУ.');
     mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
     try{document.body?.classList?.add('no-online');}catch{}
     // Статичний сайт може знайти сервер пізніше через ws.json — тоді кімнати з'являться самі.
-    findSharedServer().then(url=>{if(url){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});
+    findSharedServer().then(url=>{
+      if(!url||mpManualOff||mpClient||mpRoom||mpMode||$('#mp-server').value.trim())return;
+      $('#mp-server').value=url;settings.mpServer=url;save();
+      if(mpUsesCode())mpWarmUp();else mpConnect(null,true);
+    });
     return;
   }
   mpConnect(null,true);
@@ -760,8 +763,6 @@ function mpStartMatch(room){
   mpRoom=room;mpResultShown=false;kills=0;deaths=0;feed=[];mpChat=[];
   map=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   wallTextures=textures(map);
-  blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);
-  redSprite=makeOperator('#aa7853','#ffbd73');
   const me=room.players.find(p=>p.id===mpMyId);
   player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;player.angle=me.angle;
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
@@ -800,6 +801,7 @@ function mpApplySnapshot(snap){
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
   actors=[player,...mpRemotes.values()];
+  if(me?.alive&&!actorPathClear(map,player,player.x,player.y,actors)){player.x=me.x;player.y=me.y;}
   updateHUD();
 }
 function mpHandleEvents(events){

@@ -28,7 +28,7 @@ function fixture(saved={},browser={},serverUrl=''){
   const document=new Element('document');document.innerHTML=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');document.createElement=tag=>new Element(tag);document.exitPointerLock=()=>document.pointerLockElement=null;document.hidden=false;
   const sandbox={document,console,URL,URLSearchParams,location:{search:'?test=1'},innerWidth:320,innerHeight:200,performance:{now:()=>0},matchMedia:()=>({matches:false}),localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},requestAnimationFrame(fn){sandbox.frame=fn;},addEventListener(name,fn){(listeners[name]??=[]).push(fn);}};
   Object.assign(sandbox,browser);sandbox.window=sandbox;const context=vm.createContext(sandbox);
-  const source=['config.js','core.js','art.js','terrain.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
+  const source=['config.js','core.js','art.js','terrain.js','operators.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
   vm.runInContext(source,context,{timeout:10000});
   const key=(code,type='keydown')=>{for(const fn of listeners[type]||[])fn({code,repeat:false,preventDefault(){}});};
   const mouse=(button,type='mousedown')=>{const handlers=type==='mousedown'?document.querySelector('#game').events[type]:listeners[type];for(const fn of handlers||[])fn({button});};
@@ -49,6 +49,7 @@ test('ПКМ вирівнює приціл, прибирає хрестик і �
     assert.equal(f.document.querySelector('#crosshair').hidden,true);
     const enemy=f.game.get().actors.find(a=>a.team===1);
     Object.assign(enemy,{x:20.5,y:11.5,hp:100,armor:0});
+    f.game.get().actors.filter(a=>a.team===0&&!a.isPlayer).forEach(a=>a.x=23.5);
     f.game.shoot();assert.ok(enemy.hp<100,`${id}: target under the sight is hit`);
     f.mouse(2,'mouseup');f.game.step(.7);
     assert.equal(f.game.get().aiming,false);
@@ -141,7 +142,7 @@ test('снайперські гвинтівки купуються, звужую
     const f=fixture({map:1});f.game.start();f.game.setPlayer({money:5000});f.game.purchase(id);f.game.beginFight();
     assert.equal(f.game.get().player.weapon,id);f.mouse(2);for(let i=0;i<90;i++)f.tick(1/60);f.game.step(.001);
     assert.ok(f.game.get().fov<=(id==='sniper' ? .251 : .381),`${id}: scope zooms farther than iron sights`);
-    const enemy=f.game.get().actors.find(a=>a.team===1);Object.assign(enemy,{x:20.5,y:11.5,hp:100,armor:0,cooldown:999});f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});f.game.shoot();assert.ok(enemy.hp<100,`${id}: scope shot reaches target`);
+    const enemy=f.game.get().actors.find(a=>a.team===1);Object.assign(enemy,{x:20.5,y:11.5,hp:100,armor:0,cooldown:999});f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});f.game.get().actors.filter(a=>a.team===0&&!a.isPlayer).forEach(a=>a.x=23.5);f.game.shoot();assert.ok(enemy.hp<100,`${id}: scope shot reaches target`);
   }
 });
 
@@ -452,6 +453,47 @@ test('автономна гра пояснює відсутність серві
   assert.equal($('mp-room').hidden,true);
 });
 
+test('виправлена адреса замінює попереднє з’єднання сервісу кодів',()=>{
+  const sockets=[];
+  class Socket{
+    readyState=0;sent=[];
+    constructor(url){this.url=url;sockets.push(this);}
+    close(){this.readyState=3;this.onclose?.();}
+    send(text){this.sent.push(JSON.parse(text));}
+  }
+  const f=fixture({}, {WebSocket:Socket}),$=id=>f.document.querySelector('#'+id);
+  $('mp-transport').value='code';$('mp-transport').onchange();
+  $('mp-server').value='https://old.example';$('mp-server').onchange();
+  $('mp-server').value='localhost:4173';$('mp-server').onchange();
+  assert.equal(sockets[0].readyState,3);
+  assert.equal(sockets[1].url,'ws://localhost:4173/mp');
+  assert.equal(JSON.parse(f.storage.get('sector-settings')).mpServer,'localhost:4173');
+  $('mp-create').onclick();
+  sockets[1].readyState=1;sockets[1].onopen();
+  assert.equal(sockets.length,2);
+  assert.equal(sockets[1].sent[0].t,'peer:create');
+  $('mp-transport').value='server';$('mp-transport').onchange();
+  assert.equal(sockets[1].readyState,3);
+});
+
+test('пізнє виявлення сервера зберігає вибраний режим гри за кодом',async()=>{
+  const requests=[],sockets=[];
+  class Socket{
+    readyState=0;
+    constructor(url){this.url=url;sockets.push(this);}
+    close(){this.readyState=3;this.onclose?.();}
+  }
+  const f=fixture({}, {WebSocket:Socket,fetch:()=>new Promise(resolve=>requests.push(resolve))});
+  const $=id=>f.document.querySelector('#'+id);
+  $('mp-transport').value='code';$('mp-transport').onchange();
+  for(const resolve of requests)resolve({ok:true,json:async()=>({url:'https://found.example',ts:Date.now()})});
+  for(let i=0;i<10;i++)await Promise.resolve();
+  assert.equal($('mp-transport').value,'code');
+  assert.equal(sockets.length,1);
+  assert.equal(sockets[0].url,'wss://found.example/mp');
+  assert.equal(sockets[0].onmessage,undefined,'discovery warms the code service without starting a server-mode client');
+});
+
 test('серверна кімната автоматично підключається і створюється лише після welcome',()=>{
   const sockets=[];
   class Socket{
@@ -518,4 +560,20 @@ test('боти на всіх мапах знаходять бій і завер�
     assert.ok(exchangedFire,`map ${i}: bots must reach and attack opponents`);
     assert.equal(f.game.get().phase,'intermission',`map ${i}: round must end`);
   }
+});
+
+
+test('живий союзник блокує рух і постріл гравця, після смерті звільняє прохід',()=>{
+  const f=fixture({map:1,motion:false});f.game.start();f.game.beginFight();
+  const {player,actors}=f.game.get();
+  f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
+  const ally=actors[1],enemy=actors[3];
+  actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
+  Object.assign(ally,{x:20.5,y:9.5,z:0,angle:-Math.PI/2});
+  Object.assign(enemy,{x:20.5,y:11.5,z:0,hp:100,armor:0});
+  f.game.shoot();assert.equal(enemy.hp,100,'ally absorbs the shot without friendly damage');assert.equal(ally.hp,100);
+  f.key('KeyW');for(let i=0;i<20;i++)f.tick(.016);
+  assert.ok(player.y<9.03,'body blocks forward movement');
+  ally.hp=0;for(let i=0;i<20;i++)f.tick(.016);
+  assert.ok(player.y>9.5,'dead actor frees the passage');
 });

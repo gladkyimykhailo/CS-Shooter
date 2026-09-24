@@ -3,7 +3,7 @@ import { normalizeRoomCode, validRoomCode } from './room-code.js';
 
 export function createPeerCodeClient(url,handlers,dependencies={}){
   const WS=dependencies.WS||globalThis.WebSocket;
-  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null;
+  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null,retried=false,acknowledged=false;
   const jobs=new Map();
   const sendSignal=msg=>{if(!closed&&socket?.readyState===1)socket.send(JSON.stringify(msg));};
   const status=message=>{if(!closed)handlers.onStatus?.(message);};
@@ -19,8 +19,10 @@ export function createPeerCodeClient(url,handlers,dependencies={}){
   async function receive(msg){
     if(closed)return;
     if(msg.t==='peer:created'&&mode==='host'&&!peer.connected){
+      acknowledged=true;
       clearTimeout(timer);client.shortCode=msg.code;handlers.onCode?.(msg.code);peer.host(options,nick);
     }else if(msg.t==='peer:waiting'&&mode==='guest'){
+      acknowledged=true;
       clearTimeout(timer);status('КІМНАТУ ЗНАЙДЕНО · З’ЄДНУЄМО З ДРУГОМ…');
       timer=setTimeout(()=>finish('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером.'),90000);
     }else if(msg.t==='peer:request'&&mode==='host'){
@@ -53,24 +55,40 @@ export function createPeerCodeClient(url,handlers,dependencies={}){
     // Сюди можна передати вже відкрите з'єднання (див. mpWarmUp у game.js):
     // тоді діємо одразу, без очікування onopen. З'єднання в стані підключення
     // теж підходить — дію надішлемо, щойно воно відкриється.
-    if(dependencies.socket&&(dependencies.socket.readyState===1||dependencies.socket.readyState===0))socket=dependencies.socket;
-    else socket=new WS(url);
+    const warm=dependencies.socket;
+    connect(action,warm&&(warm.readyState===1||warm.readyState===0)?warm:null);
+  }
+  function connect(action,warm=null){
+    socket=warm||new WS(url);
+    const current=socket;
     status('ПІДКЛЮЧЕННЯ ДО СЕРВІСУ КОДІВ…');
-    timer=setTimeout(()=>finish('Сервіс кодів не відповідає. Перевір адресу сервера.'),10000);
-    if(socket.readyState===1)sendSignal(action);
-    else socket.onopen=()=>sendSignal(action);
+    clearTimeout(timer);
+    const failure=`Не вдалося підключитися до сервісу кодів (${url}). Запусти npm start і відкрий http://localhost:4173 або вкажи адресу запущеного сервера. Для гри з другом обом потрібна одна доступна адреса.`;
+    timer=setTimeout(()=>finish(failure),10000);
     socket.onmessage=event=>{
+      if(closed||socket!==current)return;
       if(typeof event.data!=='string'||event.data.length>131072)return;
       let msg;try{msg=JSON.parse(event.data);}catch{return;}
       if(msg&&typeof msg.t==='string')receive(msg).catch(error=>finish(error.message));
     };
     const unavailable=()=>{
-      if(closed)return;
-      if(!peer.connected){finish('Сервіс кодів недоступний. Перевір адресу сервера.');return;}
+      if(closed||socket!==current)return;
+      if(!peer.connected){
+        // Прогрітий сокет міг померти, поки вкладка була у фоні.
+        if(warm&&!retried&&!acknowledged){
+          retried=true;current.onclose=null;current.onerror=null;current.onmessage=null;current.onopen=null;
+          try{current.close();connect(action);}catch{finish(failure);}
+          return;
+        }
+        finish(failure);return;
+      }
       client.shortCode='';handlers.onCode?.('');
       status('Сервіс кодів відключився. Поточний прямий зв’язок залишається; для нових друзів створи кімнату знову.');
     };
     socket.onclose=unavailable;socket.onerror=unavailable;
+    // Обробники готові до надсилання навіть через вже відкритий сокет.
+    const start=()=>{try{sendSignal(action);}catch{unavailable();}};
+    if(socket.readyState===1)start();else socket.onopen=start;
   }
   const client={
     kind:'peer',codeMode:true,shortCode:'',

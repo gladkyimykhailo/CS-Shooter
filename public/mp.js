@@ -2,10 +2,10 @@
 // вся інтеграція — через handlers, які передає game.js.
 //
 // Адреса сервера — як у balloon-catcher:
-//   ?ws=  → пряме посилання-запрошення від друга (найвищий пріоритет),
+//   поле «Адреса сервера» → явно вибрана адреса,
+//   ?ws=  → пряме посилання-запрошення від друга,
 //   ws.json → файл поруч зі сторінкою, який лишає `share` на комп'ютері господаря,
-//   поле «Адреса сервера» / SERVER_URL → ручне налаштування,
-//   інакше — той самий хост, що віддав сторінку (на github.io без цього — null).
+//   інакше — той самий хост, що віддав сторінку (крім статичних ігрових хостингів).
 import { MP, C2S, S2C, sanitizeNick } from './net.js';
 
 export const SHARE_TTL = 12 * 3600 * 1000;
@@ -17,14 +17,21 @@ var shared = '';
 export function setSharedServerUrl(url) { shared = String(url || ''); }
 export function getSharedServerUrl() { return shared; }
 
-function normalizeMpUrl(value) {
+export function normalizeMpUrl(value) {
   const c = String(value || '').trim();
   if (!c) return null;
   try {
-    const url = new URL(c.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:'));
+    const address = /^(?:https?|wss?):\/\//i.test(c) ? c :
+      /^(?:localhost|\[[\da-f:]+\]|[\w-]+(?:\.[\w-]+)+)(?::\d+)?(?:[/?#]|$)/i.test(c)
+        ? `${typeof location !== 'undefined' && location.protocol === 'https:' ? 'wss' : 'ws'}://${c}` : c;
+    const url = new URL(address);
+    if (url.protocol === 'http:') url.protocol = 'ws:';
+    if (url.protocol === 'https:') url.protocol = 'wss:';
     if (!['ws:', 'wss:'].includes(url.protocol)) return null;
+    if (url.username || url.password) return null;
     const path = url.pathname.replace(/\/$/, '');
     url.pathname = path.endsWith(MP.PATH) ? path : path + MP.PATH;
+    url.hash = '';
     return url.toString();
   } catch { return null; }
 }
@@ -37,17 +44,18 @@ export function serverUrlFromQuery(search) {
 }
 
 export function defaultMpUrl(custom) {
+  // Неправильне введення не можна мовчки замінювати адресою вебсторінки.
+  if (String(custom || '').trim()) return normalizeMpUrl(custom);
   // 1. Запрошення від друга: ?ws=wss://…
   const fromQuery = serverUrlFromQuery();
   if (fromQuery) return fromQuery;
   // 2. Адреса, знайдена у ws.json під час роботи (див. findSharedServer).
   const fromShared = normalizeMpUrl(shared);
   if (fromShared) return fromShared;
-  // 3. Ручне поле або вбудований SERVER_URL.
-  const fromCustom = normalizeMpUrl(custom);
-  if (fromCustom) return fromCustom;
   if (typeof location !== 'undefined' && location.host) {
-    if (location.hostname?.endsWith('.github.io')) return null;
+    if (!['http:', 'https:'].includes(location.protocol)) return null;
+    const hostname = location.hostname || '';
+    if (['github.io', 'itch.io', 'itch.zone'].some(domain => hostname === domain || hostname.endsWith('.' + domain))) return null;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${proto}//${location.host}${MP.PATH}`;
   }
@@ -61,13 +69,7 @@ export function inviteLink(code, wsUrl) {
   const url = new URL(location.pathname, location.origin);
   if (code) url.searchParams.set('room', String(code).toUpperCase());
   const ws = normalizeMpUrl(wsUrl) || defaultMpUrl();
-  if (ws) {
-    try {
-      const raw = new URL(ws);
-      const httpProto = raw.protocol === 'wss:' ? 'https:' : 'http:';
-      url.searchParams.set('ws', `${httpProto}//${raw.host}`);
-    } catch { /* код без адреси — теж запрошення */ }
-  }
+  if (ws) url.searchParams.set('ws', ws);
   return url.href;
 }
 

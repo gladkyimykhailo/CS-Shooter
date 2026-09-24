@@ -380,12 +380,39 @@ export function floorHeight(map,x,y){return map.heights?.[Math.floor(y*map.heigh
 export function actorHeight(map,a){
   const floor=floorHeight(map,a.x,a.y);
   if(!Number.isFinite(a.z))return floor;
-  return a.grounded===false?a.z:Math.max(floor,Math.min(a.z,supportHeight(map,a.x,a.y)));
+  return a.grounded===false?a.z:Math.max(floor,Math.min(a.z,Math.max(supportHeight(map,a.x,a.y),a.bodySupport||0)));
 }
-export function resetActorHeight(map,a){a.z=floorHeight(map,a.x,a.y);a.vz=0;a.grounded=true;a.landingSpeed=0;}
+export function resetActorHeight(map,a){a.z=floorHeight(map,a.x,a.y);a.vz=0;a.grounded=true;a.landingSpeed=0;a.bodySupport=0;}
+export const ACTOR_RADIUS=.24,ACTOR_HEIGHT=1.05;
+// Swept upright bodies: both teams block movement, dead actors do not.
+// An overlapping spawn can separate instead of trapping both actors forever.
+export function actorPathClear(map,a,x,y,bodies=[]){
+  const z=actorHeight(map,a),dx=x-a.x,dy=y-a.y,length2=dx*dx+dy*dy;
+  for(const b of bodies){
+    if(b===a||b.hp<=0||b.alive===false)continue;
+    const bz=actorHeight(map,b);
+    if(z>=bz+ACTOR_HEIGHT-.001||bz>=z+ACTOR_HEIGHT-.001)continue;
+    const start2=(a.x-b.x)**2+(a.y-b.y)**2,end2=(x-b.x)**2+(y-b.y)**2;
+    const radius2=(ACTOR_RADIUS*2)**2;
+    if(start2<radius2-1e-8&&end2>start2+1e-8&&(a.x-b.x)*dx+(a.y-b.y)*dy>=-1e-9)continue;
+    const t=length2?clamp(((b.x-a.x)*dx+(b.y-a.y)*dy)/length2,0,1):0;
+    if((a.x+dx*t-b.x)**2+(a.y+dy*t-b.y)**2<radius2-1e-8)return false;
+  }
+  return true;
+}
 const JUMP_SPEED=4.2,GRAVITY=12;
 function supportHeight(map,x,y,r=.21){
   return Math.max(floorHeight(map,x,y),...[[r,r],[r,-r],[-r,r],[-r,-r]].map(([dx,dy])=>floorHeight(map,x+dx,y+dy)));
+}
+function actorSupportHeight(map,a,bodies,feet=a.z){
+  let support=0;
+  for(const b of bodies){
+    if(b===a||b.hp<=0||b.alive===false)continue;
+    const top=actorHeight(map,b)+ACTOR_HEIGHT;
+    if(Math.hypot(a.x-b.x,a.y-b.y)<ACTOR_RADIUS*2&&feet>=top-.001)support=Math.max(support,top);
+  }
+  a.bodySupport=support;
+  return Math.max(supportHeight(map,a.x,a.y),support);
 }
 export function jumpActor(map,a){
   if(a.grounded===false||!canStand(map,a.x,a.y))return false;
@@ -394,27 +421,33 @@ export function jumpActor(map,a){
 }
 // Feet have a world-space height. Substeps prevent fast frames from passing
 // through a riser; airborne actors can clear low platforms, never solid walls.
-export function stepActor(map,a,dx,dy,dt){
+export function stepActor(map,a,dx,dy,dt,bodies=[]){
   if(!Number.isFinite(dt)||dt<=0)return;
   a.z=actorHeight(map,a);a.vz??=0;a.grounded??=true;a.landingSpeed=0;
   const count=Math.max(1,Math.ceil(dt*120),Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/.05)),h=dt/count;
   for(let i=0;i<count;i++){
     if(!a.grounded){
+      const previousZ=a.z;
       a.z+=a.vz*h-GRAVITY*h*h*.5;a.vz-=GRAVITY*h;
-      const ground=supportHeight(map,a.x,a.y);
+      const ground=actorSupportHeight(map,a,bodies,previousZ);
+      if(a.vz>0)for(const b of bodies){
+        if(b===a||b.hp<=0||b.alive===false)continue;
+        const bottom=actorHeight(map,b);
+        if(Math.hypot(a.x-b.x,a.y-b.y)<ACTOR_RADIUS*2&&previousZ+ACTOR_HEIGHT<=bottom+.001&&a.z+ACTOR_HEIGHT>bottom){a.z=bottom-ACTOR_HEIGHT;a.vz=0;}
+      }
       if(a.vz<=0&&a.z<=ground){a.z=ground;a.landingSpeed=-a.vz;a.vz=0;a.grounded=true;}
     }
     for(const [axis,delta] of [['x',dx/count],['y',dy/count]]){
       if(!delta)continue;
       const x=a.x+(axis==='x'?delta:0),y=a.y+(axis==='y'?delta:0);
-      if(!canStand(map,x,y)||supportHeight(map,x,y)>a.z+(a.grounded?.181:.001))continue;
+      if(!canStand(map,x,y)||supportHeight(map,x,y)>a.z+(a.grounded?.181:.001)||!actorPathClear(map,a,x,y,bodies))continue;
       a[axis]+=delta;
       if(a.grounded){
-        const ground=supportHeight(map,a.x,a.y);
+        const ground=actorSupportHeight(map,a,bodies);
         if(a.z-ground>.181){a.grounded=false;a.vz=0;}else a.z=ground;
       }
     }
-    if(a.grounded&&a.z-supportHeight(map,a.x,a.y)>.181){a.grounded=false;a.vz=0;}
+    if(a.grounded&&a.z-actorSupportHeight(map,a,bodies)>.181){a.grounded=false;a.vz=0;}
   }
 }
 export function canTraverse(map,x,y,tx,ty,r=.21){
@@ -428,10 +461,10 @@ export function canTraverse(map,x,y,tx,ty,r=.21){
   }
   return true;
 }
-export function moveActor(map,a,dx,dy){
-  if(!map.heights){if(canStand(map,a.x+dx,a.y))a.x+=dx;if(canStand(map,a.x,a.y+dy))a.y+=dy;return;}
+export function moveActor(map,a,dx,dy,bodies=[]){
+  if(!map.heights){if(canStand(map,a.x+dx,a.y)&&actorPathClear(map,a,a.x+dx,a.y,bodies))a.x+=dx;if(canStand(map,a.x,a.y+dy)&&actorPathClear(map,a,a.x,a.y+dy,bodies))a.y+=dy;return;}
   const count=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/.08));
-  for(let i=0;i<count;i++){if(canTraverse(map,a.x,a.y,a.x+dx/count,a.y))a.x+=dx/count;if(canTraverse(map,a.x,a.y,a.x,a.y+dy/count))a.y+=dy/count;}
+  for(let i=0;i<count;i++){if(canTraverse(map,a.x,a.y,a.x+dx/count,a.y)&&actorPathClear(map,a,a.x+dx/count,a.y,bodies))a.x+=dx/count;if(canTraverse(map,a.x,a.y,a.x,a.y+dy/count)&&actorPathClear(map,a,a.x,a.y+dy/count,bodies))a.y+=dy/count;}
   a.z=floorHeight(map,a.x,a.y);
 }
 export function lineOfSight(map,x,y,tx,ty,z=floorHeight(map,x,y)+.5,tz=floorHeight(map,tx,ty)+.5){

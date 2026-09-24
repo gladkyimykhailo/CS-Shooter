@@ -1,6 +1,6 @@
 // Browser-hosted matches. Signalling may be manual or automatic; gameplay uses WebRTC.
 import { MP, C2S, S2C, createRoom, addPlayer, removePlayer, setReady, canStart, snapshotRoom, matchTick, teamScores, sanitizeNick, makeCode } from './net.js';
-import { MAPS, WEAPONS, clamp, canStand, lineOfSight, applyDamage, actorHeight, resetActorHeight, jumpActor, stepActor } from './core.js';
+import { MAPS, WEAPONS, clamp, canStand, lineOfSight, applyDamage, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './core.js';
 
 export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
   const room=createRoom({...options,id:'peer-room',code:'',isPublic:false,hostId:'host',mapId:clamp(Math.floor(Number(options.mapId)||0),0,MAPS.length-1)});
@@ -51,7 +51,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
         case C2S.STATE: {
           if(room.phase!=='playing'||!p.alive)break;
           const x=Number(msg.x),y=Number(msg.y),angle=Number(msg.angle);
-          if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)){
+          if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)&&actorPathClear(MAPS[room.mapId],p,x,y,Object.values(room.players))){
             p.x=x;p.y=y;p.angle=angle;p.moving=!!msg.moving;
             if(msg.jump===true)jumpActor(MAPS[room.mapId],p);
           }
@@ -86,7 +86,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
     },
     tick(dt){
       if(room.phase!=='playing')return;
-      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt);
+      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt,Object.values(room.players));
       const events=matchTick(room,dt);
       for(const event of events)if(event.t==='respawn')spawn(room.players[event.id]);
       for(const p of Object.values(room.players))if(p.reloadingUntil&&now()>=p.reloadingUntil){p.reloadingUntil=0;p.ammo=WEAPONS[p.weapon].size;}

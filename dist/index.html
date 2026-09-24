@@ -56,7 +56,7 @@
             <p id="mp-code-help">Створи кімнату, скопіюй короткий код і надішли другу. Друг вводить код і приєднується автоматично. Тримай цю вкладку відкритою.</p>
             <div id="mp-server-options" hidden>
             <label>Адреса сервера <input id="mp-server" type="text" placeholder="авто" style="width:260px"></label>
-            <p>Обидва гравці мають використовувати одну адресу сервера. Якщо гру відкрито із сервера, адреса визначається автоматично.</p>
+            <p>Обидва гравці мають використовувати одну адресу запущеного сервера. Для локальної гри запусти <code>npm start</code> і відкрий <code>http://localhost:4173</code>. GitHub Pages та itch.io потребують окремого сервера; для HTTPS-сайту вкажи адресу <code>wss://…</code>.</p>
             <div id="mp-server-actions" class="dialog-actions" style="margin-top:0">
               <button id="mp-connect" class="primary">ПОВТОРИТИ ПІДКЛЮЧЕННЯ <span>↻</span></button>
               <button id="mp-disconnect" class="secondary" hidden>ВІДКЛЮЧИТИСЯ</button>
@@ -519,12 +519,39 @@ function floorHeight(map,x,y){return map.heights?.[Math.floor(y*map.heightScale)
 function actorHeight(map,a){
   const floor=floorHeight(map,a.x,a.y);
   if(!Number.isFinite(a.z))return floor;
-  return a.grounded===false?a.z:Math.max(floor,Math.min(a.z,supportHeight(map,a.x,a.y)));
+  return a.grounded===false?a.z:Math.max(floor,Math.min(a.z,Math.max(supportHeight(map,a.x,a.y),a.bodySupport||0)));
 }
-function resetActorHeight(map,a){a.z=floorHeight(map,a.x,a.y);a.vz=0;a.grounded=true;a.landingSpeed=0;}
+function resetActorHeight(map,a){a.z=floorHeight(map,a.x,a.y);a.vz=0;a.grounded=true;a.landingSpeed=0;a.bodySupport=0;}
+const ACTOR_RADIUS=.24,ACTOR_HEIGHT=1.05;
+// Swept upright bodies: both teams block movement, dead actors do not.
+// An overlapping spawn can separate instead of trapping both actors forever.
+function actorPathClear(map,a,x,y,bodies=[]){
+  const z=actorHeight(map,a),dx=x-a.x,dy=y-a.y,length2=dx*dx+dy*dy;
+  for(const b of bodies){
+    if(b===a||b.hp<=0||b.alive===false)continue;
+    const bz=actorHeight(map,b);
+    if(z>=bz+ACTOR_HEIGHT-.001||bz>=z+ACTOR_HEIGHT-.001)continue;
+    const start2=(a.x-b.x)**2+(a.y-b.y)**2,end2=(x-b.x)**2+(y-b.y)**2;
+    const radius2=(ACTOR_RADIUS*2)**2;
+    if(start2<radius2-1e-8&&end2>start2+1e-8&&(a.x-b.x)*dx+(a.y-b.y)*dy>=-1e-9)continue;
+    const t=length2?clamp(((b.x-a.x)*dx+(b.y-a.y)*dy)/length2,0,1):0;
+    if((a.x+dx*t-b.x)**2+(a.y+dy*t-b.y)**2<radius2-1e-8)return false;
+  }
+  return true;
+}
 const JUMP_SPEED=4.2,GRAVITY=12;
 function supportHeight(map,x,y,r=.21){
   return Math.max(floorHeight(map,x,y),...[[r,r],[r,-r],[-r,r],[-r,-r]].map(([dx,dy])=>floorHeight(map,x+dx,y+dy)));
+}
+function actorSupportHeight(map,a,bodies,feet=a.z){
+  let support=0;
+  for(const b of bodies){
+    if(b===a||b.hp<=0||b.alive===false)continue;
+    const top=actorHeight(map,b)+ACTOR_HEIGHT;
+    if(Math.hypot(a.x-b.x,a.y-b.y)<ACTOR_RADIUS*2&&feet>=top-.001)support=Math.max(support,top);
+  }
+  a.bodySupport=support;
+  return Math.max(supportHeight(map,a.x,a.y),support);
 }
 function jumpActor(map,a){
   if(a.grounded===false||!canStand(map,a.x,a.y))return false;
@@ -533,27 +560,33 @@ function jumpActor(map,a){
 }
 // Feet have a world-space height. Substeps prevent fast frames from passing
 // through a riser; airborne actors can clear low platforms, never solid walls.
-function stepActor(map,a,dx,dy,dt){
+function stepActor(map,a,dx,dy,dt,bodies=[]){
   if(!Number.isFinite(dt)||dt<=0)return;
   a.z=actorHeight(map,a);a.vz??=0;a.grounded??=true;a.landingSpeed=0;
   const count=Math.max(1,Math.ceil(dt*120),Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/.05)),h=dt/count;
   for(let i=0;i<count;i++){
     if(!a.grounded){
+      const previousZ=a.z;
       a.z+=a.vz*h-GRAVITY*h*h*.5;a.vz-=GRAVITY*h;
-      const ground=supportHeight(map,a.x,a.y);
+      const ground=actorSupportHeight(map,a,bodies,previousZ);
+      if(a.vz>0)for(const b of bodies){
+        if(b===a||b.hp<=0||b.alive===false)continue;
+        const bottom=actorHeight(map,b);
+        if(Math.hypot(a.x-b.x,a.y-b.y)<ACTOR_RADIUS*2&&previousZ+ACTOR_HEIGHT<=bottom+.001&&a.z+ACTOR_HEIGHT>bottom){a.z=bottom-ACTOR_HEIGHT;a.vz=0;}
+      }
       if(a.vz<=0&&a.z<=ground){a.z=ground;a.landingSpeed=-a.vz;a.vz=0;a.grounded=true;}
     }
     for(const [axis,delta] of [['x',dx/count],['y',dy/count]]){
       if(!delta)continue;
       const x=a.x+(axis==='x'?delta:0),y=a.y+(axis==='y'?delta:0);
-      if(!canStand(map,x,y)||supportHeight(map,x,y)>a.z+(a.grounded?.181:.001))continue;
+      if(!canStand(map,x,y)||supportHeight(map,x,y)>a.z+(a.grounded?.181:.001)||!actorPathClear(map,a,x,y,bodies))continue;
       a[axis]+=delta;
       if(a.grounded){
-        const ground=supportHeight(map,a.x,a.y);
+        const ground=actorSupportHeight(map,a,bodies);
         if(a.z-ground>.181){a.grounded=false;a.vz=0;}else a.z=ground;
       }
     }
-    if(a.grounded&&a.z-supportHeight(map,a.x,a.y)>.181){a.grounded=false;a.vz=0;}
+    if(a.grounded&&a.z-actorSupportHeight(map,a,bodies)>.181){a.grounded=false;a.vz=0;}
   }
 }
 function canTraverse(map,x,y,tx,ty,r=.21){
@@ -567,10 +600,10 @@ function canTraverse(map,x,y,tx,ty,r=.21){
   }
   return true;
 }
-function moveActor(map,a,dx,dy){
-  if(!map.heights){if(canStand(map,a.x+dx,a.y))a.x+=dx;if(canStand(map,a.x,a.y+dy))a.y+=dy;return;}
+function moveActor(map,a,dx,dy,bodies=[]){
+  if(!map.heights){if(canStand(map,a.x+dx,a.y)&&actorPathClear(map,a,a.x+dx,a.y,bodies))a.x+=dx;if(canStand(map,a.x,a.y+dy)&&actorPathClear(map,a,a.x,a.y+dy,bodies))a.y+=dy;return;}
   const count=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/.08));
-  for(let i=0;i<count;i++){if(canTraverse(map,a.x,a.y,a.x+dx/count,a.y))a.x+=dx/count;if(canTraverse(map,a.x,a.y,a.x,a.y+dy/count))a.y+=dy/count;}
+  for(let i=0;i<count;i++){if(canTraverse(map,a.x,a.y,a.x+dx/count,a.y)&&actorPathClear(map,a,a.x+dx/count,a.y,bodies))a.x+=dx/count;if(canTraverse(map,a.x,a.y,a.x,a.y+dy/count)&&actorPathClear(map,a,a.x,a.y+dy/count,bodies))a.y+=dy/count;}
   a.z=floorHeight(map,a.x,a.y);
 }
 function lineOfSight(map,x,y,tx,ty,z=floorHeight(map,x,y)+.5,tz=floorHeight(map,tx,ty)+.5){
@@ -1068,6 +1101,145 @@ function drawTerrain(ctx,map,view,{w,h,fov,projection,horizon,eye,colStep,depths
   }
 }
 
+
+
+// Local coordinates: X points along the weapon, Y across the shoulders, Z up.
+// Every part is a closed solid, including its back, sides and underside.
+function operatorParts(a,time=0,motion=true){
+  const stride=motion&&a.moving?Math.sin(time*10)*.055:0;
+  const parts=[];
+  const box=(x,y,z,dx,dy,dz,material,head=false)=>parts.push({x,y,z,dx,dy,dz,material,head});
+  for(const side of [-1,1]){
+    const step=side*stride;
+    box(step,side*.09,.16,.13,.13,.25,'uniform');
+    box(step+.025,side*.09,.045,.20,.14,.09,'boot');
+    box(step*.45,side*.09,.345,.15,.15,.19,'uniform');
+    box(.078+step,side*.09,.22,.055,.105,.10,'armor');
+    box(.01,side*.225,.665,.17,.13,.24,'uniform');
+    box(.12,side*.205,.56,.25,.115,.12,'uniform');
+    box(.23,side*.17,.565,.10,.11,.10,'glove');
+    box(.015,side*.293,.705,.10,.012,.045,'accent');
+  }
+  box(0,0,.45,.23,.33,.12,'boot');
+  box(0,0,.655,.235,.35,.31,'uniform');
+  box(.125,0,.66,.07,.29,.245,'armor');
+  box(-.15,0,.65,.12,.28,.25,'pack');
+  for(const side of [-1,0,1])box(.17,side*.087,.59,.055,.074,.085,'pack');
+  box(.168,0,.738,.008,.17,.028,'accent');
+  box(0,0,.825,.12,.13,.06,'boot');
+  box(.015,0,.918,.235,.225,.18,'helmet',true);
+  box(0,0,1.015,.25,.255,.07,'helmet',true);
+  box(.138,0,.952,.025,.20,.065,'visor',true);
+  box(.143,0,.888,.035,.17,.06,'boot',true);
+  box(-.015,-.14,.92,.115,.045,.115,'boot',true);
+  const pistol=a.weapon==='pistol',long=['sniper','marksman'].includes(a.weapon);
+  box(.24,.09,.60,.15,.075,.085,'gun');
+  box(.34,.09,.66,pistol?.22:.38,.07,.075,'gun');
+  if(!pistol){box(.33,.09,.595,.065,.06,.13,'gun');box(.40,.09,.71,.19,.035,.035,'gun');}
+  box(pistol?.46:long?.72:.62,.09,.66,pistol?.045:long?.35:.19,.035,.035,'gun');
+  if(a.flash>0)box(pistol?.50:long?.91:.73,.09,.66,.08,.075,.075,'flash');
+  return parts;
+}
+
+// Ray/box intersection uses the same articulated solids that are drawn.
+function hitOperator(map,a,origin,direction,time=0,motion=true){
+  const ca=Math.cos(a.angle),sa=Math.sin(a.angle),dx=origin.x-a.x,dy=origin.y-a.y;
+  const o=[dx*ca+dy*sa,-dx*sa+dy*ca,origin.z-actorHeight(map,a)];
+  const d=[direction.x*ca+direction.y*sa,-direction.x*sa+direction.y*ca,direction.z];
+  let hit=null;
+  for(const p of operatorParts(a,time,motion)){
+    if(p.material==='gun'||p.material==='flash')continue;
+    let near=0,far=Infinity;
+    const centers=[p.x,p.y,p.z],sizes=[p.dx,p.dy,p.dz];
+    for(let axis=0;axis<3;axis++){
+      const lo=centers[axis]-sizes[axis]/2,hi=centers[axis]+sizes[axis]/2;
+      if(Math.abs(d[axis])<1e-9){if(o[axis]<lo||o[axis]>hi){far=-1;break;}continue;}
+      const t1=(lo-o[axis])/d[axis],t2=(hi-o[axis])/d[axis];
+      near=Math.max(near,Math.min(t1,t2));far=Math.min(far,Math.max(t1,t2));
+    }
+    if(far>=near&&(!hit||near<hit.distance))hit={distance:near,head:p.head};
+  }
+  return hit;
+}
+
+function clipOperatorFace(points){
+  const result=[],near=.045;
+  for(let i=0;i<points.length;i++){
+    const a=points[i],b=points[(i+1)%points.length],inside=a[2]>=near;
+    if(inside)result.push(a);
+    if(inside!==(b[2]>=near)){
+      const t=(near-a[2])/(b[2]-a[2]);
+      result.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,near]);
+    }
+  }
+  return result;
+}
+
+// Scan-convert convex faces with perspective-correct depth. The shared depth
+// buffer handles walls, stair treads, individual limbs and other operators.
+function rasterOperatorFace(ctx,points,color,{w,h,projection,horizon,depths}){
+  const clipped=clipOperatorFace(points);
+  if(clipped.length<3)return;
+  const screen=clipped.map(([x,z,d])=>[w*.5+x*projection/d,horizon-z*projection/d,1/d]);
+  const top=Math.max(0,Math.ceil(Math.min(...screen.map(p=>p[1]))-.5));
+  const bottom=Math.min(h,Math.ceil(Math.max(...screen.map(p=>p[1]))-.5));
+  ctx.fillStyle=color;
+  for(let y=top;y<bottom;y++){
+    const intersections=[];
+    for(let i=0;i<screen.length;i++){
+      const a=screen[i],b=screen[(i+1)%screen.length];
+      if((a[1]<=y+.5&&b[1]>y+.5)||(b[1]<=y+.5&&a[1]>y+.5)){
+        const t=(y+.5-a[1])/(b[1]-a[1]);intersections.push([a[0]+(b[0]-a[0])*t,a[2]+(b[2]-a[2])*t]);
+      }
+    }
+    if(intersections.length<2)continue;
+    intersections.sort((a,b)=>a[0]-b[0]);
+    const left=intersections[0],right=intersections.at(-1),span=right[0]-left[0];
+    if(span<1e-9)continue;
+    const start=Math.max(0,Math.ceil(left[0]-.5)),end=Math.min(w,Math.ceil(right[0]-.5));
+    let run=-1;
+    for(let x=start;x<=end;x++){
+      const depth=1/(left[1]+(right[1]-left[1])*(x+.5-left[0])/span),index=y*w+x;
+      const visible=x<end&&depth<depths[index];
+      if(visible){depths[index]=depth;if(run<0)run=x;}
+      else if(run>=0){ctx.fillRect(run,y,x-run,1);run=-1;}
+    }
+  }
+}
+
+function drawOperators(ctx,map,actors,view,options){
+  const {w,h,projection,horizon,eye,depths,time=0,motion=true,skin='#597464',glove='#333b37'}=options;
+  const ca=Math.cos(view.angle),sa=Math.sin(view.angle);
+  const faces=[[0,3,2,1],[4,5,6,7],[0,1,5,4],[3,7,6,2],[0,4,7,3],[1,2,6,5]];
+  const signs=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  const labels=[];
+  for(const a of actors){
+    if(a===view||a.hp<=0)continue;
+    const dx=a.x-view.x,dy=a.y-view.y,depth=dx*ca+dy*sa,side=-dx*sa+dy*ca;
+    if(depth<-.9||Math.abs(side)>Math.max(0,depth)*w/(2*projection)+1)continue;
+    const z=actorHeight(map,a),ac=Math.cos(a.angle),as=Math.sin(a.angle);
+    const palette={uniform:a.team===0?skin:'#aa7853',accent:a.team===0?'#c3f66b':'#ffbd73',helmet:a.team===0?skin:'#85644b',armor:'#303c38',pack:'#485249',boot:'#202925',visor:'#80b7bd',glove,gun:'#343d3e',flash:'#ffeaa0'};
+    for(const p of operatorParts(a,time,motion)){
+      const vertices=signs.map(([sx,sy,sz])=>{
+        const lx=p.x+sx*p.dx/2,ly=p.y+sy*p.dy/2;
+        const wx=dx+lx*ac-ly*as,wy=dy+lx*as+ly*ac;
+        return [-wx*sa+wy*ca,z+p.z+sz*p.dz/2-eye,wx*ca+wy*sa];
+      });
+      for(let f=0;f<faces.length;f++){
+        const points=faces[f].map(i=>vertices[i]);
+        const u=points[1].map((v,i)=>v-points[0][i]),v=points[2].map((n,i)=>n-points[0][i]);
+        const normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+        // Cull outward faces pointing away from the eye.
+        if(normal.reduce((sum,n,i)=>sum+n*points[0][i],0)>=0)continue;
+        const light=[.48,1.14,.72,.90,.60,1.02][f]*Math.max(.48,1-Math.max(0,depth)/55);
+        rasterOperatorFace(ctx,points,p.material==='flash'?palette.flash:tint(palette[p.material],light),options);
+      }
+    }
+    if(depth>.1)labels.push({a,depth,x:w*.5+side*projection/depth,y:horizon-(z+1.12-eye)*projection/depth,bodyY:horizon-(z+.7-eye)*projection/depth});
+  }
+  return labels;
+}
+
 // Спільна логіка мультиплеєра: протокол, кімнати, життєвий цикл матчу.
 // Чистий модуль без DOM і Node API — використовується браузером, server.mjs і тестами.
 const MP = {
@@ -1284,7 +1456,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
         case C2S.STATE: {
           if(room.phase!=='playing'||!p.alive)break;
           const x=Number(msg.x),y=Number(msg.y),angle=Number(msg.angle);
-          if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)){
+          if([x,y,angle].every(Number.isFinite)&&canStand(MAPS[room.mapId],x,y)&&actorPathClear(MAPS[room.mapId],p,x,y,Object.values(room.players))){
             p.x=x;p.y=y;p.angle=angle;p.moving=!!msg.moving;
             if(msg.jump===true)jumpActor(MAPS[room.mapId],p);
           }
@@ -1319,7 +1491,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
     },
     tick(dt){
       if(room.phase!=='playing')return;
-      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt);
+      for(const p of Object.values(room.players))if(p.alive)stepActor(MAPS[room.mapId],p,0,0,dt,Object.values(room.players));
       const events=matchTick(room,dt);
       for(const event of events)if(event.t==='respawn')spawn(room.players[event.id]);
       for(const p of Object.values(room.players))if(p.reloadingUntil&&now()>=p.reloadingUntil){p.reloadingUntil=0;p.ammo=WEAPONS[p.weapon].size;}
@@ -1491,7 +1663,7 @@ function validRoomCode(value){return /^[A-Z0-9]{4}$/.test(normalizeRoomCode(valu
 
 function createPeerCodeClient(url,handlers,dependencies={}){
   const WS=dependencies.WS||globalThis.WebSocket;
-  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null;
+  let socket=null,closed=false,mode='',options=null,nick='',timer=null,linkId=null,retried=false,acknowledged=false;
   const jobs=new Map();
   const sendSignal=msg=>{if(!closed&&socket?.readyState===1)socket.send(JSON.stringify(msg));};
   const status=message=>{if(!closed)handlers.onStatus?.(message);};
@@ -1507,8 +1679,10 @@ function createPeerCodeClient(url,handlers,dependencies={}){
   async function receive(msg){
     if(closed)return;
     if(msg.t==='peer:created'&&mode==='host'&&!peer.connected){
+      acknowledged=true;
       clearTimeout(timer);client.shortCode=msg.code;handlers.onCode?.(msg.code);peer.host(options,nick);
     }else if(msg.t==='peer:waiting'&&mode==='guest'){
+      acknowledged=true;
       clearTimeout(timer);status('КІМНАТУ ЗНАЙДЕНО · З’ЄДНУЄМО З ДРУГОМ…');
       timer=setTimeout(()=>finish('Не вдалося з’єднатися напряму. Спробуйте іншу мережу або режим із сервером.'),90000);
     }else if(msg.t==='peer:request'&&mode==='host'){
@@ -1541,24 +1715,40 @@ function createPeerCodeClient(url,handlers,dependencies={}){
     // Сюди можна передати вже відкрите з'єднання (див. mpWarmUp у game.js):
     // тоді діємо одразу, без очікування onopen. З'єднання в стані підключення
     // теж підходить — дію надішлемо, щойно воно відкриється.
-    if(dependencies.socket&&(dependencies.socket.readyState===1||dependencies.socket.readyState===0))socket=dependencies.socket;
-    else socket=new WS(url);
+    const warm=dependencies.socket;
+    connect(action,warm&&(warm.readyState===1||warm.readyState===0)?warm:null);
+  }
+  function connect(action,warm=null){
+    socket=warm||new WS(url);
+    const current=socket;
     status('ПІДКЛЮЧЕННЯ ДО СЕРВІСУ КОДІВ…');
-    timer=setTimeout(()=>finish('Сервіс кодів не відповідає. Перевір адресу сервера.'),10000);
-    if(socket.readyState===1)sendSignal(action);
-    else socket.onopen=()=>sendSignal(action);
+    clearTimeout(timer);
+    const failure=`Не вдалося підключитися до сервісу кодів (${url}). Запусти npm start і відкрий http://localhost:4173 або вкажи адресу запущеного сервера. Для гри з другом обом потрібна одна доступна адреса.`;
+    timer=setTimeout(()=>finish(failure),10000);
     socket.onmessage=event=>{
+      if(closed||socket!==current)return;
       if(typeof event.data!=='string'||event.data.length>131072)return;
       let msg;try{msg=JSON.parse(event.data);}catch{return;}
       if(msg&&typeof msg.t==='string')receive(msg).catch(error=>finish(error.message));
     };
     const unavailable=()=>{
-      if(closed)return;
-      if(!peer.connected){finish('Сервіс кодів недоступний. Перевір адресу сервера.');return;}
+      if(closed||socket!==current)return;
+      if(!peer.connected){
+        // Прогрітий сокет міг померти, поки вкладка була у фоні.
+        if(warm&&!retried&&!acknowledged){
+          retried=true;current.onclose=null;current.onerror=null;current.onmessage=null;current.onopen=null;
+          try{current.close();connect(action);}catch{finish(failure);}
+          return;
+        }
+        finish(failure);return;
+      }
       client.shortCode='';handlers.onCode?.('');
       status('Сервіс кодів відключився. Поточний прямий зв’язок залишається; для нових друзів створи кімнату знову.');
     };
     socket.onclose=unavailable;socket.onerror=unavailable;
+    // Обробники готові до надсилання навіть через вже відкритий сокет.
+    const start=()=>{try{sendSignal(action);}catch{unavailable();}};
+    if(socket.readyState===1)start();else socket.onopen=start;
   }
   const client={
     kind:'peer',codeMode:true,shortCode:'',
@@ -1570,6 +1760,7 @@ function createPeerCodeClient(url,handlers,dependencies={}){
   };
   return client;
 }
+
 
 
 
@@ -1596,7 +1787,7 @@ try{
 }catch{}
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
-let map=MAPS[settings.map],wallTextures=[],blueSprite,redSprite;
+let map=MAPS[settings.map],wallTextures=[];
 let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
@@ -1667,7 +1858,7 @@ function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Ma
 function start(){
   if(mpClient)mpDisconnect(true);
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];map=MAPS[settings.map];
-  wallTextures=textures(map);blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);redSprite=makeOperator('#aa7853','#ffbd73');
+  wallTextures=textures(map);
   player=actor(...map.blue[0],0,'ТИ');player.isPlayer=true;actors=[player,actor(...map.blue[1],0,'РИСЬ'),actor(...map.blue[2],0,'СОКІЛ'),...map.red.map((p,i)=>actor(...p,1,['КВАРЦ','ТІНЬ','ГРІМ'][i]))];
   $('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;$('#touch-controls').hidden=!touchDevice;resize();nextRound();
 }
@@ -1771,6 +1962,17 @@ function switchWeapon(id){if(mpMode)return;if(!player||player.hp<=0||!player.inv
 function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player.weapon=id;nextShot=.25;sound('reload');updateHUD();}
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
 function reloadWeapon(){if(mpMode||state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
+function shotCollision(angle){
+  const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+  const origin={x:player.x,y:player.y,z:actorHeight(map,player)+.5};
+  const direction={x:Math.cos(angle),y:Math.sin(angle),z:(horizon-canvas.height*.5)*Math.cos(angle-player.angle)/projection};
+  const hits=actors.filter(a=>a!==player&&a.hp>0).map(a=>({a,hit:hitOperator(map,a,origin,direction,elapsed,settings.motion)})).filter(o=>o.hit).sort((a,b)=>a.hit.distance-b.hit.distance);
+  const first=hits[0];
+  if(!first)return null;
+  const {a,hit}=first,d=hit.distance;
+  if(a.team===player.team||!lineOfSight(map,origin.x,origin.y,origin.x+direction.x*d,origin.y+direction.y*d,origin.z,origin.z+direction.z*d))return null;
+  return {a,d,head:hit.head};
+}
 function shoot(){
   if(state!=='playing'||(phase!=='fight'&&!mpMode)||paused||modal||player.hp<=0||reload>0||nextShot>0)return;
   const w=currentWeapon();
@@ -1782,14 +1984,8 @@ function shoot(){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
     let shotTarget=null,shotHead=false;
-    const candidates=actors.filter(a=>a.isRemote&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-mAngle),Math.cos(Math.atan2(dy,dx)-mAngle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
-    for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
-      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
-      if(a.team===player.team)break;
-      shotTarget=a.mpId;shotHead=height>.8;hitTime=.15;sound('hit');break;
-    }
+    const collision=shotCollision(mAngle);
+    if(collision){shotTarget=collision.a.mpId;shotHead=collision.head;hitTime=.15;sound('hit');}
     if(mpClient)mpClient.send({t:C2S.STATE,x:player.x,y:player.y,angle:player.angle,moving:player.moving,weapon:player.weapon});
     mpClient?.send({t:C2S.SHOOT,weapon:player.weapon,target:shotTarget,head:shotHead});
     updateHUD();return;
@@ -1799,13 +1995,9 @@ function shoot(){
   if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
     const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
-    const candidates=actors.filter(a=>a.team!==player.team&&a.hp>0).map(a=>{const dx=a.x-player.x,dy=a.y-player.y,d=Math.hypot(dx,dy),da=Math.atan2(Math.sin(Math.atan2(dy,dx)-angle),Math.cos(Math.atan2(dy,dx)-angle));return {a,d,da};}).sort((a,b)=>a.d-b.d);
-    for(const {a,d,da} of candidates){
-      const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
-      const sourceZ=actorHeight(map,player)+.5,targetZ=actorHeight(map,a);
-      const height=sourceZ-targetZ+(horizon-canvas.height*.5)*d/projection;if(height<0||height>1.05||Math.abs(da)>Math.atan2(.24,d)||!lineOfSight(map,player.x,player.y,a.x,a.y,sourceZ,targetZ+height))continue;
-      const head=height>.8,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;break;
-    }
+    const collision=shotCollision(angle);
+    if(collision){const {a,d,head}=collision,falloff=player.weapon==='shotgun'?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;}
+
   }
   if(anyHit){hitTime=.15;sound('hit');}updateHUD();
 }
@@ -1820,7 +2012,7 @@ function updatePlayer(dt){
   const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
-  stepActor(map,player,dx,dy,dt);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
+  stepActor(map,player,dx,dy,dt,actors);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
   if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(player.landingSpeed>1)sound('step');
@@ -1833,7 +2025,7 @@ function updateBots(dt){
     if(visible){a.angle=Math.atan2(target.y-a.y,target.x-a.x);a.seen+=dt;const skill=a.team===0?.85:level;
       if(a.cooldown<=0&&a.seen>.45){a.cooldown=(.58+Math.random()*.65)/skill;a.flash=.09;a.shots++;const chance=clamp(.85-distance*.04,.15,.75)*skill;if(Math.random()<chance)damage(target,WEAPONS[a.weapon].damage*.65,a);if(a.shots>=WEAPONS[a.weapon].size){a.cooldown=WEAPONS[a.weapon].reload;a.shots=0;}}
     }else a.seen=0;
-    if(!visible||distance>7){if(a.pathTimer<=0){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;}if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);if(d<.12)a.path.shift();else{const s=Math.min(d,dt*(a.team===0?1.5:1.35));moveActor(map,a,dx/d*s,dy/d*s);a.moving=true;if(!visible)a.angle=Math.atan2(dy,dx);}}}
+    if(!visible||distance>7){if(a.pathTimer<=0){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;}if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);if(d<.12)a.path.shift();else{const s=Math.min(d,dt*(a.team===0?1.5:1.35));moveActor(map,a,dx/d*s,dy/d*s,actors);a.moving=true;if(!visible)a.angle=Math.atan2(dy,dx);}}}
   }
 }
 function update(dt){
@@ -1914,20 +2106,13 @@ function render(){
     zbuffer[x]=dist;if(colStep===2)zbuffer[x+1]=dist;
   }
   }
-  const projected=actors.filter(a=>a!==view&&a.hp>0).map(a=>{const dx=a.x-view.x,dy=a.y-view.y;return {a,depth:dx*ca+dy*sa,side:-dx*sa+dy*ca};}).filter(o=>o.depth>.12).sort((a,b)=>b.depth-a.depth);
-  for(const {a,depth,side}of projected){const sh=projection/depth*.94,sw=sh*.5,x=w*.5+side*projection/depth-sw*.5,y=horizon+projection/depth*(eye-actorHeight(map,a))-sh+(a.moving?Math.sin(elapsed*10)*sh*.018:0),sprite=a.team===0?blueSprite:redSprite;
-    for(let sx=Math.max(0,Math.floor(x));sx<Math.min(w,x+sw);sx+=2){
-      const tx=clamp(Math.floor((sx-x)/sw*128),0,127);
-      if(!map.heights){if(depth<zbuffer[sx])ctx.drawImage(sprite,tx,0,1,256,sx,y,2,sh);continue;}
-      // Clip each vertical sprite run against the physical steps and platforms.
-      const end=Math.min(h,Math.ceil(y+sh));let run=-1;
-      for(let sy=Math.max(0,Math.ceil(y));sy<=end;sy++){
-        const visible=sy<end&&depth<Math.min(terrainDepth[sy*w+sx],terrainDepth[sy*w+Math.min(w-1,sx+1)]);
-        if(visible&&run<0)run=sy;
-        if(!visible&&run>=0){ctx.drawImage(sprite,tx,(run-y)/sh*256,1,(sy-run)/sh*256,sx,run,2,sy-run);run=-1;}
-      }
+  if(!map.heights)for(let y=0;y<h;y++)for(let x=0;x<w;x++)terrainDepth[y*w+x]=zbuffer[x];
+  const labels=drawOperators(ctx,map,actors,view,{w,h,projection,horizon,eye,depths:terrainDepth,time:elapsed,motion:settings.motion,skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color});
+  for(const {a,depth,x,y,bodyY} of labels){
+    const sx=Math.round(x),sy=Math.floor(clamp(bodyY,0,h-1));
+    if((a.team===0||mpMode)&&sx>=0&&sx<w&&y>0&&y<h&&depth<terrainDepth[sy*w+sx]+.4){
+      ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,projection/depth*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x,y);ctx.textAlign='left';
     }
-    const center=Math.round(x+sw*.5);if(center>0&&center<w&&depth<zbuffer[center]&&(!map.heights||depth<terrainDepth[Math.floor(clamp(y+sh*.4,0,h-1))*w+center])){if(a.team===0||mpMode){ctx.fillStyle=a.team===0?'#c3f66b':'#f4a46a';ctx.font=`${Math.max(9,Math.min(13,sh*.07))}px monospace`;ctx.textAlign='center';ctx.fillText(a.name,x+sw*.5,y-9);ctx.textAlign='left';}if(a.flash>0){ctx.fillStyle='#ffeaa0';ctx.beginPath();ctx.arc(x+sw*.85,y+sh*.46,Math.max(3,sh*.07),0,7);ctx.fill();}}
   }
   const vignette=ctx.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.5,w*.75);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04100b99');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
   if(player.hp>0)drawGun(w,h);
@@ -2030,12 +2215,13 @@ function mpSetup(){
   if(!mpWired){
     mpWired=true;
     $('#mp-room-map').innerHTML=MAPS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
-    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(SERVER_URL||settings.mpServer||'').trim();
+    $('#mp-nick').value=settings.mpNick||'';$('#mp-server').value=String(settings.mpServer||SERVER_URL||'').trim();
     if(!$('#mp-transport').value)$('#mp-transport').value='server';
     // Усі кімнати — приватні за кодом, як у balloon-catcher. Публічний список
     // лишається лише для тих, хто явно обере «Публічна».
     if($('#mp-room-visibility')&&!$('#mp-room-visibility').value)$('#mp-room-visibility').value='private';
     $('#mp-connect').onclick=()=>mpConnect();
+    $('#mp-server').onchange=()=>{settings.mpServer=$('#mp-server').value.trim();save();mpWarmUp();};
     $('#mp-transport').onchange=()=>{mpManualOff=false;mpDisconnect(true);mpTransportChanged();};
     $('#mp-disconnect').onclick=()=>{mpManualOff=true;mpDisconnect();};
     $('#mp-refresh').onclick=()=>mpServerAction({t:C2S.LIST});
@@ -2107,18 +2293,21 @@ function mpTransportChanged(){
 // миттєво: з'єднання вже відкрите, чекати нема чого.
 function mpWarmUp(){
   try{
-    if(!mpUsesCode()||mpClient||mpRoom||mpMode)return;
+    if(!mpUsesCode()||mpClient||mpRoom||mpMode){
+      try{mpWarmSocket?.close?.();}catch{}
+      mpWarmSocket=null;return;
+    }
     const WS=globalThis.WebSocket;
     if(!WS)return;
     const url=defaultMpUrl($('#mp-server').value);
-    if(!url)return;
+    if(!url){try{mpWarmSocket?.close?.();}catch{}mpWarmSocket=null;return;}
     if(mpWarmSocket&&(mpWarmSocket.readyState===1||mpWarmSocket.readyState===0)&&mpWarmUrl===url)return;
     try{mpWarmSocket?.close?.();}catch{}
     mpWarmUrl=url;
     const s=new WS(url);
     mpWarmSocket=s;
     s.onclose=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
-    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;};
+    s.onerror=()=>{if(mpWarmSocket===s)mpWarmSocket=null;try{s.close();}catch{}};
   }catch{}
 }
 function mpTakeWarm(url){
@@ -2130,7 +2319,7 @@ function mpTakeWarm(url){
 function mpCodeAction(code,options){
   mpDisconnect(true);settings.mpNick=$('#mp-nick').value;settings.mpServer=$('#mp-server').value;save();
   const url=defaultMpUrl(settings.mpServer);
-  if(!url){const message='Для коротких кодів потрібен сервіс кімнат. Відкрий гру за адресою запущеного сервера або вкажи його адресу.';$('#mp-code-status').textContent=message;toast(message);return;}
+  if(!url){const message=settings.mpServer.trim()?'Невірна адреса сервера. Приклад для локальної гри: http://localhost:4173.':'Для коротких кодів потрібен сервіс кімнат. Запусти npm start і відкрий http://localhost:4173 або вкажи адресу запущеного сервера.';$('#mp-code-status').textContent=message;toast(message);return;}
   mpClient=createPeerCodeClient(url,mpHandlers(mpEpoch),{socket:mpTakeWarm(url)});
   try{if(code)mpClient.join(code,settings.mpNick);else mpClient.host(options,settings.mpNick);}
   catch(error){mpDisconnect(true);$('#mp-code-status').textContent=error.message;toast(error.message);}
@@ -2251,14 +2440,18 @@ function mpConnect(action=null,automatic=false){
 function mpAutoConnect(){
   mpSetup();
   if(mpUsesPeer())return;
-  const shared=String(SERVER_URL||'').trim();
+  const shared=String(settings.mpServer||SERVER_URL||'').trim();
   if(shared){settings.mpServer=shared;$('#mp-server').value=shared;save();}
   if(!defaultMpUrl($('#mp-server').value)){
     mpSetStatus('СЕРВЕР КІМНАТ ЗАРАЗ НЕ ПІДКЛЮЧЕНИЙ. З БОТАМИ МОЖНА ГРАТИ ОДРАЗУ.');
     mpSetConnectionStatus('СЕРВЕР НЕ НАЛАШТОВАНО');
     try{document.body?.classList?.add('no-online');}catch{}
     // Статичний сайт може знайти сервер пізніше через ws.json — тоді кімнати з'являться самі.
-    findSharedServer().then(url=>{if(url){$('#mp-server').value=url;settings.mpServer=url;save();mpConnect(null,true);}});
+    findSharedServer().then(url=>{
+      if(!url||mpManualOff||mpClient||mpRoom||mpMode||$('#mp-server').value.trim())return;
+      $('#mp-server').value=url;settings.mpServer=url;save();
+      if(mpUsesCode())mpWarmUp();else mpConnect(null,true);
+    });
     return;
   }
   mpConnect(null,true);
@@ -2332,8 +2525,6 @@ function mpStartMatch(room){
   mpRoom=room;mpResultShown=false;kills=0;deaths=0;feed=[];mpChat=[];
   map=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   wallTextures=textures(map);
-  blueSprite=makeOperator(SKINS[settings.skin].color,'#c3f66b',GLOVES[settings.glove].color);
-  redSprite=makeOperator('#aa7853','#ffbd73');
   const me=room.players.find(p=>p.id===mpMyId);
   player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;player.angle=me.angle;
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
@@ -2372,6 +2563,7 @@ function mpApplySnapshot(snap){
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
   actors=[player,...mpRemotes.values()];
+  if(me?.alive&&!actorPathClear(map,player,player.x,player.y,actors)){player.x=me.x;player.y=me.y;}
   updateHUD();
 }
 function mpHandleEvents(events){
@@ -2437,10 +2629,10 @@ if(new URLSearchParams(location.search).has('test'))window.__sector={start,begin
 // вся інтеграція — через handlers, які передає game.js.
 //
 // Адреса сервера — як у balloon-catcher:
-//   ?ws=  → пряме посилання-запрошення від друга (найвищий пріоритет),
+//   поле «Адреса сервера» → явно вибрана адреса,
+//   ?ws=  → пряме посилання-запрошення від друга,
 //   ws.json → файл поруч зі сторінкою, який лишає `share` на комп'ютері господаря,
-//   поле «Адреса сервера» / SERVER_URL → ручне налаштування,
-//   інакше — той самий хост, що віддав сторінку (на github.io без цього — null).
+//   інакше — той самий хост, що віддав сторінку (крім статичних ігрових хостингів).
 
 const SHARE_TTL = 12 * 3600 * 1000;
 
@@ -2455,10 +2647,17 @@ function normalizeMpUrl(value) {
   const c = String(value || '').trim();
   if (!c) return null;
   try {
-    const url = new URL(c.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:'));
+    const address = /^(?:https?|wss?):\/\//i.test(c) ? c :
+      /^(?:localhost|\[[\da-f:]+\]|[\w-]+(?:\.[\w-]+)+)(?::\d+)?(?:[/?#]|$)/i.test(c)
+        ? `${typeof location !== 'undefined' && location.protocol === 'https:' ? 'wss' : 'ws'}://${c}` : c;
+    const url = new URL(address);
+    if (url.protocol === 'http:') url.protocol = 'ws:';
+    if (url.protocol === 'https:') url.protocol = 'wss:';
     if (!['ws:', 'wss:'].includes(url.protocol)) return null;
+    if (url.username || url.password) return null;
     const path = url.pathname.replace(/\/$/, '');
     url.pathname = path.endsWith(MP.PATH) ? path : path + MP.PATH;
+    url.hash = '';
     return url.toString();
   } catch { return null; }
 }
@@ -2471,17 +2670,18 @@ function serverUrlFromQuery(search) {
 }
 
 function defaultMpUrl(custom) {
+  // Неправильне введення не можна мовчки замінювати адресою вебсторінки.
+  if (String(custom || '').trim()) return normalizeMpUrl(custom);
   // 1. Запрошення від друга: ?ws=wss://…
   const fromQuery = serverUrlFromQuery();
   if (fromQuery) return fromQuery;
   // 2. Адреса, знайдена у ws.json під час роботи (див. findSharedServer).
   const fromShared = normalizeMpUrl(shared);
   if (fromShared) return fromShared;
-  // 3. Ручне поле або вбудований SERVER_URL.
-  const fromCustom = normalizeMpUrl(custom);
-  if (fromCustom) return fromCustom;
   if (typeof location !== 'undefined' && location.host) {
-    if (location.hostname?.endsWith('.github.io')) return null;
+    if (!['http:', 'https:'].includes(location.protocol)) return null;
+    const hostname = location.hostname || '';
+    if (['github.io', 'itch.io', 'itch.zone'].some(domain => hostname === domain || hostname.endsWith('.' + domain))) return null;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${proto}//${location.host}${MP.PATH}`;
   }
@@ -2495,13 +2695,7 @@ function inviteLink(code, wsUrl) {
   const url = new URL(location.pathname, location.origin);
   if (code) url.searchParams.set('room', String(code).toUpperCase());
   const ws = normalizeMpUrl(wsUrl) || defaultMpUrl();
-  if (ws) {
-    try {
-      const raw = new URL(ws);
-      const httpProto = raw.protocol === 'wss:' ? 'https:' : 'http:';
-      url.searchParams.set('ws', `${httpProto}//${raw.host}`);
-    } catch { /* код без адреси — теж запрошення */ }
-  }
+  if (ws) url.searchParams.set('ws', ws);
   return url.href;
 }
 

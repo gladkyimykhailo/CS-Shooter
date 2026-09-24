@@ -228,3 +228,14 @@ test('server URLs are normalized and static GitHub Pages has no implicit backend
   try{globalThis.location={host:'player.github.io',hostname:'player.github.io',protocol:'https:'};assert.equal(defaultMpUrl(''),null);}
   finally{if(old===undefined)delete globalThis.location;else globalThis.location=old;}
 });
+
+test('host rejects movement through a living player but accepts moving away and past a corpse',()=>{
+  const f=hostFixture();startDuel(f);
+  const p=f.host.room.players.host,q=f.host.room.players.p123456;
+  Object.assign(p,{x:20.5,y:8.5,z:0});Object.assign(q,{x:20.5,y:9.5,z:0});
+  f.host.receive('host',{t:C2S.STATE,x:20.5,y:10.5,angle:Math.PI/2});
+  assert.equal(p.y,8.5);
+  f.host.receive('host',{t:C2S.STATE,x:20.5,y:8,angle:Math.PI/2});assert.equal(p.y,8);
+  q.hp=0;q.alive=false;
+  f.host.receive('host',{t:C2S.STATE,x:20.5,y:10.5,angle:Math.PI/2});assert.equal(p.y,10.5);
+});

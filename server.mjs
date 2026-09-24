@@ -10,7 +10,7 @@ import {
   createRoom, publicRoomInfo, addPlayer, removePlayer, setReady,
   canStart, teamScores, matchTick, snapshotRoom, assignTeam,
 } from './public/net.js';
-import { MAPS, WEAPONS, clamp, lineOfSight, applyDamage, canStand, actorHeight, resetActorHeight, jumpActor, stepActor } from './public/core.js';
+import { MAPS, WEAPONS, clamp, lineOfSight, applyDamage, canStand, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './public/core.js';
 
 const root = fileURLToPath(new URL('./public/', import.meta.url));
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png' };
@@ -115,7 +115,7 @@ export function startServer(port) {
     for (const room of rooms.values()) {
       if (room.phase !== 'playing') continue;
       const map = MAPS[validMapId(room.mapId)];
-      for (const p of Object.values(room.players)) if (p.alive) stepActor(map, p, 0, 0, 1 / MP.TICK_HZ);
+      for (const p of Object.values(room.players)) if (p.alive) stepActor(map, p, 0, 0, 1 / MP.TICK_HZ, Object.values(room.players));
       const events = matchTick(room, 1 / MP.TICK_HZ);
       for (const e of events) {
         if (e.t === 'respawn') {
@@ -249,7 +249,7 @@ export function startServer(port) {
           if (++client.stateN > 45) break;
           const map = MAPS[validMapId(room.mapId)];
           const x = Number(msg.x), y = Number(msg.y), angle = Number(msg.angle);
-          if ([x, y, angle].every(Number.isFinite) && canStand(map, x, y)) {
+          if ([x, y, angle].every(Number.isFinite) && canStand(map, x, y) && actorPathClear(map, p, x, y, Object.values(room.players))) {
             p.x = clamp(x, 0.3, map.size - 0.3); p.y = clamp(y, 0.3, map.size - 0.3);
             p.angle = angle;
             p.moving = !!msg.moving;
