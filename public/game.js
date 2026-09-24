@@ -27,7 +27,7 @@ try{
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[];
-let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=20,kills=0,deaths=0;
+let state='lobby',phase='buy',paused=false,modal='',player,actors=[],round=0,score=[0,0],clock=MATCH.freezeTime,kills=0,deaths=0;
 let bomb=null,losses=[0,0],touchUse=false;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
@@ -90,7 +90,7 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, стрибка ↑ та перезаряджання справа. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['B','Закупівля під час підготовки'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
@@ -119,6 +119,12 @@ function nextRound(){
   });
   bomb=createBomb(actors,round%2?'a':'b');touchUse=false;
   resetGunMotion();$('#game-message').textContent='';$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
+}
+function beginCountdown(){
+  if(phase!=='buy')return;
+  closeDialog(false);paused=false;phase='countdown';clock=MATCH.countdownTime;aiming=false;
+  keys.clear();shootHeld=false;touchFire=false;touchUse=false;stick={x:0,y:0};
+  $('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(clock)}`;updateHUD();
 }
 function beginFight(){closeDialog(false);paused=false;phase='fight';clock=MATCH.roundTime;keys.clear();shootHeld=false;touchFire=false;$('#game-message').textContent=player.team?'T · ВСТАНОВИ C4 НА A АБО B':'CT · ЗАХИЩАЙ ТОЧКИ A / B';setTimeout(()=>{if(state==='playing'&&phase==='fight'&&player.hp>0)$('#game-message').textContent='';},1800);sound('win');updateHUD();}
 function inBuyZone(){return Math.hypot(player.x-(player.team?map.red:map.blue)[0][0],player.y-(player.team?map.red:map.blue)[0][1])<4;}
@@ -163,7 +169,7 @@ function openShop(category='all'){
     if(WEAPONS[id]&&player.primary&&player.primary!==id){const oldName=WEAPONS[player.primary].name;b.innerHTML=`ЗАМІНИТИ ${oldName}? НАТИСНИ ЩЕ РАЗ`;if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';return;}}
     const result=purchase(player,id);if(result.ok){sound('buy');openShop(category);updateHUD();}else toast(result.message);
   });
-  $('#shop-ready').onclick=()=>{beginFight();lock();};$('#shop-close').onclick=()=>closeDialog();$('#shop-close-icon').onclick=()=>closeDialog();
+  $('#shop-ready').onclick=()=>{beginCountdown();lock();};$('#shop-close').onclick=()=>closeDialog();$('#shop-close-icon').onclick=()=>closeDialog();
 }
 function pause(){if(state!=='playing'||phase==='finished')return;if(mpMode)return mpPause();paused=true;aiming=false;dialog('pause',header('ОПЕРАЦІЮ ПРИЗУПИНЕНО','ПАУЗА')+`<p>${map.name} · Раунд ${round} · Рахунок ${score[0]} : ${score[1]}</p><div class="dialog-actions"><button id="resume" class="primary">ПРОДОВЖИТИ <span>→</span></button><button id="restart" class="secondary">НОВИЙ МАТЧ</button><button id="leave" class="secondary">У ГОЛОВНЕ МЕНЮ</button></div>`);$('#resume').onclick=()=>closeDialog();$('.dialog-close').onclick=()=>closeDialog();$('#restart').onclick=start;$('#leave').onclick=leave;}
 $('#pause-button').onclick=pause;
@@ -308,8 +314,9 @@ function update(dt){
   elapsed+=dt;recoil=Math.max(0,recoil-dt*6);hitTime=Math.max(0,hitTime-dt);hurtTime=Math.max(0,hurtTime-dt);nextShot=Math.max(0,nextShot-dt);if(player)player.spray=Math.max(0,(player.spray||0)-dt*1.8);feed.forEach(f=>f.t-=dt);feed=feed.filter(f=>f.t>0);feedTimer-=dt;if(feedTimer<=0){feedTimer=.5;paintFeed();}
   if(mpMode){mpUpdate(dt);return;}
   if(phase==='intermission'){intermission-=dt;if(intermission<=0){if(score.some(s=>s>=MATCH.winScore)||round>=MATCH.halfRounds*2)endMatch();else nextRound();}return;}
-  clock-=dt;if(phase!=='buy')updatePlayer(dt);updateGunMotion(dt);
-  if(phase==='buy'){if(clock<=0)beginFight();return;}
+  clock-=dt;if(phase==='fight')updatePlayer(dt);updateGunMotion(dt);
+  if(phase==='buy'){if(clock<=0)beginCountdown();return;}
+  if(phase==='countdown'){if(clock<=0)beginFight();else $('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(clock)}`;return;}
   if(reload>0){reload-=dt;const p=reloadProgress();if(reloadStage===0&&p>=.38){reloadStage=1;sound('reload');}else if(reloadStage===1&&p>=.72){reloadStage=2;sound('reload');}if(reload<=0){reload=0;reloadTotal=0;reloadStage=0;const inv=player.inventory[player.weapon],take=Math.min(currentWeapon().size-inv.ammo,inv.reserve);inv.ammo+=take;inv.reserve-=take;sound('reload');updateHUD();}}
   if(shootHeld||touchFire){if(currentWeapon().automatic)shoot();}
   updateBots(dt);
@@ -321,11 +328,11 @@ function update(dt){
 }
 function updateObjectiveHUD(){
   const panel=$('#objective');panel.hidden=phase!=='fight';
-  $('#touch-use').hidden=phase!=='fight'||player.hp<=0;
+  $('#touch-use').hidden=phase!=='fight'||!bombAction(map,bomb,player);
   if(phase!=='fight')return;
   const action=bombAction(map,bomb,player);
   const acting=bomb.user===player&&bomb.action;
-  panel.classList.toggle('planted',bomb.planted);
+  panel.classList.toggle('planted',bomb.planted);panel.classList.toggle('interacting',!!acting);panel.classList.toggle('available',!!action);
   $('#objective-title').textContent=bomb.planted?`C4 · ${bomb.site.toUpperCase()} · ${Math.ceil(bomb.timeLeft)} С`:bomb.carrier===player?'У ТЕБЕ C4 · ТОЧКИ A / B':bomb.dropped?'C4 НА ЗЕМЛІ':player.team?'СУПРОВОДЖУЙ C4':'ЗАХИЩАЙ A / B';
   $('#objective-hint').textContent=acting?`${bomb.action==='plant'?'ВСТАНОВЛЕННЯ':'ЗНЕШКОДЖЕННЯ'} · ${Math.floor(bomb.progress/action.duration*100)}%`:action?`ТРИМАЙ E · ${action.type==='plant'?'ВСТАНОВИТИ C4':'ЗНЕШКОДИТИ'} (${action.duration} С)`:bomb.planted?player.team?'ЗАХИЩАЙ C4 ДО ВИБУХУ':'ЗНАЙДИ C4 НА МІНІМАПІ · ТРИМАЙ E ПОРУЧ':player.team?'ВСТАНОВИ C4 АБО УСУНЬ CT':'НЕ ДАЙ T ВСТАНОВИТИ C4';
   $('#objective-progress').style.width=acting?`${Math.min(100,bomb.progress/action.duration*100)}%`:'0%';
@@ -337,6 +344,9 @@ function updateVitals(){
 }
 function updateHUD(){
   if(!player)return;
+  const aimButton=$('#touch-aim');aimButton.ariaPressed=String(aiming);aimButton.classList.toggle('active',aiming);
+  aimButton.hidden=player.hp<=0||(!mpMode&&phase!=='fight');
+  $('#touch-shop').hidden=mpMode||phase!=='buy';
   const areas=[map.sites.a,map.sites.b,map.mid,...(map.callouts||[])];
   let area=null,distance=Infinity;
   for(const candidate of areas){const d=Math.hypot(player.x-candidate.point[0],player.y-candidate.point[1]);if(d<distance){distance=d;area=candidate;}}
@@ -361,7 +371,7 @@ function updateHUD(){
     return;
   }
   updateObjectiveHUD();
-  const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`$ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)/60)}:${String(Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 24`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ПІДГОТОВКА':`${actors.filter(a=>a.team===0&&a.hp>0).length} CT / ${actors.filter(a=>a.team===1&&a.hp>0).length} T`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
+  const inv=player.inventory[player.weapon];updateVitals();$('#ammo').textContent=reload>0?'··':inv.ammo;$('#reserve').textContent=inv.reserve;$('#weapon-name').textContent=reload>0?'ПЕРЕЗАРЯДЖАННЯ':currentWeapon().name;$('#money').textContent=`$ ${player.money.toLocaleString('uk')}`;$('#blue-score').textContent=score[0];$('#red-score').textContent=score[1];$('#timer').textContent=`${Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)/60)}:${String(Math.floor(Math.max(0,bomb?.planted&&phase==='fight'?bomb.timeLeft:clock)%60)).padStart(2,'0')}`;$('#round-label').textContent=`РАУНД ${round} / 24`;$('#map-name').textContent=map.name;$('#phase-label').textContent=phase==='buy'?'ЗАКУПІВЛЯ':phase==='countdown'?'ПОЧАТОК БОЮ':`${actors.filter(a=>a.team===0&&a.hp>0).length} CT / ${actors.filter(a=>a.team===1&&a.hp>0).length} T`;$('#buy-tip').hidden=phase!=='buy'||!!modal;$('#crosshair').hidden=player.hp<=0||aimProgress()>.65;$('#crosshair').style.opacity=reload>0?'.25':'1';$('#hit-marker').style.opacity=hitTime>0?'1':'0';$('#hurt').style.opacity=String(hurtTime*.9);if($('#shop-timer'))$('#shop-timer').textContent=Math.ceil(Math.max(0,clock));}
 
 function resize(){const cap=settings.quality==='low'?640:960;canvas.width=Math.min(cap,innerWidth);canvas.height=Math.round(canvas.width*innerHeight/innerWidth);zbuffer=new Float32Array(canvas.width);terrainDepth=new Float32Array(canvas.width*canvas.height);}
 addEventListener('resize',resize);
@@ -430,14 +440,14 @@ function drawGun(w,h){
   const cockJerk=p>.72&&p<.92?Math.sin((p-.72)/.2*Math.PI):0;
   const dropY=downHold*105+dip*18-cockJerk*22;
   const tilt=downHold*.5-cockJerk*.09;
-  ctx.save();const scale=Math.min(w/900,h/560);
+  ctx.save();const scale=Math.min(w/900,h/560)*(touchDevice?.62:1);
   const physical=settings.motion,ads=aimProgress(),scoped=!!currentWeapon().scope;
   const wall=physical?clamp(gunMotion.wall.value,0,1):0;
   const gx=physical?gunMotion.x.value:0,gy=physical?gunMotion.y.value+gunMotion.kick.value:0;
   const angle=.48+ads*.85,muzzle=WEAPON_MUZZLES[player.weapon];
   const aimX=w*.5+(muzzle*Math.cos(angle)-24*Math.sin(angle))*scale;
   const aimY=h*.5+(120+muzzle*Math.sin(angle)+24*Math.cos(angle))*scale;
-  const originX=w*(pistol?.64:.78)*(1-ads)+aimX*ads;
+  const originX=w*(touchDevice?.8:pistol?.64:.78)*(1-ads)+aimX*ads;
   const originY=h*(1-ads)+aimY*ads;
   ctx.translate(originX+(sway+gx-wall*25)*scale,originY+(dropY+gy+wall*90)*scale);
   ctx.scale(scale*(1-wall*.12),scale*(1-wall*.12));ctx.rotate(-tilt*.55+(physical?gunMotion.roll.value:0)-wall*.28);
@@ -453,7 +463,7 @@ function drawGun(w,h){
   }
   if(scoped&&ads>0)drawScopeOverlay(ctx,w,h,player.weapon,ads);
   // Шкала прогресу перезаряджання під прицілом.
-  if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*.56;ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
+  if(p>0){const bw=Math.min(220,w*.3),bx=w/2-bw/2,by=h*(touchDevice?.86:.56);ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0b1513cc';ctx.fillRect(bx-8,by-8,bw+16,30);ctx.fillStyle='#2a3a32';ctx.fillRect(bx,by,bw,6);ctx.fillStyle='#c3f66b';ctx.fillRect(bx,by,bw*p,6);ctx.fillStyle='#eef1e8';ctx.font='11px monospace';ctx.textAlign='center';const label=p<.38?'МАГАЗИН ГЕТЬ':p<.72?'НОВИЙ МАГАЗИН':'ЗАТВОР · ГОТОВО';ctx.fillText(`${label} ${Math.round(p*100)}%`,w/2,by+22);ctx.textAlign='left';ctx.restore();}
 }
 function renderMinimap(view){
   const s=160/map.size;
@@ -505,13 +515,17 @@ addEventListener('blur',()=>{keys.clear();shootHeld=false;touchFire=false;aiming
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing'&&phase!=='finished'&&modal!=='pause')pause();});
 $('#overlay').addEventListener('keydown',e=>{if(e.key!=='Tab')return;const focusables=[...$('#dialog').querySelectorAll('button:not(:disabled),a[href],input,select')];if(!focusables.length)return;const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 const joy=$('#joystick');let joyId;
-joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect();stick.x=clamp((e.clientX-r.left-50)/40,-1,1);stick.y=clamp((e.clientY-r.top-50)/40,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*25}px,${stick.y*25}px)`;});
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);});joy.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect(),radius=r.width*.4,travel=r.width*.25;stick.x=clamp((e.clientX-r.left-r.width/2)/radius,-1,1);stick.y=clamp((e.clientY-r.top-r.height/2)/radius,-1,1);joy.firstElementChild.style.transform=`translate(${stick.x*travel}px,${stick.y*travel}px)`;});
 function releaseJoy(){joyId=null;stick={x:0,y:0};joy.firstElementChild.style.transform='';}joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);
+$('#touch-aim').onclick=()=>{
+  if(state!=='playing'||paused||modal||player.hp<=0||reload>0||mpReloadT>0||(!mpMode&&phase!=='fight'))return;
+  aiming=!aiming;updateHUD();
+};
 const useButton=$('#touch-use');
 useButton.addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchUse=true;});
 useButton.addEventListener('pointerup',()=>touchUse=false);useButton.addEventListener('pointercancel',()=>touchUse=false);
 $('#touch-fire').addEventListener('pointerdown',e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchFire=true;shoot();});$('#touch-fire').addEventListener('pointerup',()=>touchFire=false);$('#touch-fire').addEventListener('pointercancel',()=>touchFire=false);$('#touch-jump').onclick=requestJump;$('#touch-reload').onclick=reloadWeapon;$('#touch-shop').onclick=()=>modal==='shop'?closeDialog():openShop();
-canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.006*settings.sensitivity;pitch=clamp(pitch-(t.clientY-lookTouch.y)*.004,-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
+canvas.style.touchAction='none';canvas.addEventListener('touchstart',e=>{if(paused||modal)return;const t=e.changedTouches[0];lookTouch={id:t.identifier,x:t.clientX,y:t.clientY};},{passive:true});canvas.addEventListener('touchmove',e=>{if(!lookTouch||paused||modal||player.hp<=0)return;const t=[...e.changedTouches].find(t=>t.identifier===lookTouch.id);if(!t)return;player.angle+=(t.clientX-lookTouch.x)*.004*settings.sensitivity*(aiming?.5:1);pitch=clamp(pitch-(t.clientY-lookTouch.y)*.003*settings.sensitivity*(aiming?.5:1),-.45,.45);lookTouch.x=t.clientX;lookTouch.y=t.clientY;e.preventDefault();},{passive:false});canvas.addEventListener('touchend',()=>lookTouch=null);canvas.addEventListener('touchcancel',()=>lookTouch=null);
 
 // ---------- Мультиплеєр: лобі, кімнати, синхронізація ----------
 function mpMe(){return mpRoom&&mpMyId?mpRoom.players.find(p=>p.id===mpMyId):null;}
@@ -930,4 +944,4 @@ mpAutoConnect();
 mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight,beginCountdown,shoot,purchase:id=>purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),get:()=>({bomb,state,phase,paused,modal,round,score,kills,deaths,clock,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};

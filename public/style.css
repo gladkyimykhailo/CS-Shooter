@@ -12,3 +12,72 @@
 
 /* Round objective remains visible while the player watches a teammate. */
 .objective{position:absolute;top:100px;left:50%;transform:translateX(-50%);width:min(400px,48vw);padding:12px 16px;background:#0d171de8;border:1px solid #8c783f;display:flex;flex-direction:column;gap:7px;text-align:center;font:11px var(--mono);color:#e1b75e}.objective span{font-size:9px;color:#d2d8d5}.objective.planted{border-color:#ed7659}.objective-track{height:3px;background:#35413d}.objective-track i{display:block;height:100%;width:0;background:#e1b75e}#touch-use{position:absolute;right:185px;bottom:150px;width:52px;height:52px;border-radius:50%;border:2px solid #e1b75e;background:#51421ecc;color:#fff;pointer-events:auto;touch-action:none;font:22px var(--mono)}.launch-bar{flex-wrap:wrap}@media(max-width:720px){.objective{top:180px;width:min(340px,85vw);padding:8px;font-size:10px}.objective span{font-size:8px}}
+
+#touch-aim{position:absolute;right:180px;bottom:220px;width:48px;height:48px;border-radius:50%;border:1px solid #e5ffc077;background:#14201999;color:#e5ffc0;font-size:24px;pointer-events:auto;touch-action:none}
+#touch-aim.active{background:#9ebc57bb;color:#101615;border-color:#e1f7b5}
+/* Keep the middle of the phone screen clear in both orientations. */
+@media (pointer:coarse), (max-width:720px){
+  .hud-top{padding:8px 10px}
+  .hud-map{max-width:105px;font-size:8px;letter-spacing:.5px}
+  .hud-map small{font-size:7px;margin-top:3px}
+  #map-location{display:none}
+  .score{position:absolute;left:50%;top:7px;transform:translateX(-50%);gap:10px;padding:5px 12px}
+  .score>b{font-size:20px}.score strong{font-size:16px}.score small{font-size:7px;letter-spacing:.5px}
+  .hud-button{width:34px;height:34px;padding:0;font-size:14px}
+  #minimap{top:43px;left:10px;width:68px;height:68px;opacity:.85}
+  .hud-bottom{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));display:flex;gap:8px}
+  .vitals{display:flex;min-width:0;width:auto;gap:7px;padding:5px 8px;background:#08100db3}
+  .vitals>.health-bar,.health-readout small,.health-readout em{display:none}
+  .vitals>.health-readout{gap:4px}.health-icon{font-size:18px}.health-readout strong{font-size:18px}
+  .vitals>.armor-readout{padding-left:7px!important;gap:1px}.armor-readout small{font-size:6px}.armor-readout b{font-size:13px}
+  .weapon-info{padding:0;text-shadow:0 1px 3px #000}.weapon-info small{font-size:7px;letter-spacing:.5px}
+  .weapon-info strong{font-size:22px}.weapon-info span,.weapon-info> b{font-size:9px}.weapon-info div{margin:1px 0}
+  .hud-help{display:none}
+  .objective{top:55px;width:auto;max-width:56vw;min-width:130px;padding:5px 8px;font-size:8px;gap:3px;background:#0d171d9c}
+  .objective span,.objective-track{display:none}
+  .objective.interacting span,.objective.available span{display:block;font-size:7px}
+  .objective.interacting .objective-track{display:block}
+  .game-message{top:117px;max-width:80vw;font-size:11px;letter-spacing:.5px;white-space:normal}
+  .kill-feed{top:49px;right:10px;max-width:30%;font-size:7px}.kill-feed div{padding:4px 6px}
+  .buy-tip{bottom:45px;font-size:8px}.buy-tip span{display:none}
+  #joystick{width:76px;height:76px;left:18px;bottom:58px;border-width:1px;background:#09161020}
+  #joystick span{width:30px;height:30px;left:22px;top:22px;background:#d2ee9c44}
+  #touch-fire,#touch-jump,#touch-reload,#touch-shop,#touch-use,#touch-aim{width:44px;height:44px;border-width:1px;background:#17271f88;font-size:18px}
+  #touch-fire{width:58px;height:58px;right:18px;bottom:67px;font-size:27px}
+  #touch-jump{right:25px;bottom:135px}
+  #touch-reload{right:88px;bottom:59px}
+  #touch-aim{right:88px;bottom:113px;font-size:25px}
+  #touch-use{right:142px;bottom:59px}
+  #touch-shop{left:108px;right:auto;bottom:59px}
+  #touch-aim.active{background:#9ebc57bb}
+  .toast{max-width:70vw;padding:8px 12px;font-size:10px}
+  .overlay{padding:8px}
+  .dialog-shop{max-height:calc(100dvh - 16px);overflow:hidden}
+  .buy-terminal{display:flex;flex-direction:column;max-height:calc(100dvh - 16px)}
+  .buy-topbar{min-height:56px;padding:10px 12px;gap:10px;flex-shrink:0}
+  .buy-topbar .eyebrow{font-size:7px}.buy-topbar h2{font-size:15px;margin-top:4px}
+  .buy-status{font-size:8px;gap:3px}.buy-status strong{font-size:16px}.buy-close{width:30px;height:30px;font-size:22px}
+  .buy-layout{display:grid;grid-template-columns:86px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;min-height:0}
+  .buy-categories{display:flex;flex-direction:column;gap:2px;overflow:auto;padding:7px 4px;margin:0;border-bottom:0}
+  .buy-categories>span{font-size:6px;padding:0 3px 4px}
+  .buy-category{display:flex;gap:4px;min-height:39px;padding:4px;font-size:8px;letter-spacing:0;flex-shrink:0}
+  .buy-category b,.buy-category i{display:none}
+  .buy-content{padding:8px;overflow:auto;overscroll-behavior:contain}
+  .buy-content-head{margin-bottom:7px;padding-bottom:6px;gap:4px}.buy-content-head .eyebrow{font-size:8px}
+  .buy-content-head p,.buy-count{display:none}
+  .buy-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .buy-item{min-height:0;padding:8px}.buy-item h3{font-size:13px;margin-top:5px}
+  .buy-item-top{font-size:6px;letter-spacing:0}.buy-item-top span{display:none}
+  .buy-item-visual{height:40px}.buy-item .gun-sprite{height:36px;width:95px}.buy-item .gun-icon{font-size:25px;letter-spacing:-4px}
+  .buy-item p{display:none}.buy-item-stats{font-size:7px;letter-spacing:0;margin:5px 0;padding-top:5px}
+  .buy-item button{min-height:38px;flex-wrap:wrap;gap:3px;padding:6px;font-size:8px;letter-spacing:0}.buy-item button strong{font-size:10px}
+  .buy-issued{font-size:7px;padding:7px 3px;letter-spacing:0}
+  .buy-loadout{grid-column:1/-1;display:flex;flex-direction:row;justify-content:flex-end;align-items:center;gap:12px;padding:8px 10px;border-top:1px solid var(--buy-line)}
+  .buy-loadout>div,.buy-loadout>span,.buy-loadout p{display:none}
+  .buy-loadout .primary{width:auto;min-height:40px;padding:10px 16px;font-size:10px;gap:25px}
+  .buy-loadout .text-button{align-self:center;font-size:9px}
+}
+@media (pointer:coarse) and (max-width:440px){
+  .buy-layout{grid-template-columns:70px minmax(0,1fr)}
+  .buy-category{font-size:7px}.buy-content{padding:6px}.buy-grid{gap:5px}.buy-item{padding:6px}
+}

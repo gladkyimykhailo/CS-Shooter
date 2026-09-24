@@ -1,6 +1,6 @@
 import { canStand, findPath, floorHeight, lineOfSight } from './core.js';
 
-export const MATCH = { startMoney:800, maxMoney:16000, freezeTime:15, roundTime:115, bombTime:40, plantTime:3.2, defuseTime:10, kitTime:5, winScore:13, halfRounds:12 };
+export const MATCH = { startMoney:800, maxMoney:16000, freezeTime:30, countdownTime:5, roundTime:115, bombTime:40, plantTime:3.2, defuseTime:10, kitTime:5, winScore:13, halfRounds:12 };
 
 export function teamSpawns(map, team) {
   const positions=(team?map.red:map.blue).map(p=>[...p]);
