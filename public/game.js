@@ -880,6 +880,7 @@ function mpAutoConnect(){
   mpConnect(null,true);
 }
 function mpDisconnect(silent=false){
+  const wasInMatch=state!=='lobby'&&(mpMode||mpRoom);
   mpEpoch++;
   clearTimeout(mpReconnectTimer);mpReconnectTimer=0;
   if(!silent)mpLastJoin=null;
@@ -889,7 +890,7 @@ function mpDisconnect(silent=false){
   $('#mp-disconnect').hidden=true;
   $('#mp-short-code-panel').hidden=true;
   $('#mp-short-code').value='';$('#mp-code-status').textContent='';
-  if(!silent){
+  if(!silent&&wasInMatch){
     state='lobby';paused=false;modal='';release();
     $('#overlay').hidden=true;canvas.hidden=true;$('#hud').hidden=true;$('#lobby').hidden=false;
     tab('mp');
