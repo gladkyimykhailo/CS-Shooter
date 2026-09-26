@@ -33,6 +33,7 @@ let projectiles=[],grenadeEffects=[],selectedGrenade=null,lastGrenade='he';
 let bomb=null,losses=[0,0],touchUse=false;
 let pitch=0,aiming=false,shootHeld=false,nextShot=0,reload=0,reloadTotal=0,reloadStage=0,recoil=0,hitTime=0,hurtTime=0,walk=0,stepTimer=0,intermission=0,elapsed=0;
 let zbuffer=[],terrainDepth=[],keys=new Set(),lastTime=performance.now(),hudTimer=0,feed=[],toastTimer,feedTimer=0,dragging=false,lookTouch=null,stick={x:0,y:0},touchFire=false;
+let sprintToggle=false;
 let mpClient=null,mpRoom=null,mpMyId=null,mpMode=false,mpRemotes=new Map(),mpSendTimer=0,mpChat=[],mpRooms=[],mpReloadT=0,mpWired=false,mpListTimer=0,mpResultShown=false;
 let mpEpoch=0;
 let mpInviteChecked=false,mpLastJoin=null,mpReconnectTimer=0,mpReconnectTries=0;
@@ -80,7 +81,7 @@ $$('.nav').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('[data-go-play]').for
 for(const key of ['sensitivity','volume','quality','motion','difficulty']){const e=$(`#${key}`);if(e.type==='checkbox')e.checked=settings[key];else e.value=settings[key];e.addEventListener('input',()=>{settings[key]=e.type==='checkbox'?e.checked:e.type==='range'?Number(e.value):e.value;save();if(key==='quality')resize();});}
 renderCards();renderOperator();mapArt($('#hero-canvas'),map,true);
 
-function release(){shootHeld=false;touchFire=false;touchUse=false;keys.clear();stick={x:0,y:0};if(document.pointerLockElement===canvas)document.exitPointerLock();}
+function release(){shootHeld=false;touchFire=false;touchUse=false;keys.clear();sprintToggle=false;stick={x:0,y:0};if(document.pointerLockElement===canvas)document.exitPointerLock();}
 function lock(){if(touchDevice)return;try{const p=canvas.requestPointerLock?.();p?.catch(()=>toast('Натисни на ігровий екран. Також можна оглядатися, затиснувши мишу.'));}catch{toast('Для огляду затисни мишу на ігровому екрані.');}}
 function dialog(type,html){modal=type;const panel=$('#dialog');panel.className=`dialog dialog-${type}`;panel.innerHTML=html;$('#overlay').hidden=false;release();panel.querySelector('button')?.focus();}
 function closeDialog(resume=true){$('#overlay').hidden=true;modal='';if(resume&&state==='playing'){paused=false;lock();}}
@@ -92,7 +93,7 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['4','Обрати / змінити гранату'],['ЛКМ / ПКМ з гранатою','Дальній / короткий кидок'],['G','Швидко кинути гранату'],['B','Закупівля в перші 30 секунд раунду'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Гранати доступні у грі з ботами: B → ГРАНАТИ, максимум 4, серед них до 2 світлошумових. На телефоні натисни список гранат, щоб обрати, і кнопку G, щоб кинути. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['4','Обрати / змінити гранату'],['ЛКМ / ПКМ з гранатою','Дальній / короткий кидок'],['G','Швидко кинути гранату'],['B','Закупівля в перші 30 секунд раунду'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Біг: утримуй або натисни раз для вкл/викл'],['C','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>Біг на CTRL: звичайний крок — 3,3, тихий крок і присідання — 1,8, біг — 5,2. Біг вимикається прицілюванням (ПКМ), Shift, C і роботою з C4. Увага браузера: не тримай CTRL разом із W, бо CTRL+W закриває вкладку — натисни CTRL один раз, щоб увімкнути біг, і біжи на WASD, повторне натискання вимикає.</p><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Гранати доступні у грі з ботами: B → ГРАНАТИ, максимум 4, серед них до 2 світлошумових. На телефоні натисни список гранат, щоб обрати, і кнопку G, щоб кинути. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
@@ -113,7 +114,7 @@ $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
   round++;projectiles=[];grenadeEffects=[];selectedGrenade=null;
   if(round===MATCH.halfRounds+1){score.reverse();losses=[0,0];for(const a of actors){a.team=1-a.team;a.hp=0;a.money=MATCH.startMoney;}}
-  phase='buy';clock=MATCH.countdownTime;buyRemaining=MATCH.buyTime;fightIn=MATCH.countdownTime;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;keys.clear();
+  phase='buy';clock=MATCH.countdownTime;buyRemaining=MATCH.buyTime;fightIn=MATCH.countdownTime;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;sprintToggle=false;keys.clear();
   const spawns=[teamSpawns(map,0),teamSpawns(map,1)];
   actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;a.patrol=null;a.patrolT=0;a.destination='';    if(a.hp<=0){a.grenades={};a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,sidearmKit(a.team));}
     a.hp=100;a.blind=0;a.blindPeak=0;a.moving=false;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
@@ -221,7 +222,17 @@ function paintFeed(){$('#kill-feed').innerHTML=feed.map(f=>`<div><b>${escapeText
 function damage(target,n,source,head=false,utility=null){if(mpMode){if(target.isRemote&&mpClient)mpClient.send({t:C2S.SHOOT,weapon:player.weapon,target:target.mpId,head});return;}if(target.hp<=0)return;if(utility==='fire')target.hp=Math.max(0,target.hp-n);else applyDamage(target,n,head);if(target.isPlayer){if(hurtTime<=0)sound('hit');hurtTime=.45;}if(target.hp<=0){const killAward=WEAPONS[source.weapon]?.award||300;if(source!==target){source.money=Math.min(MATCH.maxMoney,source.money+(utility?300:killAward));if(source.isPlayer)kills++;}logKill(utility?{name:`${source.name} · ${utility==='fire'?'ВОГОНЬ':'HE'}`}:source,target);if(target.isPlayer){deaths++;reload=0;reloadTotal=0;reloadStage=0;shootHeld=false;touchFire=false;$('#game-message').textContent='ТИ ВИБУВ · СПОСТЕРЕЖЕННЯ ЗА СОЮЗНИКОМ';}sound('hit');}}
 function currentWeapon(){return WEAPONS[player.weapon];}
 function aimProgress(){return player?.hp>0?(settings.motion?clamp(gunMotion.aim.value,0,1):Number(aiming)):0;}
-function viewFov(){const zoom=player&&WEAPONS[player.weapon]?.scope||.5;return .78-(.78-zoom)*aimProgress();}
+// CTRL — біг (як у Roblox-аренах): утримуй або натисни один раз, щоб увімкнути/вимкнути.
+// C — присідання, Shift — тихий крок. Біг вимикається прицілюванням, присіданням і роботою з C4.
+const crouchHeld=()=>keys.has('KeyC');
+const quietHeld=()=>keys.has('ShiftLeft')||keys.has('ShiftRight');
+const sprintHeld=()=>keys.has('ControlLeft')||keys.has('ControlRight');
+function sprinting(){
+  if(!player||player.hp<=0||aiming||crouchHeld()||quietHeld()||usingBomb())return false;
+  if(!(sprintHeld()||sprintToggle))return false;
+  return phase==='fight'||phase==='mp'||mpMode;
+}
+function viewFov(){const zoom=player&&WEAPONS[player.weapon]?.scope||.5;const base=.78-(.78-zoom)*aimProgress();return base+((sprinting()&&player&&player.hp>0)?0.07:0);}
 function resetGunMotion(){
   gunMotion=createWeaponMotion();
   gunSample=player?{x:player.x,y:player.y,angle:player.angle,pitch,weapon:player.weapon}:null;
@@ -251,7 +262,7 @@ function mpSwitchWeapon(id){if(!player||player.hp<=0||!WEAPONS[id])return;player
 function reloadProgress(){if(reload<=0||reloadTotal<=0)return 0;return clamp(1-reload/reloadTotal,0,1);}
 function reloadWeapon(){if(selectedGrenade)return;if(usingBomb()||mpMode||state!=='playing'||paused||modal||phase!=='fight'||player.hp<=0||reload>0)return;const w=currentWeapon(),inv=player.inventory[player.weapon];if(inv.ammo>=w.size||!inv.reserve)return;reload=w.reload;reloadTotal=w.reload;reloadStage=0;aiming=false;sound('reload');updateHUD();}
 function shotCollision(angle){
-  const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(keys.has('ControlLeft')?canvas.height*.06:0);
+  const projection=canvas.width/(2*viewFov()),horizon=canvas.height*.48+pitch*canvas.height+(crouchHeld()?canvas.height*.06:0);
   const origin={x:player.x,y:player.y,z:actorHeight(map,player)+.5};
   const direction={x:Math.cos(angle),y:Math.sin(angle),z:(horizon-canvas.height*.5)*Math.cos(angle-player.angle)/projection};
   const hits=actors.filter(a=>a!==player&&a.hp>0).map(a=>({a,hit:hitOperator(map,a,origin,direction,elapsed,settings.motion)})).filter(o=>o.hit).sort((a,b)=>a.hit.distance-b.hit.distance);
@@ -270,7 +281,7 @@ function shoot(){
     if(mpMyAmmo()<=0){sound('empty');nextShot=.3;return;}
     nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);
     if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
-    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
+    const spread=w.spread*(aiming?.45:1)*(sprinting()?2.4:player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);
     const mAngle=player.angle+(Math.random()-.5)*spread;
     let shotTarget=null,shotHead=false;
     const collision=shotCollision(mAngle);
@@ -283,7 +294,7 @@ function shoot(){
   inv.ammo--;nextShot=w.rate;recoil=1;kickGun();sound('shot',player.weapon);let anyHit=false;
   if(w.automatic)player.spray=Math.min(1.5,(player.spray||0)+(player.weapon==='kalash'?.16:.07));
   for(let pellet=0;pellet<w.pellets;pellet++){
-    const spread=w.spread*(aiming?.45:1)*(player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
+    const spread=w.spread*(aiming?.45:1)*(sprinting()?2.4:player.moving?1.8:1)*(w.automatic?1+(player.spray||0)*2:1);const angle=player.angle+(Math.random()-.5)*spread;
     const collision=shotCollision(angle);
     if(collision){const {a,d,head}=collision,falloff=w.pellets>1?clamp(1-d/14,.15,1):1;damage(a,w.damage*falloff*(head?(w.headMult||2):1),player,head);anyHit=true;}
 
@@ -315,11 +326,12 @@ function usingBomb(){return !mpMode&&phase==='fight'&&player&&bombAction(map,bom
 function updatePlayer(dt){
   player.moving=false;if(player.hp<=0||modal)return;
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
-  const speed=keys.has('ShiftLeft')||keys.has('ControlLeft')?1.8:3.3;
+  const run=sprinting();
+  const speed=run?5.2:(quietHeld()||crouchHeld()?1.8:3.3);
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
-  stepActor(map,player,dx,dy,dt,actors);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;
-  if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=keys.has('ShiftLeft')?.6:.4;sound('step');}}
+  stepActor(map,player,dx,dy,dt,actors);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;player.sprinting=run&&player.moving;
+  if(player.moving&&player.grounded){walk+=dt*speed*3;stepTimer-=dt;if(stepTimer<=0){stepTimer=(quietHeld()||crouchHeld())?0.6:(run?0.28:0.4);sound('step');}}
   if(keys.has('ArrowLeft'))player.angle-=dt*1.8;if(keys.has('ArrowRight'))player.angle+=dt*1.8;
   if(player.landingSpeed>1)sound('step');
 }
@@ -461,7 +473,7 @@ function viewActor(){if(mpMode||player.hp>0)return player;return actors.find(a=>
 function render(){
   if(state!=='playing')return;
   ctx.imageSmoothingEnabled=false;
-  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(keys.has('ControlLeft')?h*.06:0);
+  const w=canvas.width,h=canvas.height,view=viewActor(),angle=view.angle,ca=Math.cos(angle),sa=Math.sin(angle),fov=view===player?viewFov():.78,projection=w/(2*fov),horizon=h*.48+(view===player?pitch*h:0)+(crouchHeld()?h*.06:0);
   ctx.fillStyle=map.sky;ctx.fillRect(0,0,w,h);const sky=ctx.createLinearGradient(0,0,0,Math.max(1,horizon));sky.addColorStop(0,tint(map.sky,.53));sky.addColorStop(1,tint(map.sky,1.03));ctx.fillStyle=sky;ctx.fillRect(0,0,w,Math.max(1,horizon));
   ctx.fillStyle=tint(map.wall,.7);for(let i=-1;i<18;i++){const x=((i*113-angle*100)%(w+113)+w+113)%(w+113)-113;const bh=40+Math.sin(i*17)*25;ctx.fillRect(x,horizon-bh,70,bh);}
   const floor=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);floor.addColorStop(0,tint(map.floor,.46));floor.addColorStop(1,tint(map.floor,.9));ctx.fillStyle=floor;ctx.fillRect(0,Math.max(0,horizon),w,h);
@@ -575,11 +587,14 @@ requestAnimationFrame(frame);
 addEventListener('keydown',e=>{
   if(state!=='playing'){if(e.code==='Escape'&&modal)closeDialog(false);return;}
   if(['Space','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
+  // Намагаємось перехопити CTRL+клавіша, щоб біг не натискав гарячі клавіші браузера (крім зарезервованих на кшталт CTRL+W).
+  if(e.ctrlKey&&['KeyW','KeyA','KeyS','KeyD','KeyR','KeyB','KeyM','KeyG','KeyE','Space'].includes(e.code))e.preventDefault();
   if(e.repeat)return;
   if(e.code==='Escape'){if(modal==='shop'||modal==='pause'||modal==='map')closeDialog();else if(!modal)pause();return;}
   if(e.code==='KeyM'){if(modal==='map')closeDialog();else if(!modal&&!paused)showMapPlan();return;}
   if(e.code==='KeyB'){if(modal==='shop')closeDialog();else if(!modal)openShop();return;}
   if(modal||paused)return;keys.add(e.code);
+  if(e.code==='ControlLeft'||e.code==='ControlRight'){sprintToggle=!sprintToggle;toast(sprintToggle?'БІГ УВІМКНЕНО · повторний CTRL вимикає':'ЗВИЧАЙНИЙ КРОК');}
   if(mpMode){
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
     if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
@@ -1072,4 +1087,4 @@ mpAutoConnect();
 mpCheckInvite();
 
 // Explicitly enabled only by the local browser verification harness.
-if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight:()=>{closeDialog(false);beginFight();},beginCountdown,shoot,purchase:id=>GRENADES[id]?buyGrenade(player,id):purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),cycleGrenade,throwGrenade:throwSelectedGrenade,get:()=>({projectiles,grenadeEffects,selectedGrenade,bomb,state,phase,paused,modal,round,score,kills,deaths,clock,buyRemaining,fightIn,touchFire,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id}),endRound,endMatch,leave,openShop};
+if(new URLSearchParams(location.search).has('test'))window.__sector={start,beginFight:()=>{closeDialog(false);beginFight();},beginCountdown,shoot,purchase:id=>GRENADES[id]?buyGrenade(player,id):purchase(player,id),reload:reloadWeapon,reloadProgress,step:dt=>{update(dt);updateHUD();render();},setClock:n=>clock=n,setPitch:v=>pitch=v,setPaused:v=>paused=v,setPlayer:p=>Object.assign(player,p),cycleGrenade,throwGrenade:throwSelectedGrenade,get:()=>({projectiles,grenadeEffects,selectedGrenade,bomb,state,phase,paused,modal,round,score,kills,deaths,clock,buyRemaining,fightIn,touchFire,reload,reloadTotal,reloadStage,player,actors,gunMotion,aiming,aimProgress:aimProgress(),fov:viewFov(),map:map.id,sprinting:sprinting(),sprintToggle,crouching:crouchHeld()}),endRound,endMatch,leave,openShop};
