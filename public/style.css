@@ -103,3 +103,10 @@
   #touch-shop{left:94px;bottom:86px}
   .hud-bottom{bottom:6px}
 }
+
+#grenade-hud{position:absolute;right:30px;bottom:150px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;max-width:310px;padding:10px 12px;background:#101b18dc;border-right:2px solid #a9bc87;font:10px var(--mono)}
+#grenade-select{pointer-events:auto;background:transparent;color:#dae5cc;font:12px var(--mono);padding:5px 0}#grenade-select.active{color:#c3f66b}#grenade-list{font-size:9px;color:#bfccb2}#grenade-hint{font-size:8px;color:#94a887}
+#touch-grenade{position:absolute;right:245px;bottom:150px;width:48px;height:48px;border-radius:50%;border:1px solid #e5ffc077;background:#17271faa;color:#e5ffc0;pointer-events:auto;touch-action:none;font:20px var(--mono)}
+@media(pointer:coarse){#grenade-hud{right:12px;bottom:245px;max-width:230px;padding:5px 9px;gap:3px}#grenade-hint{display:none}#grenade-select{min-height:35px;font-size:10px}#grenade-list{font-size:8px}#touch-grenade{right:152px;bottom:160px;width:46px;height:46px}}
+@media(pointer:coarse) and (orientation:landscape){#grenade-hud{right:12px;bottom:205px;max-width:250px}#touch-grenade{right:134px;bottom:136px;width:42px;height:42px}}
+.grenade-icon{width:72px;height:76px;filter:drop-shadow(5px 8px 3px #0005)}

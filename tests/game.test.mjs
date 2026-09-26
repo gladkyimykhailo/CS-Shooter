@@ -28,7 +28,7 @@ function fixture(saved={},browser={},serverUrl=''){
   const document=new Element('document');document.innerHTML=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');document.createElement=tag=>new Element(tag);document.exitPointerLock=()=>document.pointerLockElement=null;document.hidden=false;
   const sandbox={document,console,URL,URLSearchParams,location:{search:'?test=1'},innerWidth:320,innerHeight:200,performance:{now:()=>0},matchMedia:()=>({matches:false}),localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},requestAnimationFrame(fn){sandbox.frame=fn;},addEventListener(name,fn){(listeners[name]??=[]).push(fn);}};
   Object.assign(sandbox,browser);sandbox.window=sandbox;const context=vm.createContext(sandbox);
-  const source=['config.js','core.js','tactical.js','art.js','terrain.js','operators.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
+  const source=['config.js','core.js','tactical.js','grenades.js','art.js','terrain.js','operators.js','net.js','peer.js','room-code.js','peer-code.js','game.js','mp.js'].map(f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8').replace(/^import .+?;\s*$/gm,'').replace(/^export /gm,'')).join('\n').replace("const SERVER_URL = '';",`const SERVER_URL = ${JSON.stringify(serverUrl)};`);
   vm.runInContext(source,context,{timeout:10000});
   const key=(code,type='keydown')=>{for(const fn of listeners[type]||[])fn({code,repeat:false,preventDefault(){}});};
   const mouse=(button,type='mousedown')=>{const handlers=type==='mousedown'?document.querySelector('#game').events[type]:listeners[type];for(const fn of handlers||[])fn({button});};
@@ -71,7 +71,7 @@ test('прицілювання працює без анімацій; перез�
 });
 
 test('меню запускає гру, закупівля має категорії та купує зброю й броню',()=>{
-  const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,10);assert.equal(f.document.querySelectorAll('[data-category]').length,7);
+  const f=fixture();assert.equal(f.document.querySelectorAll('.map-card').length,MAPS.length);assert.match(f.document.querySelector('#map-cards').innerHTML,/MIRAGE · PIXEL/);assert.match(f.document.querySelector('#map-cards').innerHTML,/A \/ B · ТОЧКИ/);assert.match(f.document.querySelector('#map-cards').innerHTML,/MID · MID/);f.document.querySelector('#start').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().actors.length,10);assert.equal(f.document.querySelectorAll('[data-category]').length,8);
   f.game.setPlayer({money:2550});  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='sniper').onclick();assert.equal(f.document.querySelectorAll('[data-buy]').length,3);assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='marksman'));assert.ok(f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='scar20'));
   f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='smg').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smg').onclick();f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='gear').onclick();f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='armor').onclick();assert.equal(f.game.get().player.money,650);assert.equal(f.game.get().player.armor,100);
   f.document.querySelector('#shop-ready').onclick();assert.equal(f.game.get().phase,'buy');assert.equal(f.game.get().modal,'');f.game.openShop();assert.equal(f.game.get().modal,'shop');f.game.step(.016);assert.ok(f.drawCalls()>1000,'renderer executes');
@@ -773,4 +773,46 @@ test('боти розходяться різними напрямками зі �
   assert.equal(JSON.stringify(foes.map(a=>a.route)),plans,'plans do not reroll every frame');
   f.game.endRound(0);f.tick(3.6);
   assert.notEqual(JSON.stringify(foes.map(a=>a.route)),plans,'a new round assigns fresh positions');
+});
+
+test('grenade shop, selection, throwing and round inventory lifecycle use real UI',()=>{
+  const f=fixture();f.game.start();f.game.setPlayer({money:2000});
+  f.document.querySelectorAll('[data-category]').find(b=>b.dataset.category==='grenades').onclick();
+  assert.equal(f.document.querySelectorAll('[data-buy]').length,5);
+  assert.ok(!f.document.querySelectorAll('[data-buy]').some(b=>b.dataset.buy==='molotov'));
+  f.document.querySelectorAll('[data-buy]').find(b=>b.dataset.buy==='smoke').onclick();
+  assert.equal(f.game.get().player.grenades.smoke,1);
+  f.document.querySelector('#shop-close').onclick();f.key('Digit4');assert.equal(f.game.get().selectedGrenade,'smoke');
+  f.key('KeyG');assert.equal(f.game.get().projectiles.length,0,'cannot throw during freeze time');
+  f.game.beginFight();f.key('Digit4');f.mouse(2);assert.equal(f.game.get().projectiles.length,1);assert.equal(f.game.get().player.grenades.smoke,0);assert.equal(f.game.get().selectedGrenade,null);assert.equal(f.game.get().aiming,false);
+  f.game.purchase('he');f.key('Digit4');f.key('Digit2');assert.equal(f.game.get().selectedGrenade,null);
+  f.game.setPlayer({hp:0});f.key('KeyG');assert.equal(f.game.get().player.grenades.he,1);
+  f.game.endRound(0);f.tick(4);assert.equal(f.game.get().projectiles.length,0);assert.equal(f.game.get().grenadeEffects.length,0);assert.equal(Object.keys(f.game.get().player.grenades).length,0);
+});
+
+test('grenades pause with match, survive a won round and render on desktop and touch',()=>{
+  for(const touch of [false,true]){
+    const f=fixture({}, {matchMedia:()=>({matches:touch})});f.game.start();f.game.purchase('he');f.game.purchase('flashbang');f.game.beginFight();
+    f.document.querySelector('#grenade-select').onclick();f.game.step(.01);assert.equal(f.game.get().selectedGrenade,'he');
+    const event={pointerId:1,preventDefault(){}};for(const fn of f.document.querySelector('#touch-grenade').events.pointerdown)fn(event);
+    const shot=f.game.get().projectiles[0];assert.ok(shot);const age=shot.age;f.game.setPaused(true);f.tick(.5);assert.equal(shot.age,age);f.game.setPaused(false);
+    f.game.step(.1);assert.ok(shot.age>age);
+    f.game.endRound(0);f.tick(4);assert.equal(f.game.get().player.grenades.flashbang,1);assert.equal(f.game.get().projectiles.length,0);
+  }
+});
+
+test('blind bots cannot shoot and smoke conceals enemies from their targeting',()=>{
+  const f=fixture({map:1});f.game.start();f.game.beginFight();f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
+  const {player,actors,grenadeEffects}=f.game.get(),enemy=actors.find(a=>a.team!==player.team);
+  actors.filter(a=>a!==enemy&&a!==player).forEach(a=>a.hp=0);
+  Object.assign(enemy,{x:20.5,y:11.5,blind:3,cooldown:0,seen:2});f.tick(.1);assert.equal(enemy.shots,0);
+  enemy.blind=0;grenadeEffects.push({kind:'smoke',x:20.5,y:10,z:0,radius:2.7,left:18,duration:18});f.tick(.1);assert.equal(enemy.shots,0);assert.equal(enemy.seen,0);
+  f.game.step(.01);
+});
+
+test('fire bypasses armor and a self elimination gives no money or frag',()=>{
+  const f=fixture();f.game.start();f.game.beginFight();f.game.setPlayer({hp:1,armor:100});
+  const {player,grenadeEffects}=f.game.get(),money=player.money;
+  grenadeEffects.push({kind:'fire',x:player.x,y:player.y,z:player.z+.06,radius:2.4,left:7,duration:7,owner:player});
+  f.tick(.1);assert.equal(player.hp,0);assert.equal(player.armor,100);assert.equal(player.money,money);assert.equal(f.game.get().kills,0);assert.equal(f.game.get().deaths,1);
 });
