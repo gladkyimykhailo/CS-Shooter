@@ -120,6 +120,21 @@
 @media(pointer:coarse){#grenade-hud{right:12px;bottom:245px;max-width:230px;padding:5px 9px;gap:3px}#grenade-hint{display:none}#grenade-select{min-height:35px;font-size:10px}#grenade-list{font-size:8px}#touch-grenade{right:152px;bottom:160px;width:46px;height:46px}}
 @media(pointer:coarse) and (orientation:landscape){#grenade-hud{right:12px;bottom:205px;max-width:250px}#touch-grenade{right:134px;bottom:136px;width:42px;height:42px}}
 .grenade-icon{width:72px;height:76px;filter:drop-shadow(5px 8px 3px #0005)}
+
+/* Class roster: the same uniform palettes are used in preview and combat. */
+.class-intro{color:var(--muted);font-size:14px;line-height:1.6;max-width:760px}
+.class-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:24px 0 32px}
+.class-card{display:flex;flex-direction:column;align-items:stretch;text-align:left;border:1px solid var(--line);background:linear-gradient(145deg,color-mix(in srgb,var(--class-color) 25%,#101615),#141c19);padding:0;overflow:hidden;transition:border-color .15s,transform .15s}
+.class-card:hover{border-color:var(--class-accent);transform:translateY(-3px)}
+.class-card.selected{border:2px solid var(--class-accent);box-shadow:0 0 0 2px #ffffff09}
+.class-card canvas{width:100%;height:150px;object-fit:contain;image-rendering:pixelated;background:linear-gradient(0deg,#10161544,transparent)}
+.class-card-body{display:flex;flex-direction:column;gap:8px;padding:14px;border-top:1px solid #ffffff15}
+.class-card-body small{font:9px var(--mono);color:var(--class-accent);letter-spacing:1px}
+.class-card-body strong{font-size:17px}.class-card-body span{font:11px var(--mono);color:#c2ccc3}.class-card-body b{font-size:12px;color:var(--class-accent)}
+.class-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}.class-stats>div{display:flex;flex-direction:column;gap:8px;padding:14px;background:#101615;border:1px solid var(--line)}.class-stats>div:last-child{grid-column:1/-1}.class-stats small{font:10px var(--mono);color:var(--muted)}.class-stats b{font-size:23px;color:var(--lime)}
+.class-note{font-size:12px!important;line-height:1.6}.class-launch{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;padding:18px 22px;margin-top:24px;background:var(--panel);border:1px solid var(--line);text-align:left}.class-launch span{display:flex;flex-direction:column;gap:8px;font:10px var(--mono);color:var(--muted)}.class-launch b{font:14px Arial,sans-serif;color:var(--text)}.class-launch strong{font:11px var(--mono);color:var(--lime)}#hud-class{color:var(--lime)}
+@media(max-width:1000px){.class-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.class-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.class-card canvas{height:130px}.class-card-body{padding:10px}.class-card-body strong{font-size:15px}.class-card-body span{font-size:10px}.class-launch{align-items:flex-start;flex-direction:column}.class-stats b{font-size:20px}}
 </style>
   <style>
     body.no-online .online-block { display: none !important; }
@@ -143,6 +158,7 @@
         </div>
         <div class="section-heading"><div><span class="eyebrow">ОБЕРИ МІСЦЕ ЗУСТРІЧІ</span><h2>ПІКСЕЛЬНА РОТАЦІЯ<span id="map-count">09</span></h2></div><span class="section-note">КОЖНА МАПА — НОВА ТАКТИКА</span></div>
         <div id="map-cards" class="map-cards"></div>
+        <button id="class-open" class="class-launch"><span>ТВІЙ КЛАС <b id="selected-class">Штурмовик</b></span><strong>ЗМІНИТИ БІЙЦЯ →</strong></button>
         <div class="launch-bar"><div class="mode-badge">⌖</div><div class="mode-info"><b>ЗНЕШКОДЖЕННЯ · 5 НА 5</b><span>До 13 перемог · зміна сторін після 12 раундів</span></div><label class="difficulty-label">КОМАНДА<select id="team-select"><option value="0">CT · Спецпризначенці</option><option value="1">T · Терористи</option></select></label><label class="difficulty-label">СКЛАДНІСТЬ<select id="difficulty"><option value="easy">Новачок</option><option value="normal" selected>Боєць</option><option value="hard">Ветеран</option></select></label><button id="start" class="primary">РОЗПОЧАТИ <span>→</span></button></div>
         <div class="bottom-info"><span><kbd>W A S D</kbd> Рух <kbd>МИША</kbd> Приціл <kbd>B</kbd> ЗАКУПІВЛЯ</span><button id="map-plan-open" class="text-button">СХЕМА МАПИ · M ↗</button><button id="help-open" class="text-button">УСЕ КЕРУВАННЯ ↗</button></div>
       </section>
@@ -214,7 +230,12 @@
           </div>
         </div>
       </section>
-      <section id="tab-operator" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ТВІЙ ПОЗИВНИЙ — CT</span><h2>ОПЕРАТОР</h2></div></div><div class="operator-layout"><div class="operator-preview"><canvas id="operator-canvas" width="480" height="520"></canvas><span>CT / ШТУРМОВИК</span></div><div class="operator-options"><h3>ЗБЕРИ СВІЙ ОБРАЗ</h3><p>Вигляд змінює стиль. Характеристики залишаються однаковими.</p><label>ФОРМА</label><div id="skin-options" class="option-row"></div><label>РУКАВИЧКИ</label><div id="glove-options" class="option-row"></div><div class="saved-note">✓ Вибір зберігається автоматично</div><button class="primary" data-go-play>ОБРАТИ МАПУ <span>→</span></button></div></div></section>
+      <section id="tab-operator" class="tab" hidden>
+        <div class="section-heading"><div><span class="eyebrow">10 КЛАСІВ · 30 ВАРІАНТІВ ФОРМИ</span><h2>ОБЕРИ СВОГО БІЙЦЯ</h2></div><span class="section-note">ЗДОРОВ’Я · ШВИДКІСТЬ · СТАРТОВА ЗБРОЯ</span></div>
+        <p class="class-intro">Міцність танка чи швидкість розвідника? Обери клас перед матчем. Стартова зброя видається безкоштовно на обох сторонах.</p>
+        <div id="class-options" class="class-grid" role="group" aria-label="Класи персонажів"></div>
+        <div class="operator-layout"><div class="operator-preview"><canvas id="operator-canvas" width="480" height="520"></canvas><span id="operator-name">ШТУРМОВИК</span></div><div class="operator-options"><h3>ТВІЙ КОМПЛЕКТ</h3><p id="class-description"></p><div id="class-stats" class="class-stats"></div><p class="class-note">100% — звичайна швидкість. Бонус класу діє на крок, біг і присідання. У Штурмовика за T стартовий пістолет — Glock-18.</p><label>СКІН КЛАСУ</label><div id="skin-options" class="option-row"></div><label>РУКАВИЧКИ</label><div id="glove-options" class="option-row"></div><div class="saved-note">✓ Клас і вигляд зберігаються автоматично · зміна діє з наступного матчу</div><button class="primary" data-go-play>ОБРАТИ МАПУ <span>→</span></button></div></div>
+      </section>
       <section id="tab-settings" class="tab" hidden><div class="section-heading"><div><span class="eyebrow">ПІД СЕБЕ</span><h2>НАЛАШТУВАННЯ</h2></div></div><div class="settings-panel"><label>Чутливість миші <input id="sensitivity" type="range" min="0.3" max="2.5" step="0.1" value="1"></label><label>Гучність ефектів <input id="volume" type="range" min="0" max="1" step="0.05" value="0.5"></label><label>Якість зображення<select id="quality"><option value="low">Продуктивність</option><option value="high">Висока</option></select></label><label>Рух зброї та віддача камери<input id="motion" type="checkbox" checked></label><p>Налаштування зберігаються на цьому пристрої. Для керування мишею натисни на ігровий екран. Esc звільняє курсор і ставить гру на паузу.</p><button id="credits-open" class="secondary">АВТОРИ ТА РЕСУРСИ ↗</button></div></section>
     </main>
     <footer><span>СЕКТОР © 2026</span><span>НЕОФІЦІЙНИЙ БРАУЗЕРНИЙ ПРОТОТИП</span><button id="footer-credits" class="text-button">ПРО ГРУ ↗</button></footer>
@@ -228,7 +249,7 @@
     <div id="grenade-hud"><button id="grenade-select" aria-label="Обрати наступну гранату">ГРАНАТИ · 4</button><span id="grenade-list"></span><small id="grenade-hint">G — ШВИДКИЙ КИДОК</small></div>
     <div id="game-message" class="game-message"></div>
     <div id="buy-tip" class="buy-tip"><kbd>B</kbd> ЗАКУПІВЛЯ <span>· ПЕРШІ 30 СЕКУНД РАУНДУ</span></div>
-    <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ <kbd>E</kbd> C4</div><div class="weapon-info"><small id="weapon-name">USP-S</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">$ 800</b></div></div>
+    <div class="hud-bottom"><div class="vitals" aria-label="Стан бійця"><div class="health-readout"><span class="health-icon">+</span><div><small>ЗДОРОВʼЯ</small><strong><b id="health">100</b><em>/ <span id="health-max">100</span> HP</em></strong></div></div><div class="health-bar" aria-hidden="true"><i id="health-bar" style="width:100%"></i></div><div class="armor-readout"><small>БРОНЯ</small><b id="armor">0</b></div></div><div class="hud-help"><span id="hud-class">Штурмовик</span> · <kbd>R</kbd> ПЕРЕЗАРЯДИТИ <kbd>1 / 2</kbd> ЗБРОЯ <kbd>E</kbd> C4</div><div class="weapon-info"><small id="weapon-name">USP-S</small><div><strong id="ammo">12</strong><span>/ <b id="reserve">36</b></span></div><b id="money">$ 800</b></div></div>
     <div id="touch-controls" hidden><div id="joystick"><span></span></div><button id="touch-aim" aria-label="Прицілювання" aria-pressed="false">⌖</button><button id="touch-fire">◎</button><button id="touch-jump" aria-label="Стрибок">↑</button><button id="touch-use" aria-label="Утримуй для взаємодії з C4">E</button><button id="touch-grenade" aria-label="Кинути гранату">G</button><button id="touch-reload">R</button><button id="touch-weapon" aria-label="Змінити зброю">⇄</button><button id="touch-shop">B</button></div>
   </div>
   <div id="overlay" class="overlay" hidden><section id="dialog" class="dialog" role="dialog" aria-modal="true" aria-label="Меню гри"></section></div>
@@ -275,6 +296,34 @@ const WEAPONS = {
   negev: { name: 'Negev', type: 'КУЛЕМЕТ', price: 1700, damage: 25, size: 150, rate: .08, reload: 5.5, spread: .03, pellets: 1, automatic: true, icon: '▰▪▪▪', description: 'Стіна свинцю. 25 шкоди · 150 патронів' },
   m249: { name: 'M249', type: 'КУЛЕМЕТ', price: 5200, damage: 25, size: 100, rate: .08, reload: 4.5, spread: .028, pellets: 1, automatic: true, icon: '▰▰▪▪', description: 'Точний кулемет. 25 шкоди · 100 патронів' }
 };
+// Class stats are shared by solo play, the room server and WebRTC hosts.
+const CLASSES = [
+  {id:'assault',name:'Штурмовик',hp:100,speed:1,weapon:'pistol',color:'#657f67',accent:'#c3f66b',skin:'Лісовий дозор',description:'Універсальний боєць без штрафу до руху.'},
+  {id:'tank',name:'Танк',hp:160,speed:.75,weapon:'deagle',color:'#657080',accent:'#ffca68',skin:'Сталева фортеця',description:'Більше здоров’я, важкий пістолет, повільний рух.'},
+  {id:'scout',name:'Розвідник',hp:80,speed:1.25,weapon:'p250',color:'#409b89',accent:'#b4ffe5',skin:'Бірюзовий слід',description:'Найшвидший у загоні, але витримує менше влучань.'},
+  {id:'ghost',name:'Тінь',hp:90,speed:1.15,weapon:'pistol',color:'#685a8e',accent:'#d5b5ff',skin:'Фіолетовий туман',description:'Легкий боєць із USP-S для швидкої зміни позиції.'},
+  {id:'duelist',name:'Дуелянт',hp:95,speed:1.10,weapon:'dualies',color:'#a44d65',accent:'#ffb9ca',skin:'Багряний азарт',description:'Dual Berettas і швидкий рух для ближніх дуелей.'},
+  {id:'guardian',name:'Вартовий',hp:140,speed:.85,weapon:'fiveseven',color:'#4778a3',accent:'#aedcff',skin:'Синя варта',description:'Міцний захисник із містким магазином Five-SeveN.'},
+  {id:'raider',name:'Рейдер',hp:105,speed:1.05,weapon:'tec9',color:'#b0783e',accent:'#ffda9c',skin:'Піщаний рейд',description:'Tec-9 та невеликий запас здоров’я для наступу.'},
+  {id:'storm',name:'Штурм',hp:110,speed:.95,weapon:'cz75',color:'#a14f39',accent:'#ffb276',skin:'Мідна буря',description:'Автоматичний CZ75 і міцність ціною швидкості.'},
+  {id:'sniper',name:'Снайпер',hp:85,speed:.95,weapon:'marksman',color:'#79939d',accent:'#e0f6ff',skin:'Полярний приціл',description:'SSG 08 з оптикою на старті, менше здоров’я.'},
+  {id:'breacher',name:'Пролом',hp:125,speed:.90,weapon:'shotgun',color:'#92913e',accent:'#f2f49d',skin:'Жовтий шершень',description:'Дробовик Nova для прориву на короткій дистанції.'}
+];
+function getClass(id){return CLASSES.find(c=>c.id===id)||CLASSES[0];}
+function classWeapon(id,team=0){const c=getClass(id);return c.id==='assault'&&team===1?'glock':c.weapon;}
+function classLoadout(id,team=0){
+  const c=getClass(id),weapon=classWeapon(c.id,team),pistol=WEAPONS[weapon].type==='ПІСТОЛЕТ';
+  const sidearm=pistol?weapon:team===1?'glock':'pistol',primary=pistol?null:weapon;
+  const inventory={};for(const gun of new Set([weapon,sidearm]))inventory[gun]={ammo:WEAPONS[gun].size,reserve:WEAPONS[gun].size*3};
+  return {classId:c.id,maxHp:c.hp,hp:c.hp,sidearm,primary,weapon,inventory};
+}
+function classAppearance(id,variant=0){
+  const c=getClass(id),v=Number.isInteger(variant)&&variant>=0&&variant<3?variant:0;
+  const channels=c.color.slice(1).match(/../g).map(n=>parseInt(n,16));
+  const color='#'+channels.map(n=>Math.round(v===1?n*.52:v===2?n*.45+140:n).toString(16).padStart(2,'0')).join('');
+  return {color,accent:c.accent,name:v===0?c.skin:v===1?'Нічний патруль':'Арктичний камуфляж'};
+}
+
 // A tile-based adaptation of the supplied Mirage floor-plan reference.
 // Rooms are carved from solid masonry, so routes cannot bypass the buildings.
 const mirageRooms = [
@@ -812,7 +861,7 @@ function purchase(player,id){
   }
   const w=WEAPONS[id];if(!w||!w.price)return {ok:false,message:'Недоступна зброя'};
   if(w.side==='ct'&&player.team!==0||w.side==='t'&&player.team!==1)return {ok:false,message:'Зброя іншої сторони'};
-  if(player.primary===id)return {ok:false,message:'Уже в спорядженні'};
+  if(player.primary===id||player.sidearm===id)return {ok:false,message:'Уже в спорядженні'};
   if(player.money<w.price)return {ok:false,message:'Недостатньо грошей'};
   if(player.primary)delete player.inventory[player.primary];
   player.money-=w.price;player.primary=id;player.weapon=id;player.inventory[id]={ammo:w.size,reserve:w.size*3};return {ok:true};
@@ -1218,7 +1267,7 @@ function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   r(49,101,56,12,'#212b2c');r(68,90,31,12,'#36443f');r(94,104,32,6,'#192528');r(70,112,11,20,'#172323');r(59,105,4,4,accent);r(48,102,13,7,'#4f5b51');
   return cv;
 }
-function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
+function drawOperator(canvas,skin,glove,look=null){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(look?.color||SKINS[skin].color,look?.accent||'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-w*.23,h*.048,w*.46,h*.91);}
 const WEAPON_FILES = { pistol:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAATElEQVR4nGNgoCf4f4vhPwwTVIALg5RhGIKugBiMYQBMYmZaGhiTbADMEGIMwOkFYp2OEYjYNBMISMzQJ2gLPoBsAMmakcOALM2UAgB/E7syf4HG/wAAAABJRU5ErkJggg==', smg:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAALCAYAAACksgdhAAAAOUlEQVR4nGNgoAX4f4vhPwzjlUTHIGkMTciSuDCGbYQ0IGukrk3IfKL8hC0ASAo9rDbgA3htIAcAANEVmFAdRs2NAAAAAElFTkSuQmCC', rifle:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAWklEQVR4nGNgGCjw/xbDfxjGK0kMBmnBahhMEobR+bgwhmEwjTPT0sAYmQ3jo4vBxHEahOwidEOJchEIIxuEy3tYwgt7GGELVJwuIBRrWKIZMzxIBXi9QgsAAMjC4eJ5pMAwAAAAAElFTkSuQmCC', shotgun:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAR0lEQVR4nGNgoBX4f4vhP6kYp2aQELEYwyA0CcoNguGZaWkEMU6DiNFMkkG4XIXsdTQaf0yRHEa4kgGyYqKiH5dBRCumJgAAnQn7tQIgoSQAAAAASUVORK5CYII=', kalash:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAALCAYAAAByF90EAAAAY0lEQVR4nGNgGNRAWUP7P6m4qqHkP4ohea6qYEErR1eceFWFG1bDUAzpijKGS/CLCON0AUgOHaMYArINxAfRMD4MK2tpojofGwAZhM5HxyCDiDIMHwC5DhwR1DAMBga3YehiAMi4dBfpjcEDAAAAAElFTkSuQmCC' };
 // Текстури зброї з itch.io (AystarGames, CC0). У середовищі без DOM (тести) повертає {}.
 function loadWeaponSprites(){
@@ -1245,7 +1294,7 @@ function drawScopeOverlay(c,w,h,id,alpha=1){
 // Rear view down the barrel. The front sight's tip is exactly (0, 0),
 // matching the screen-centre ray used for hit detection.
 function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
-  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun';
+  const pistol=WEAPONS[id]?.type==='ПІСТОЛЕТ',ak=id==='kalash',shotgun=id==='shotgun';
   const shape=(points,color)=>{poly(c,points,color);c.strokeStyle='#11191f';c.lineWidth=2;c.lineJoin='round';c.stroke();};
   const line=(points,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();};
   const body=pistol?40:id==='smg'?48:shotgun?54:ak?56:60,front=pistol?12:18,kick=flash>0?flash*6:0;
@@ -1296,7 +1345,7 @@ function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
 // Large, continuous silhouettes with visible upper faces and separate grips.
 // Coordinates run from the muzzle on the left to the stock on the right.
 function drawHeldWeapon(c,id,{skin,glove,ads=0,reload=0,flash=0}={}){
-  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun',scoped=id==='marksman'||id==='sniper';
+  const pistol=WEAPONS[id]?.type==='ПІСТОЛЕТ',ak=id==='kalash',shotgun=id==='shotgun',scoped=id==='marksman'||id==='sniper';
   const metal='#39444c',edge='#82919a',dark='#1b232b',wood='#95572d';
   const shape=(points,color)=>{
     poly(c,points,color);c.strokeStyle='#101820';c.lineWidth=2;c.lineJoin='round';c.stroke();
@@ -1550,7 +1599,7 @@ function operatorParts(a,time=0,motion=true){
   box(.138,0,.952,.025,.20,.065,'visor',true);
   box(.143,0,.888,.035,.17,.06,'boot',true);
   box(-.015,-.14,.92,.115,.045,.115,'boot',true);
-  const pistol=a.weapon==='pistol',long=['sniper','marksman'].includes(a.weapon);
+  const pistol=WEAPONS[a.weapon]?.type==='ПІСТОЛЕТ',long=['sniper','marksman'].includes(a.weapon);
   box(.24,.09,.60,.15,.075,.085,'gun');
   box(.34,.09,.66,pistol?.22:.38,.07,.075,'gun');
   if(!pistol){box(.33,.09,.595,.065,.06,.13,'gun');box(.40,.09,.71,.19,.035,.035,'gun');}
@@ -1636,7 +1685,8 @@ function drawOperators(ctx,map,actors,view,options){
     const dx=a.x-view.x,dy=a.y-view.y,depth=dx*ca+dy*sa,side=-dx*sa+dy*ca;
     if(depth<-.9||Math.abs(side)>Math.max(0,depth)*w/(2*projection)+1)continue;
     const z=actorHeight(map,a),ac=Math.cos(a.angle),as=Math.sin(a.angle);
-    const palette={uniform:a.team===0?skin:'#aa7853',accent:a.team===0?'#c3f66b':'#ffbd73',helmet:a.team===0?skin:'#85644b',armor:'#303c38',pack:'#485249',boot:'#202925',visor:'#80b7bd',glove,gun:'#343d3e',flash:'#ffeaa0'};
+    const look=classAppearance(a.classId,a.skin);
+    const palette={uniform:look.color,accent:a.team===0?'#c3f66b':'#ffbd73',helmet:look.color,armor:tint(look.color,.48),pack:tint(look.color,.7),boot:'#202925',visor:look.accent,glove:GLOVES[a.glove||0]?.color||glove,gun:'#343d3e',flash:'#ffeaa0'};
     for(const p of operatorParts(a,time,motion)){
       const vertices=signs.map(([sx,sy,sz])=>{
         const lx=p.x+sx*p.dx/2,ly=p.y+sy*p.dy/2;
@@ -1658,6 +1708,7 @@ function drawOperators(ctx,map,actors,view,options){
   return labels;
 }
 
+
 // Спільна логіка мультиплеєра: протокол, кімнати, життєвий цикл матчу.
 // Чистий модуль без DOM і Node API — використовується браузером, server.mjs і тестами.
 const MP = {
@@ -1673,7 +1724,7 @@ const MP = {
 // Типи повідомлень клієнт -> сервер
 const C2S = {
   HELLO: 'hello', LIST: 'list', CREATE: 'create', JOIN: 'join', JOIN_CODE: 'joinCode',
-  LEAVE: 'leave', READY: 'ready', START: 'start', STATE: 'state', SHOOT: 'shoot', CHAT: 'chat',
+  LOADOUT: 'loadout', LEAVE: 'leave', READY: 'ready', START: 'start', STATE: 'state', SHOOT: 'shoot', CHAT: 'chat',
 };
 // Типи повідомлень сервер -> клієнт
 const S2C = {
@@ -1716,8 +1767,23 @@ function makePlayer(id, nick, team) {
     id, nick: sanitizeNick(nick), team, ready: false,
     alive: true, hp: 100, armor: 0, x: 0, y: 0, angle: 0, moving: false,
     weapon: 'pistol', ammo: 12, reloadingUntil: 0, kills: 0, deaths: 0, respawnIn: 0,
-    lastShotAt: 0, flashAt: 0,
+    lastShotAt: 0, flashAt: 0, classId:'assault',maxHp:100,skin:0,glove:0,
   };
+}
+
+// Only the lobby can change class; health/speed are never accepted from clients.
+function setPlayerLoadout(room,id,msg){
+  const p=room.players[id];
+  if(!p||!['lobby','finished'].includes(room.phase))return false;
+  p.classId=getClass(msg.classId).id;
+  p.skin=Number.isInteger(msg.skin)&&msg.skin>=0&&msg.skin<3?msg.skin:0;
+  p.glove=Number.isInteger(msg.glove)&&msg.glove>=0&&msg.glove<3?msg.glove:0;
+  p.maxHp=getClass(p.classId).hp;p.ready=false;
+  return true;
+}
+function resetPlayerLoadout(p){
+  Object.assign(p,classLoadout(p.classId,p.team));
+  p.ammo=WEAPONS[p.weapon].size;p.reloadingUntil=0;
 }
 
 // Публічний опис кімнати для списку. Код приватної кімнати НЕ розкриваємо.
@@ -1791,7 +1857,7 @@ function matchTick(room, dt) {
     if (!p.alive) {
       p.respawnIn -= dt;
       if (p.respawnIn <= 0) {
-        p.alive = true; p.hp = 100; p.respawnIn = 0;
+        p.alive = true; resetPlayerLoadout(p); p.respawnIn = 0;
         events.push({ t: 'respawn', id: p.id });
       }
     }
@@ -1837,8 +1903,8 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
     const mates=Object.values(room.players).filter(q=>q.team===p.team);
     [p.x,p.y]=positions[mates.indexOf(p)%positions.length];
     resetActorHeight(MAPS[room.mapId],p);
-    p.angle=p.team?3.8:.72;p.hp=100;p.alive=true;p.moving=false;
-    p.weapon='pistol';p.ammo=12;p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
+    p.angle=p.team?3.8:.72;resetPlayerLoadout(p);p.alive=true;p.moving=false;
+    p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
   }
   function finish(events){
     if(events.length)broadcast({t:S2C.EVENTS,events});
@@ -1865,6 +1931,7 @@ function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
       if(!msg||typeof msg.t!=='string'||!Object.hasOwn(room.players,id))return;
       const p=room.players[id];
       switch(msg.t){
+        case C2S.LOADOUT: if(setPlayerLoadout(room,id,msg))publish();break;
         case C2S.READY: if(setReady(room,id,msg.ready))publish();break;
         case C2S.START:
           if(!canStart(room,id)){error(id,'Потрібні щонайменше двоє гравців і готовність усіх');break;}
@@ -2192,11 +2259,12 @@ function createPeerCodeClient(url,handlers,dependencies={}){
 
 
 
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('#minimap'),mc=mini.getContext('2d');
 const minimapBackgrounds=new WeakMap();
-const settings={skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mapKey:'mirage',mpNick:'',mpServer:''};
+const settings={classId:'assault',skin:0,glove:0,sensitivity:1,volume:.5,quality:'high',motion:true,difficulty:'normal',map:0,mapKey:'mirage',mpNick:'',mpServer:''};
 try{
   const saved=JSON.parse(localStorage.getItem('sector-settings')||'{}');
   for(const k in settings)if(typeof saved[k]===typeof settings[k])settings[k]=saved[k];
@@ -2205,6 +2273,7 @@ try{
   const key=saved.mapKey||(saved.map===9?'dust2':'mirage');
   settings.map=Math.max(0,MAPS.findIndex(m=>m.id===key));
 }catch{}
+settings.classId=getClass(settings.classId).id;
 settings.skin=clamp(Math.floor(settings.skin),0,2);settings.glove=clamp(Math.floor(settings.glove),0,2);settings.map=clamp(Math.floor(settings.map),0,MAPS.length-1);settings.sensitivity=clamp(settings.sensitivity,.3,2.5);settings.volume=clamp(settings.volume,0,1);
 const save=()=>{try{settings.mapKey=MAPS[settings.map].id;localStorage.setItem('sector-settings',JSON.stringify(settings));}catch{}};
 let map=MAPS[settings.map],wallTextures=[];
@@ -2249,13 +2318,24 @@ function renderCards(){
   $('#map-cards').innerHTML=MAPS.map((m,i)=>`<button class="map-card ${settings.map===i?'selected':''}" data-map="${i}" aria-pressed="${settings.map===i}"><div class="map-image"><canvas width="600" height="280" aria-label="${m.name}"></canvas><span class="map-number">${String(i+1).padStart(2,'0')} / ${count}</span><span class="map-check">${settings.map===i?'✓':''}</span></div><div class="map-detail"><h3>${m.name}</h3><p>${m.desc}</p><div class="map-tags"><span>A / B · ТОЧКИ</span><span>MID · ${m.mid.name} ↗</span></div></div></button>`).join('');
   $$('.map-card').forEach((card,i)=>{mapArt(card.querySelector('canvas'),MAPS[i]);card.onclick=()=>{settings.map=i;map=MAPS[i];save();renderCards();mapArt($('#hero-canvas'),map,true);};});
 }
-function renderOperator(){
-  $('#skin-options').innerHTML=SKINS.map((s,i)=>`<button class="option ${settings.skin===i?'selected':''}" data-skin="${i}"><i style="background:${s.color}"></i>${s.name}</button>`).join('');
-  $('#glove-options').innerHTML=GLOVES.map((s,i)=>`<button class="option ${settings.glove===i?'selected':''}" data-glove="${i}"><i style="background:${s.color}"></i>${s.name}</button>`).join('');
-  $$('[data-skin]').forEach(b=>b.onclick=()=>{settings.skin=Number(b.dataset.skin);save();renderOperator();});
-  $$('[data-glove]').forEach(b=>b.onclick=()=>{settings.glove=Number(b.dataset.glove);save();renderOperator();});
-  drawOperator($('#operator-canvas'),settings.skin,settings.glove);
+function syncClassSelection(){
+  if(mpRoom&&mpRoom.phase!=='playing')mpClient?.send({t:C2S.LOADOUT,classId:settings.classId,skin:settings.skin,glove:settings.glove});
 }
+function renderOperator(){
+  const selected=getClass(settings.classId),look=classAppearance(selected.id,settings.skin);
+  $('#class-options').innerHTML=CLASSES.map((c,i)=>`<button class="class-card ${c.id===selected.id?'selected':''}" data-class="${c.id}" aria-pressed="${c.id===selected.id}" style="--class-color:${c.color};--class-accent:${c.accent}"><canvas width="150" height="180" aria-hidden="true"></canvas><span class="class-card-body"><small>ОПЕРАТОР ${String(i+1).padStart(2,'0')}</small><strong>${c.name}</strong><span>${c.hp} HP · РУХ ${Math.round(c.speed*100)}%</span><b>${WEAPONS[c.weapon].name}</b></span></button>`).join('');
+  $$('[data-class]').forEach((b,i)=>{drawOperator(b.querySelector('canvas'),0,settings.glove,classAppearance(CLASSES[i].id));b.onclick=()=>{settings.classId=b.dataset.class;save();syncClassSelection();renderOperator();};});
+  $('#operator-name').textContent=selected.name.toUpperCase();
+  $('#class-description').textContent=selected.description;
+  $('#class-stats').innerHTML=`<div><small>ЗДОРОВ’Я</small><b>${selected.hp} HP</b></div><div><small>ШВИДКІСТЬ</small><b>${Math.round(selected.speed*100)}%</b></div><div><small>СТАРТОВА ЗБРОЯ</small><b>${WEAPONS[selected.weapon].name}</b></div>`;
+  $('#skin-options').innerHTML=[0,1,2].map(i=>{const s=classAppearance(selected.id,i);return `<button class="option ${settings.skin===i?'selected':''}" data-skin="${i}" aria-pressed="${settings.skin===i}"><i style="background:${s.color}"></i>${s.name}</button>`;}).join('');
+  $('#glove-options').innerHTML=GLOVES.map((s,i)=>`<button class="option ${settings.glove===i?'selected':''}" data-glove="${i}" aria-pressed="${settings.glove===i}"><i style="background:${s.color}"></i>${s.name}</button>`).join('');
+  $$('[data-skin]').forEach(b=>b.onclick=()=>{settings.skin=Number(b.dataset.skin);save();syncClassSelection();renderOperator();});
+  $$('[data-glove]').forEach(b=>b.onclick=()=>{settings.glove=Number(b.dataset.glove);save();syncClassSelection();renderOperator();});
+  $('#selected-class').textContent=`${selected.name} · ${selected.hp} HP · ${WEAPONS[classWeapon(selected.id,Number($('#team-select').value)||0)].name}`;
+  drawOperator($('#operator-canvas'),settings.skin,settings.glove,look);
+}
+
 function tab(name){$$('.tab').forEach(e=>e.hidden=e.id!==`tab-${name}`);$$('.nav').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='operator')renderOperator();if(name==='mp')mpTabOpened();}
 $$('.nav').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('[data-go-play]').forEach(b=>b.onclick=()=>tab('play'));
 for(const key of ['sensitivity','volume','quality','motion','difficulty']){const e=$(`#${key}`);if(e.type==='checkbox')e.checked=settings[key];else e.value=settings[key];e.addEventListener('input',()=>{settings[key]=e.type==='checkbox'?e.checked:e.type==='range'?Number(e.value):e.value;save();if(key==='quality')resize();});}
@@ -2273,33 +2353,33 @@ function showMapPlan(){
   mapArt($('#map-plan'),map,true);$('.dialog-close').onclick=()=>closeDialog(state==='playing');
 }
 $('#map-plan-open').onclick=showMapPlan;
-function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені оператори — CT, помаранчеві — T.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['4','Обрати / змінити гранату'],['ЛКМ / ПКМ з гранатою','Дальній / короткий кидок'],['G','Швидко кинути гранату'],['B','Закупівля в перші 30 секунд раунду'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Біг: утримуй або натисни раз для вкл/викл'],['C','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>Біг на CTRL: звичайний крок — 3,3, тихий крок і присідання — 1,8, біг — 5,2. Біг вимикається прицілюванням (ПКМ), Shift, C і роботою з C4. Увага браузера: не тримай CTRL разом із W, бо CTRL+W закриває вкладку — натисни CTRL один раз, щоб увімкнути біг, і біжи на WASD, повторне натискання вимикає.</p><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Гранати доступні у грі з ботами: B → ГРАНАТИ, максимум 4, серед них до 2 світлошумових. На телефоні натисни список гранат, щоб обрати, і кнопку G, щоб кинути. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
+function help(){dialog('help',header('ПОЛЬОВИЙ ДОВІДНИК','КЕРУВАННЯ')+`<p>CT захищають точки A/B, T встановлюють C4. Тримай E стоячи на точці з C4 або біля встановленої бомби за CT. Встановлення — 3,2 с, вибух — через 40 с, знешкодження — 10 с або 5 с із набором. Матч до 13 перемог, зміна сторін після 12 раундів; 12:12 — нічия. Зелені командні нашивки — CT, помаранчеві — T. Колір форми залежить від класу.</p><div class="control-list">${[['W A S D','Рух'],['МИША','Огляд'],['ЛКМ','Постріл'],['ПКМ','Прицілювання'],['R','Перезаряджання'],['1 / 2','Основна / пістолет'],['4','Обрати / змінити гранату'],['ЛКМ / ПКМ з гранатою','Дальній / короткий кидок'],['G','Швидко кинути гранату'],['B','Закупівля в перші 30 секунд раунду'],['E (тримати)','Встановити / знешкодити C4'],['M','Схема мапи'],['SHIFT','Тихий крок'],['CTRL','Біг: утримуй або натисни раз для вкл/викл'],['C','Присідання'],['SPACE','Стрибок'],['ESC','Пауза'],['TAB','Рахунок команди']].map(([k,t])=>`<div><kbd>${k}</kbd>${t}</div>`).join('')}</div><p>Біг на CTRL: звичайний крок — 3,3, тихий крок і присідання — 1,8, біг — 5,2. Біг вимикається прицілюванням (ПКМ), Shift, C і роботою з C4. Увага браузера: не тримай CTRL разом із W, бо CTRL+W закриває вкладку — натисни CTRL один раз, щоб увімкнути біг, і біжи на WASD, повторне натискання вимикає.</p><p>На сенсорному екрані: джойстик зліва, огляд правою половиною екрана, кнопки пострілу, прицілювання ⌖, стрибка ↑ та перезаряджання справа. ⌖ вмикає та вимикає приціл. Гранати доступні у грі з ботами: B → ГРАНАТИ, максимум 4, серед них до 2 світлошумових. На телефоні натисни список гранат, щоб обрати, і кнопку G, щоб кинути. Після поразки спостерігай за союзником.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 function credits(){dialog('credits',header('СЕКТОР / V.01','ПРО ГРУ ТА РЕСУРСИ')+`<p>Браузерний прототип: дев’ять піксельних мап — Mirage, Dust II, Overpass, Ancient, Inferno, Vertigo, Office, Cache та Nuke за наданими схемами, командні бої з ботами, снайперська оптика, тактична закупівля й кастомізація. Мапи, ілюстрації, текстури та звуки цієї збірки створені в коді проєкту.</p><p>Для наступного оновлення підібрані ресурси з itch.io. Вони ще не включені до цієї збірки:</p><ul class="credits-list"><li><a href="https://f8studios.itch.io/snakes-authentic-gun-sounds" target="_blank" rel="noopener">SnakeF8 — звуки зброї</a></li><li><a href="https://kronbits.itch.io/matriax-free-cg-textures" target="_blank" rel="noopener">Kronbits — текстури, CC0</a></li><li><a href="https://quaternius.itch.io/50-lowpoly-guns" target="_blank" rel="noopener">Quaternius — моделі зброї, CC0</a></li><li><a href="https://kenney-assets.itch.io/prototype-textures" target="_blank" rel="noopener">Kenney — текстури прототипу, CC0</a></li></ul><p>Гра працює локально у браузері. Налаштування зберігаються лише на твоєму пристрої.</p>`);$('.dialog-close').onclick=()=>closeDialog(false);}
 $('#help-open').onclick=help;$('#credits-open').onclick=credits;$('#footer-credits').onclick=credits;
 
 function spawnSidearm(team){return team===1?'glock':'pistol';}
-function sidearmKit(team){const id=spawnSidearm(team);return {weapon:id,inventory:{[id]:{ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3}}};}
-function actor(x,y,team,name){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:MATCH.startMoney,helmet:false,kit:false,primary:null,grenades:{},blind:0,...sidearmKit(team),shots:0,spray:0};}
+function actor(x,y,team,name,classId='assault'){return {x,y,team,name,hp:100,armor:0,angle:team?Math.PI*1.2:.6,cooldown:1.4+Math.random(),path:[],pathTimer:0,moving:false,flash:0,seen:0,money:MATCH.startMoney,helmet:false,kit:false,primary:null,grenades:{},blind:0,...classLoadout(classId,team),skin:0,glove:0,shots:0,spray:0};}
 function start(){
   if(mpClient)mpDisconnect(true);
   initAudio();state='playing';phase='buy';paused=false;round=0;score=[0,0];kills=deaths=0;feed=[];losses=[0,0];map=MAPS[settings.map];
   wallTextures=textures(map);
   const team=Number($('#team-select').value)||0;
   const spawns=[teamSpawns(map,0),teamSpawns(map,1)],names=['РИСЬ','СОКІЛ','КВАРЦ','ТІНЬ','ГРІМ'];
-  actors=[0,1].flatMap(t=>spawns[t].map((pos,i)=>({...actor(...pos,t,`${t?'T':'CT'} · ${names[i]}`),slot:i,callsign:names[i]})));
-  player=actors.find(a=>a.team===team);player.isPlayer=true;player.name='ТИ';
+  actors=[0,1].flatMap(t=>spawns[t].map((pos,i)=>({...actor(...pos,t,`${t?'T':'CT'} · ${names[i]}`,CLASSES[t*5+i].id),slot:i,callsign:names[i]})));
+  player=actors.find(a=>a.team===team);Object.assign(player,classLoadout(settings.classId,team),{skin:settings.skin,glove:settings.glove});player.isPlayer=true;player.name='ТИ';
   $('#lobby').hidden=true;canvas.hidden=false;$('#hud').hidden=false;$('#touch-controls').hidden=!touchDevice;resize();nextRound();
 }
+$('#class-open').onclick=()=>tab('operator');$('#team-select').addEventListener('change',renderOperator);
 $('#start').onclick=start;$('#quick-play').onclick=start;
 function nextRound(){
   round++;projectiles=[];grenadeEffects=[];selectedGrenade=null;
   if(round===MATCH.halfRounds+1){score.reverse();losses=[0,0];for(const a of actors){a.team=1-a.team;a.hp=0;a.money=MATCH.startMoney;}}
   phase='buy';clock=MATCH.countdownTime;buyRemaining=MATCH.buyTime;fightIn=MATCH.countdownTime;paused=false;reload=0;reloadTotal=0;reloadStage=0;nextShot=0;pitch=0;recoil=0;hitTime=0;hurtTime=0;aiming=false;shootHeld=false;touchFire=false;touchUse=false;sprintToggle=false;keys.clear();
   const spawns=[teamSpawns(map,0),teamSpawns(map,1)];
-  actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;a.patrol=null;a.patrolT=0;a.destination='';    if(a.hp<=0){a.grenades={};a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,sidearmKit(a.team));}
-    a.hp=100;a.blind=0;a.blindPeak=0;a.moving=false;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
-    for(const id of [spawnSidearm(a.team),a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
-    if(!a.isPlayer){const want=a.team===1?['kalash','galil','sg553','mac10']:['rifle','m4a1','famas','aug','smg'];const pick=want.find(id=>a.money>=WEAPONS[id].price);if(pick)purchase(a,pick);if(a.armor<100)purchase(a,'armor');if(a.team===0&&!a.kit)purchase(a,'kit');}
+  actors.forEach(a=>{if(!a.isPlayer)a.name=`${a.team?'T':'CT'} · ${a.callsign}`;const pos=spawns[a.team][a.slot];a.x=pos[0];a.y=pos[1];a.angle=a.team?3.8:.72;a.patrol=null;a.patrolT=0;a.destination='';    if(a.hp<=0){a.grenades={};a.primary=null;a.armor=0;a.helmet=false;a.kit=false;Object.assign(a,classLoadout(a.classId,a.team));}
+    a.hp=getClass(a.classId).hp;a.maxHp=a.hp;a.blind=0;a.blindPeak=0;a.moving=false;resetActorHeight(map,a);a.path=[];a.pathTimer=0;a.cooldown=1.5;a.flash=0;a.seen=0;a.shots=0;a.spray=0;
+    for(const id of [a.sidearm||spawnSidearm(a.team),a.primary].filter(Boolean))a.inventory[id]={ammo:WEAPONS[id].size,reserve:WEAPONS[id].size*3};
+    if(!a.isPlayer){const want=a.team===1?['kalash','galil','sg553','mac10']:['rifle','m4a1','famas','aug','smg'];const pick=!a.primary&&want.find(id=>a.money>=WEAPONS[id].price);if(pick)purchase(a,pick);if(a.armor<100)purchase(a,'armor');if(a.team===0&&!a.kit)purchase(a,'kit');}
   });
   bomb=createBomb(actors,Math.random()<.5?'a':'b');assignBotRoutes(map,actors,bomb);touchUse=false;
   resetGunMotion();$('#game-message').textContent=`БІЙ ЧЕРЕЗ ${Math.ceil(fightIn)}`;$('#kill-feed').innerHTML='';feed=[];updateHUD();openShop();
@@ -2365,16 +2445,17 @@ function openShop(category='all'){
     {id:'armor',category:'gear',name:'Kevlar',type:'ЗАХИСТ',price:650,icon:'◇',description:'100 броні · захист корпусу'},
     {id:'helmet',category:'gear',name:'Kevlar + Helmet',type:'ЗАХИСТ',price:1000,icon:'◇',description:'100 броні та шолом · захист голови'},
     ...(player.team===0?[{id:'kit',category:'gear',name:'Defuse Kit',type:'СПОРЯДЖЕННЯ CT',price:400,icon:'⌁',description:'Знешкодження C4 за 5 секунд замість 10'}]:[])
-  ].filter(item=>(category==='all'||item.category===category)&&(!item.side||item.side==='both'||(player.team===0?item.side==='ct':item.side==='t')));
+  ].filter(item=>(!item.issued||player.inventory[item.id])&&(category==='all'||item.category===category)&&(!item.side||item.side==='both'||(player.team===0?item.side==='ct':item.side==='t')));
   const itemCard=item=>{
-    const owned=item.category==='grenades'?(player.grenades?.[item.id]||0)>=(item.id==='flashbang'?2:1):item.issued||(item.id==='armor'?player.armor>=100:item.id==='helmet'?player.helmet&&player.armor>=100:item.id==='kit'?player.kit:player.primary===item.id);
+    if(item.id===player.sidearm)item={...item,issued:true};
+    const owned=item.category==='grenades'?(player.grenades?.[item.id]||0)>=(item.id==='flashbang'?2:1):item.issued||(item.id==='armor'?player.armor>=100:item.id==='helmet'?player.helmet&&player.armor>=100:item.id==='kit'?player.kit:player.primary===item.id||player.sidearm===item.id);
     const disabled=item.category==='grenades'?!!grenadePurchaseError(player,item.id):owned||player.money<item.price;
     const stats=item.category==='grenades'?`У ТЕБЕ ${player.grenades?.[item.id]||0} / ${item.id==='flashbang'?2:1} · УСЬОГО ${grenadeCount(player)} / 4 ГРАНАТИ`:item.category==='gear'?item.description:`${item.damage} ШКОДИ · ${item.size} У МАГАЗИНІ${item.scope?` · ОПТИКА ×${item.scope<=.3?'4':'2'}`:''}`;
     const visual=item.category==='grenades'?grenadeIcon(item.id):WEAPON_FILES[item.id]?`<img class="gun-sprite" src="${WEAPON_FILES[item.id]}" alt="Зброя ${item.name}" draggable="false">`:`<div class="gun-icon">${item.icon}</div>`;
     const action=item.issued?'<span class="buy-issued">ВИДАНО БЕЗКОШТОВНО</span>':`<button data-buy="${item.id}" ${disabled?'disabled':''}><span>${owned?'У СПОРЯДЖЕННІ':player.money<item.price?'БРАКУЄ ГРОШЕЙ':item.category==='grenades'&&grenadeCount(player)>=4?'ЛІМІТ 4 ГРАНАТИ':'КУПИТИ'}</span><strong>$ ${item.price.toLocaleString('uk')}</strong></button>`;
     return `<article class="buy-item ${owned?'is-owned':''}"><div class="buy-item-top"><small>${item.type}</small><span>${item.category.toUpperCase()}</span></div><h3>${item.name}</h3><div class="buy-item-visual">${visual}</div><p>${item.description}</p><div class="buy-item-stats">${stats}</div>${action}</article>`;
   };
-  dialog('shop',`<div class="buy-terminal"><header class="buy-topbar"><div><span class="eyebrow">ЗАКУПІВЛЯ / РАУНД ${round}</span><h2>ВИБІР СПОРЯДЖЕННЯ</h2></div><div class="buy-status"><span id="shop-round-status">${roundStartLabel()}</span><span>ЗАКУПІВЛЯ <b id="shop-timer">${Math.ceil(buyRemaining)}</b> С</span><strong>$ ${player.money.toLocaleString('uk')}</strong></div><button id="shop-close-icon" class="buy-close" aria-label="Закрити закупівлю">×</button></header><div class="buy-layout"><nav class="buy-categories" aria-label="Категорії спорядження"><span>КАТЕГОРІЇ</span>${SHOP_CATEGORIES.map(c=>`<button class="buy-category ${category===c.id?'active':''}" data-category="${c.id}" aria-pressed="${category===c.id}"><b>${c.number}</b><span>${c.name}</span><i>›</i></button>`).join('')}</nav><main class="buy-content"><div class="buy-content-head"><div><span class="eyebrow">${category==='all'?'УСЕ СПОРЯДЖЕННЯ':SHOP_CATEGORIES.find(c=>c.id===category).name}</span><p>Пістолет і запас патронів видаються на початку кожного раунду.</p></div><span class="buy-count">${items.length} ПОЗ.</span></div><div class="buy-grid">${items.map(itemCard).join('')}</div></main><aside class="buy-loadout"><span>ПОТОЧНЕ СПОРЯДЖЕННЯ</span><div><small>ОСНОВНА ЗБРОЯ</small><b>${player.primary?WEAPONS[player.primary].name:'НЕ ВИБРАНО'}</b></div><div><small>ЗАПАСНА</small><b>${WEAPONS[spawnSidearm(player.team)].name}</b></div><div><small>БРОНЯ</small><b>${Math.ceil(player.armor)} / 100</b></div><div><small>ГРАНАТИ · ${grenadeCount(player)} / 4</small><b>${Object.entries(player.grenades||{}).filter(([,n])=>n>0).map(([id,n])=>`${GRENADES[id].short} ×${n}`).join(' · ')||'НЕ ВИБРАНО'}</b></div><p>4 — обрати · ЛКМ — кинути · ПКМ — короткий кидок · G — швидкий кидок.</p><p>Заміна основної зброї не повертає її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button><button id="shop-close" class="text-button">ЗАКРИТИ / B</button></aside></div></div>`);
+  dialog('shop',`<div class="buy-terminal"><header class="buy-topbar"><div><span class="eyebrow">ЗАКУПІВЛЯ / РАУНД ${round}</span><h2>ВИБІР СПОРЯДЖЕННЯ</h2></div><div class="buy-status"><span id="shop-round-status">${roundStartLabel()}</span><span>ЗАКУПІВЛЯ <b id="shop-timer">${Math.ceil(buyRemaining)}</b> С</span><strong>$ ${player.money.toLocaleString('uk')}</strong></div><button id="shop-close-icon" class="buy-close" aria-label="Закрити закупівлю">×</button></header><div class="buy-layout"><nav class="buy-categories" aria-label="Категорії спорядження"><span>КАТЕГОРІЇ</span>${SHOP_CATEGORIES.map(c=>`<button class="buy-category ${category===c.id?'active':''}" data-category="${c.id}" aria-pressed="${category===c.id}"><b>${c.number}</b><span>${c.name}</span><i>›</i></button>`).join('')}</nav><main class="buy-content"><div class="buy-content-head"><div><span class="eyebrow">${category==='all'?'УСЕ СПОРЯДЖЕННЯ':SHOP_CATEGORIES.find(c=>c.id===category).name}</span><p>Стартова зброя класу безкоштовна. Після загибелі комплект відновлюється; патрони поповнюються щораунду.</p></div><span class="buy-count">${items.length} ПОЗ.</span></div><div class="buy-grid">${items.map(itemCard).join('')}</div></main><aside class="buy-loadout"><span>ПОТОЧНЕ СПОРЯДЖЕННЯ</span><div><small>ОСНОВНА ЗБРОЯ</small><b>${player.primary?WEAPONS[player.primary].name:'НЕ ВИБРАНО'}</b></div><div><small>ЗАПАСНА</small><b>${WEAPONS[(player.sidearm||spawnSidearm(player.team))].name}</b></div><div><small>БРОНЯ</small><b>${Math.ceil(player.armor)} / 100</b></div><div><small>ГРАНАТИ · ${grenadeCount(player)} / 4</small><b>${Object.entries(player.grenades||{}).filter(([,n])=>n>0).map(([id,n])=>`${GRENADES[id].short} ×${n}`).join(' · ')||'НЕ ВИБРАНО'}</b></div><p>4 — обрати · ЛКМ — кинути · ПКМ — короткий кидок · G — швидкий кидок.</p><p>Заміна основної зброї не повертає її вартості.</p><button id="shop-ready" class="primary">У БІЙ <span>→</span></button><button id="shop-close" class="text-button">ЗАКРИТИ / B</button></aside></div></div>`);
   $$('[data-category]').forEach(button=>button.onclick=()=>openShop(button.dataset.category));
   $$('[data-buy]').forEach(b=>b.onclick=()=>{
     if(!buyAvailable()||!inBuyZone())return;
@@ -2507,7 +2588,7 @@ function updatePlayer(dt){
   player.moving=false;if(player.hp<=0||modal)return;
   const right=Number(keys.has('KeyD'))-Number(keys.has('KeyA'))+stick.x,forward=Number(keys.has('KeyW'))-Number(keys.has('KeyS'))-stick.y,len=Math.max(1,Math.hypot(right,forward));
   const run=sprinting();
-  const speed=run?5.2:(quietHeld()||crouchHeld()?1.8:3.3);
+  const speed=(run?5.2:(quietHeld()||crouchHeld()?1.8:3.3))*getClass(player.classId).speed;
   const dx=(Math.cos(player.angle)*forward-Math.sin(player.angle)*right)*speed*dt/len,dy=(Math.sin(player.angle)*forward+Math.cos(player.angle)*right)*speed*dt/len;
   const oldX=player.x,oldY=player.y;
   stepActor(map,player,dx,dy,dt,actors);player.moving=Math.hypot(player.x-oldX,player.y-oldY)>.001;player.sprinting=run&&player.moving;
@@ -2565,7 +2646,7 @@ function updateBots(dt){
     const destination=`${Math.floor(target.x)},${Math.floor(target.y)}`;
     if(a.pathTimer<=0||(a.destination&&a.destination!==destination)){a.path=findPath(map,a.x,a.y,target.x,target.y);a.pathTimer=.9+Math.random()*.35;a.destination=destination;}
     if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy);
-      if(d<.12)a.path.shift();else {const speed=Math.min(d,dt*2.2),x=a.x,y=a.y;moveActor(map,a,dx/d*speed,dy/d*speed,actors);
+      if(d<.12)a.path.shift();else {const speed=Math.min(d,dt*2.2*getClass(a.classId).speed),x=a.x,y=a.y;moveActor(map,a,dx/d*speed,dy/d*speed,actors);
         if(Math.hypot(a.x-x,a.y-y)<.001)moveActor(map,a,-dy/d*speed,dx/d*speed,actors);
         a.moving=Math.hypot(a.x-x,a.y-y)>.001;if(!visible)a.angle=Math.atan2(dy,dx);
       }
@@ -2605,8 +2686,8 @@ function updateObjectiveHUD(){
 }
 function updateVitals(){
   const hp=Math.max(0,Math.ceil(player.hp)),armor=Math.max(0,Math.ceil(player.armor||0));
-  $('#health').textContent=hp;$('#armor').textContent=armor;
-  const bar=$('#health-bar');if(bar){bar.style.width=hp+'%';bar.classList.toggle('warning',hp>25&&hp<=50);bar.classList.toggle('critical',hp<=25);}
+  $('#hud-class').textContent=getClass(player.classId).name;$('#health-max').textContent=player.maxHp||100;$('#health').textContent=hp;$('#armor').textContent=armor;
+  const bar=$('#health-bar');if(bar){const percent=clamp(hp/(player.maxHp||100)*100,0,100);bar.style.width=percent+'%';bar.classList.toggle('warning',percent>25&&percent<=50);bar.classList.toggle('critical',percent<=25);}
 }
 function updateHUD(){
   if(!player)return;
@@ -2685,7 +2766,7 @@ function render(){
   }
   if(!map.heights)for(let y=0;y<h;y++)for(let x=0;x<w;x++)terrainDepth[y*w+x]=zbuffer[x];
   const visibleActors=mpMode?actors:actors.filter(a=>a===view||clearGrenadeSight(view,a));
-  const labels=drawOperators(ctx,map,visibleActors,view,{w,h,projection,horizon,eye,depths:terrainDepth,time:elapsed,motion:settings.motion,skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color});
+  const labels=drawOperators(ctx,map,visibleActors,view,{w,h,projection,horizon,eye,depths:terrainDepth,time:elapsed,motion:settings.motion,skin:classAppearance(player.classId,player.skin).color,glove:GLOVES[player.glove||0].color});
   for(const {a,depth,x,y,bodyY} of labels){
     const sx=Math.round(x),sy=Math.floor(clamp(bodyY,0,h-1));
     if((a.team===player.team||mpMode)&&sx>=0&&sx<w&&y>0&&y<h&&depth<terrainDepth[sy*w+sx]+.4){
@@ -2709,7 +2790,7 @@ function render(){
   if(!mpMode&&view.blind>0){ctx.save();ctx.globalAlpha=Math.min(1,view.blind/1.2);ctx.fillStyle='#f8faf3';ctx.fillRect(0,0,w,h);ctx.restore();}
 }
 function drawGun(w,h){
-  const pistol=player.weapon==='pistol';
+  const pistol=currentWeapon().type==='ПІСТОЛЕТ';
   const p=reloadProgress();
   const downHold=p<=0?0:p<.25?p/.25:p<.65?1:1-(p-.65)/.35;
   const dip=p>0?Math.sin(p*Math.PI):0;
@@ -2729,13 +2810,13 @@ function drawGun(w,h){
   ctx.translate(originX+(sway+gx-wall*25)*scale,originY+(dropY+gy+wall*90)*scale);
   ctx.scale(scale*(1-wall*.12),scale*(1-wall*.12));ctx.rotate(-tilt*.55+(physical?gunMotion.roll.value:0)-wall*.28);
   ctx.globalAlpha=1-ads;
-  drawHeldWeapon(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,ads,reload:p,flash:recoil});
+  drawHeldWeapon(ctx,player.weapon,{skin:classAppearance(player.classId,player.skin).color,glove:GLOVES[player.glove||0].color,ads,reload:p,flash:recoil});
   ctx.restore();
   if(ads>0&&!scoped){
     ctx.save();ctx.globalAlpha=ads;
     ctx.translate(w*.5+(1-ads)*w*.18,h*.5+(1-ads)*h*.25);
     ctx.scale(scale,scale);
-    drawWeaponSights(ctx,player.weapon,{skin:SKINS[settings.skin].color,glove:GLOVES[settings.glove].color,flash:recoil});
+    drawWeaponSights(ctx,player.weapon,{skin:classAppearance(player.classId,player.skin).color,glove:GLOVES[player.glove||0].color,flash:recoil});
     ctx.restore();
   }
   if(scoped&&ads>0)drawScopeOverlay(ctx,w,h,player.weapon,ads);
@@ -2777,14 +2858,14 @@ addEventListener('keydown',e=>{
   if(e.code==='ControlLeft'||e.code==='ControlRight'){sprintToggle=!sprintToggle;toast(sprintToggle?'БІГ УВІМКНЕНО · повторний CTRL вимикає':'ЗВИЧАЙНИЙ КРОК');}
   if(mpMode){
     if(e.code==='KeyR')toast('Перезаряджання автоматичне після порожнього магазина');
-    if(e.code==='Digit1')mpSwitchWeapon('pistol');if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
+    if(e.code==='Digit1')mpSwitchWeapon(classWeapon(player.classId,player.team));if(e.code==='Digit2')mpSwitchWeapon('smg');if(e.code==='Digit3')mpSwitchWeapon('rifle');if(e.code==='Digit4')mpSwitchWeapon('shotgun');if(e.code==='Digit5')mpSwitchWeapon('kalash');if(e.code==='Digit6')mpSwitchWeapon('marksman');if(e.code==='Digit7')mpSwitchWeapon('sniper');
     if(e.code==='KeyB')toast('Магазина в мережі немає — усі 7 стволів доступні на 1–7');
     if(e.code==='Space')requestJump();
     if(e.code==='Tab'&&mpRoom)toast(`CT ${mpRoom.score[0]} : ${mpRoom.score[1]} T · Фраги: ${kills} · Смерті: ${deaths}`);
     return;
   }
   if(e.code==='Digit4')cycleGrenade();if(e.code==='KeyG')throwSelectedGrenade();
-  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1')switchWeapon(player.primary||spawnSidearm(player.team));if(e.code==='Digit2')switchWeapon(spawnSidearm(player.team));if(e.code==='Space')requestJump();
+  if(e.code==='KeyR')reloadWeapon();if(e.code==='Digit1')switchWeapon(player.primary||(player.sidearm||spawnSidearm(player.team)));if(e.code==='Digit2')switchWeapon((player.sidearm||spawnSidearm(player.team)));if(e.code==='Space')requestJump();
   if(e.code==='Tab')toast(`CT ${score[0]} : ${score[1]} T · Твої усунення: ${kills} · Смерті: ${deaths}`);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
@@ -2838,7 +2919,8 @@ const MP_TOUCH_GUNS=['pistol','smg','rifle','shotgun','kalash','marksman','snipe
 tapButton($('#touch-weapon'),()=>{
   if(!player||player.hp<=0||paused||modal)return;
   if(!mpMode){switchWeapon(player.weapon);return;}
-  const next=MP_TOUCH_GUNS[(MP_TOUCH_GUNS.indexOf(player.weapon)+1+MP_TOUCH_GUNS.length)%MP_TOUCH_GUNS.length];
+  const guns=[...new Set([classWeapon(player.classId,player.team),...MP_TOUCH_GUNS.slice(1)])];
+  const next=guns[(guns.indexOf(player.weapon)+1+guns.length)%guns.length];
   mpSwitchWeapon(next);toast(WEAPONS[player.weapon].name);
 });
 tapButton($('#touch-shop'),()=>modal==='shop'?closeDialog():openShop());
@@ -2983,7 +3065,7 @@ function mpHandlers(epoch,action=null,automatic=false){
       }
     }),
     onRooms:active(rooms=>{mpRooms=rooms;if(!mpRoom&&!mpMode){mpRenderRooms();mpSetStatus(`НА ЗВʼЯЗКУ · ${rooms.length} КІМНАТ`);}}),
-    onJoined:active(room=>{mpRoom=room;mpChat=[];mpLastJoin={code:room.code};mpReconnectTries=0;mpShowRoom();}),
+    onJoined:active(room=>{mpRoom=room;syncClassSelection();mpChat=[];mpLastJoin={code:room.code};mpReconnectTries=0;mpShowRoom();}),
     onRoom:active(room=>{mpRoom=room;if(!mpMode)mpShowRoom();}),
     onMatchStart:active(room=>mpStartMatch(room)),
     onSnapshot:active(snap=>{if(mpMode)mpApplySnapshot(snap);}),
@@ -3150,7 +3232,7 @@ function mpRenderRoom(){
   $('#mp-room-info').textContent=`${m.name} · ${room.players.length}/${room.maxPlayers} гравців · до ${room.killTarget} фрагів · ${Math.floor(room.matchTime/60)} хв${waiting}`;
   $('#mp-room-code').textContent=mpClient?.kind==='peer'?'НАПРЯМУ · ВХІД ЗА КОРОТКИМ КОДОМ':room.isPublic?`ПУБЛІЧНА · КОД ДЛЯ ДРУЗІВ: ${room.code}`:`КОД ДЛЯ ДРУЗІВ: ${room.code}`;
   const copyLink=$('#mp-copy-link');if(copyLink)copyLink.hidden=mpClient?.kind==='peer';
-  $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'CT':'T'}</kbd>${escapeText(p.nick)}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
+  $('#mp-players').innerHTML=room.players.map(p=>`<div><kbd style="border-color:${p.team===0?'#c3f66b':'#e49a62'};color:${p.team===0?'#c3f66b':'#e49a62'}">${p.team===0?'CT':'T'}</kbd>${escapeText(p.nick)} · ${getClass(p.classId).name}${p.id===mpMyId?' (ТИ)':''}${p.id===room.hostId?' ★':''}<span style="margin-left:auto">${room.phase!=='lobby'?'':p.ready?'✓ ГОТОВИЙ':'· ЧЕКАЄ'}</span></div>`).join('');
   $('#mp-ready').textContent=me&&me.ready?'НЕ ГОТОВИЙ ✕':'ГОТОВИЙ ✓';
   const startBtn=$('#mp-start');
   startBtn.hidden=room.hostId!==mpMyId;
@@ -3168,11 +3250,11 @@ function mpStartMatch(room){
   map=MAPS[clamp(room.mapId,0,MAPS.length-1)];
   wallTextures=textures(map);
   const me=room.players.find(p=>p.id===mpMyId);
-  player=actor(me.x,me.y,me.team,me.nick);player.isPlayer=true;player.hp=me.hp;player.angle=me.angle;
+  player=actor(me.x,me.y,me.team,me.nick,me.classId);Object.assign(player,{skin:me.skin||0,glove:me.glove||0,weapon:me.weapon});player.isPlayer=true;player.hp=me.hp;player.angle=me.angle;
   mpRemotes=new Map();mpReloadT=0;mpSendTimer=0;
   for(const p of room.players){
     if(p.id===mpMyId)continue;
-    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:p.hp,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
+    mpRemotes.set(p.id,{mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,classId:p.classId,skin:p.skin||0,glove:p.glove||0,hp:p.hp,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:p.weapon,lastFlash:p.flashAt||0,pendingFlash:false});
   }
   actors=[player,...mpRemotes.values()];
   state='playing';phase='mp';paused=false;modal='';mpMode=true;
@@ -3189,9 +3271,9 @@ function mpApplySnapshot(snap){
   const me=snap.players.find(p=>p.id===mpMyId);
   if(me){
     const wasAlive=player.hp>0;
-    player.hp=me.hp;player.armor=me.armor||0;
+    player.hp=me.hp;player.maxHp=getClass(me.classId).hp;player.classId=getClass(me.classId).id;player.skin=me.skin||0;player.glove=me.glove||0;player.armor=me.armor||0;
     if(!me.alive&&wasAlive){hurtTime=.45;sound('hit');}
-    if(me.alive&&!wasAlive){player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;resetActorHeight(map,player);resetGunMotion();$('#game-message').textContent='';}
+    if(me.alive&&!wasAlive){player.weapon=me.weapon;player.x=me.x;player.y=me.y;player.angle=me.angle;pitch=0;resetActorHeight(map,player);resetGunMotion();$('#game-message').textContent='';}
     if(!me.alive)$('#game-message').textContent=`ЗАГИБЛИК · ВІДРОДЖЕННЯ ЧЕРЕЗ ${Math.max(1,Math.ceil(me.respawnIn))}`;
   }
   const seen=new Set();
@@ -3200,7 +3282,7 @@ function mpApplySnapshot(snap){
     seen.add(p.id);
     let a=mpRemotes.get(p.id);
     if(!a){a={mpId:p.id,isRemote:true,x:p.x,y:p.y,tx:p.x,ty:p.y,angle:p.angle,tAngle:p.angle,team:p.team,name:p.nick,hp:100,z:p.z??floorHeight(map,p.x,p.y),tz:p.z??floorHeight(map,p.x,p.y),grounded:false,armor:0,moving:false,flash:0,weapon:'pistol',lastFlash:p.flashAt||0,pendingFlash:false};mpRemotes.set(p.id,a);}
-    a.tx=p.x;a.ty=p.y;a.tz=p.z??floorHeight(map,p.x,p.y);a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
+    a.classId=p.classId;a.skin=p.skin||0;a.glove=p.glove||0;a.tx=p.x;a.ty=p.y;a.tz=p.z??floorHeight(map,p.x,p.y);a.tAngle=p.angle;a.team=p.team;a.name=p.nick;a.hp=p.hp;a.moving=p.moving;a.weapon=p.weapon;
     if((p.flashAt||0)>a.lastFlash){a.lastFlash=p.flashAt;a.pendingFlash=true;}
   }
   for(const id of [...mpRemotes.keys()])if(!seen.has(id))mpRemotes.delete(id);
