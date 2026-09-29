@@ -1,4 +1,4 @@
-import { actorHeight } from './core.js';
+import { actorHeight, classAppearance, GLOVES, WEAPONS } from './core.js';
 import { tint } from './art.js';
 
 // Local coordinates: X points along the weapon, Y across the shoulders, Z up.
@@ -30,7 +30,7 @@ export function operatorParts(a,time=0,motion=true){
   box(.138,0,.952,.025,.20,.065,'visor',true);
   box(.143,0,.888,.035,.17,.06,'boot',true);
   box(-.015,-.14,.92,.115,.045,.115,'boot',true);
-  const pistol=a.weapon==='pistol',long=['sniper','marksman'].includes(a.weapon);
+  const pistol=WEAPONS[a.weapon]?.type==='ПІСТОЛЕТ',long=['sniper','marksman'].includes(a.weapon);
   box(.24,.09,.60,.15,.075,.085,'gun');
   box(.34,.09,.66,pistol?.22:.38,.07,.075,'gun');
   if(!pistol){box(.33,.09,.595,.065,.06,.13,'gun');box(.40,.09,.71,.19,.035,.035,'gun');}
@@ -116,7 +116,8 @@ export function drawOperators(ctx,map,actors,view,options){
     const dx=a.x-view.x,dy=a.y-view.y,depth=dx*ca+dy*sa,side=-dx*sa+dy*ca;
     if(depth<-.9||Math.abs(side)>Math.max(0,depth)*w/(2*projection)+1)continue;
     const z=actorHeight(map,a),ac=Math.cos(a.angle),as=Math.sin(a.angle);
-    const palette={uniform:a.team===0?skin:'#aa7853',accent:a.team===0?'#c3f66b':'#ffbd73',helmet:a.team===0?skin:'#85644b',armor:'#303c38',pack:'#485249',boot:'#202925',visor:'#80b7bd',glove,gun:'#343d3e',flash:'#ffeaa0'};
+    const look=classAppearance(a.classId,a.skin);
+    const palette={uniform:look.color,accent:a.team===0?'#c3f66b':'#ffbd73',helmet:look.color,armor:tint(look.color,.48),pack:tint(look.color,.7),boot:'#202925',visor:look.accent,glove:GLOVES[a.glove||0]?.color||glove,gun:'#343d3e',flash:'#ffeaa0'};
     for(const p of operatorParts(a,time,motion)){
       const vertices=signs.map(([sx,sy,sz])=>{
         const lx=p.x+sx*p.dx/2,ly=p.y+sy*p.dy/2;

@@ -1,5 +1,5 @@
 // Browser-hosted matches. Signalling may be manual or automatic; gameplay uses WebRTC.
-import { MP, C2S, S2C, createRoom, addPlayer, removePlayer, setReady, canStart, snapshotRoom, matchTick, teamScores, sanitizeNick, makeCode } from './net.js';
+import { MP, C2S, S2C, createRoom, addPlayer, removePlayer, setReady, setPlayerLoadout, resetPlayerLoadout, canStart, snapshotRoom, matchTick, teamScores, sanitizeNick, makeCode } from './net.js';
 import { MAPS, WEAPONS, clamp, canStand, lineOfSight, applyDamage, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './core.js';
 
 export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) {
@@ -14,8 +14,8 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
     const mates=Object.values(room.players).filter(q=>q.team===p.team);
     [p.x,p.y]=positions[mates.indexOf(p)%positions.length];
     resetActorHeight(MAPS[room.mapId],p);
-    p.angle=p.team?3.8:.72;p.hp=100;p.alive=true;p.moving=false;
-    p.weapon='pistol';p.ammo=12;p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
+    p.angle=p.team?3.8:.72;resetPlayerLoadout(p);p.alive=true;p.moving=false;
+    p.reloadingUntil=0;p.respawnIn=0;p.lastShotAt=-100;p.flashAt=0;
   }
   function finish(events){
     if(events.length)broadcast({t:S2C.EVENTS,events});
@@ -42,6 +42,7 @@ export function createPeerHost(options, nick, deliver, now=()=>Date.now()/1000) 
       if(!msg||typeof msg.t!=='string'||!Object.hasOwn(room.players,id))return;
       const p=room.players[id];
       switch(msg.t){
+        case C2S.LOADOUT: if(setPlayerLoadout(room,id,msg))publish();break;
         case C2S.READY: if(setReady(room,id,msg.ready))publish();break;
         case C2S.START:
           if(!canStart(room,id)){error(id,'Потрібні щонайменше двоє гравців і готовність усіх');break;}

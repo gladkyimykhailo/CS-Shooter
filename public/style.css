@@ -110,3 +110,18 @@
 @media(pointer:coarse){#grenade-hud{right:12px;bottom:245px;max-width:230px;padding:5px 9px;gap:3px}#grenade-hint{display:none}#grenade-select{min-height:35px;font-size:10px}#grenade-list{font-size:8px}#touch-grenade{right:152px;bottom:160px;width:46px;height:46px}}
 @media(pointer:coarse) and (orientation:landscape){#grenade-hud{right:12px;bottom:205px;max-width:250px}#touch-grenade{right:134px;bottom:136px;width:42px;height:42px}}
 .grenade-icon{width:72px;height:76px;filter:drop-shadow(5px 8px 3px #0005)}
+
+/* Class roster: the same uniform palettes are used in preview and combat. */
+.class-intro{color:var(--muted);font-size:14px;line-height:1.6;max-width:760px}
+.class-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:24px 0 32px}
+.class-card{display:flex;flex-direction:column;align-items:stretch;text-align:left;border:1px solid var(--line);background:linear-gradient(145deg,color-mix(in srgb,var(--class-color) 25%,#101615),#141c19);padding:0;overflow:hidden;transition:border-color .15s,transform .15s}
+.class-card:hover{border-color:var(--class-accent);transform:translateY(-3px)}
+.class-card.selected{border:2px solid var(--class-accent);box-shadow:0 0 0 2px #ffffff09}
+.class-card canvas{width:100%;height:150px;object-fit:contain;image-rendering:pixelated;background:linear-gradient(0deg,#10161544,transparent)}
+.class-card-body{display:flex;flex-direction:column;gap:8px;padding:14px;border-top:1px solid #ffffff15}
+.class-card-body small{font:9px var(--mono);color:var(--class-accent);letter-spacing:1px}
+.class-card-body strong{font-size:17px}.class-card-body span{font:11px var(--mono);color:#c2ccc3}.class-card-body b{font-size:12px;color:var(--class-accent)}
+.class-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}.class-stats>div{display:flex;flex-direction:column;gap:8px;padding:14px;background:#101615;border:1px solid var(--line)}.class-stats>div:last-child{grid-column:1/-1}.class-stats small{font:10px var(--mono);color:var(--muted)}.class-stats b{font-size:23px;color:var(--lime)}
+.class-note{font-size:12px!important;line-height:1.6}.class-launch{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;padding:18px 22px;margin-top:24px;background:var(--panel);border:1px solid var(--line);text-align:left}.class-launch span{display:flex;flex-direction:column;gap:8px;font:10px var(--mono);color:var(--muted)}.class-launch b{font:14px Arial,sans-serif;color:var(--text)}.class-launch strong{font:11px var(--mono);color:var(--lime)}#hud-class{color:var(--lime)}
+@media(max-width:1000px){.class-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.class-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.class-card canvas{height:130px}.class-card-body{padding:10px}.class-card-body strong{font-size:15px}.class-card-body span{font-size:10px}.class-launch{align-items:flex-start;flex-direction:column}.class-stats b{font-size:20px}}

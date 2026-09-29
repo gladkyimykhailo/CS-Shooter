@@ -33,6 +33,34 @@ export const WEAPONS = {
   negev: { name: 'Negev', type: 'КУЛЕМЕТ', price: 1700, damage: 25, size: 150, rate: .08, reload: 5.5, spread: .03, pellets: 1, automatic: true, icon: '▰▪▪▪', description: 'Стіна свинцю. 25 шкоди · 150 патронів' },
   m249: { name: 'M249', type: 'КУЛЕМЕТ', price: 5200, damage: 25, size: 100, rate: .08, reload: 4.5, spread: .028, pellets: 1, automatic: true, icon: '▰▰▪▪', description: 'Точний кулемет. 25 шкоди · 100 патронів' }
 };
+// Class stats are shared by solo play, the room server and WebRTC hosts.
+export const CLASSES = [
+  {id:'assault',name:'Штурмовик',hp:100,speed:1,weapon:'pistol',color:'#657f67',accent:'#c3f66b',skin:'Лісовий дозор',description:'Універсальний боєць без штрафу до руху.'},
+  {id:'tank',name:'Танк',hp:160,speed:.75,weapon:'deagle',color:'#657080',accent:'#ffca68',skin:'Сталева фортеця',description:'Більше здоров’я, важкий пістолет, повільний рух.'},
+  {id:'scout',name:'Розвідник',hp:80,speed:1.25,weapon:'p250',color:'#409b89',accent:'#b4ffe5',skin:'Бірюзовий слід',description:'Найшвидший у загоні, але витримує менше влучань.'},
+  {id:'ghost',name:'Тінь',hp:90,speed:1.15,weapon:'pistol',color:'#685a8e',accent:'#d5b5ff',skin:'Фіолетовий туман',description:'Легкий боєць із USP-S для швидкої зміни позиції.'},
+  {id:'duelist',name:'Дуелянт',hp:95,speed:1.10,weapon:'dualies',color:'#a44d65',accent:'#ffb9ca',skin:'Багряний азарт',description:'Dual Berettas і швидкий рух для ближніх дуелей.'},
+  {id:'guardian',name:'Вартовий',hp:140,speed:.85,weapon:'fiveseven',color:'#4778a3',accent:'#aedcff',skin:'Синя варта',description:'Міцний захисник із містким магазином Five-SeveN.'},
+  {id:'raider',name:'Рейдер',hp:105,speed:1.05,weapon:'tec9',color:'#b0783e',accent:'#ffda9c',skin:'Піщаний рейд',description:'Tec-9 та невеликий запас здоров’я для наступу.'},
+  {id:'storm',name:'Штурм',hp:110,speed:.95,weapon:'cz75',color:'#a14f39',accent:'#ffb276',skin:'Мідна буря',description:'Автоматичний CZ75 і міцність ціною швидкості.'},
+  {id:'sniper',name:'Снайпер',hp:85,speed:.95,weapon:'marksman',color:'#79939d',accent:'#e0f6ff',skin:'Полярний приціл',description:'SSG 08 з оптикою на старті, менше здоров’я.'},
+  {id:'breacher',name:'Пролом',hp:125,speed:.90,weapon:'shotgun',color:'#92913e',accent:'#f2f49d',skin:'Жовтий шершень',description:'Дробовик Nova для прориву на короткій дистанції.'}
+];
+export function getClass(id){return CLASSES.find(c=>c.id===id)||CLASSES[0];}
+export function classWeapon(id,team=0){const c=getClass(id);return c.id==='assault'&&team===1?'glock':c.weapon;}
+export function classLoadout(id,team=0){
+  const c=getClass(id),weapon=classWeapon(c.id,team),pistol=WEAPONS[weapon].type==='ПІСТОЛЕТ';
+  const sidearm=pistol?weapon:team===1?'glock':'pistol',primary=pistol?null:weapon;
+  const inventory={};for(const gun of new Set([weapon,sidearm]))inventory[gun]={ammo:WEAPONS[gun].size,reserve:WEAPONS[gun].size*3};
+  return {classId:c.id,maxHp:c.hp,hp:c.hp,sidearm,primary,weapon,inventory};
+}
+export function classAppearance(id,variant=0){
+  const c=getClass(id),v=Number.isInteger(variant)&&variant>=0&&variant<3?variant:0;
+  const channels=c.color.slice(1).match(/../g).map(n=>parseInt(n,16));
+  const color='#'+channels.map(n=>Math.round(v===1?n*.52:v===2?n*.45+140:n).toString(16).padStart(2,'0')).join('');
+  return {color,accent:c.accent,name:v===0?c.skin:v===1?'Нічний патруль':'Арктичний камуфляж'};
+}
+
 // A tile-based adaptation of the supplied Mirage floor-plan reference.
 // Rooms are carved from solid masonry, so routes cannot bypass the buildings.
 const mirageRooms = [
@@ -570,7 +598,7 @@ export function purchase(player,id){
   }
   const w=WEAPONS[id];if(!w||!w.price)return {ok:false,message:'Недоступна зброя'};
   if(w.side==='ct'&&player.team!==0||w.side==='t'&&player.team!==1)return {ok:false,message:'Зброя іншої сторони'};
-  if(player.primary===id)return {ok:false,message:'Уже в спорядженні'};
+  if(player.primary===id||player.sidearm===id)return {ok:false,message:'Уже в спорядженні'};
   if(player.money<w.price)return {ok:false,message:'Недостатньо грошей'};
   if(player.primary)delete player.inventory[player.primary];
   player.money-=w.price;player.primary=id;player.weapon=id;player.inventory[id]={ammo:w.size,reserve:w.size*3};return {ok:true};

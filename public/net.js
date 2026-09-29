@@ -1,3 +1,4 @@
+import { getClass, classLoadout, WEAPONS } from './core.js';
 // Спільна логіка мультиплеєра: протокол, кімнати, життєвий цикл матчу.
 // Чистий модуль без DOM і Node API — використовується браузером, server.mjs і тестами.
 export const MP = {
@@ -13,7 +14,7 @@ export const MP = {
 // Типи повідомлень клієнт -> сервер
 export const C2S = {
   HELLO: 'hello', LIST: 'list', CREATE: 'create', JOIN: 'join', JOIN_CODE: 'joinCode',
-  LEAVE: 'leave', READY: 'ready', START: 'start', STATE: 'state', SHOOT: 'shoot', CHAT: 'chat',
+  LOADOUT: 'loadout', LEAVE: 'leave', READY: 'ready', START: 'start', STATE: 'state', SHOOT: 'shoot', CHAT: 'chat',
 };
 // Типи повідомлень сервер -> клієнт
 export const S2C = {
@@ -56,8 +57,23 @@ export function makePlayer(id, nick, team) {
     id, nick: sanitizeNick(nick), team, ready: false,
     alive: true, hp: 100, armor: 0, x: 0, y: 0, angle: 0, moving: false,
     weapon: 'pistol', ammo: 12, reloadingUntil: 0, kills: 0, deaths: 0, respawnIn: 0,
-    lastShotAt: 0, flashAt: 0,
+    lastShotAt: 0, flashAt: 0, classId:'assault',maxHp:100,skin:0,glove:0,
   };
+}
+
+// Only the lobby can change class; health/speed are never accepted from clients.
+export function setPlayerLoadout(room,id,msg){
+  const p=room.players[id];
+  if(!p||!['lobby','finished'].includes(room.phase))return false;
+  p.classId=getClass(msg.classId).id;
+  p.skin=Number.isInteger(msg.skin)&&msg.skin>=0&&msg.skin<3?msg.skin:0;
+  p.glove=Number.isInteger(msg.glove)&&msg.glove>=0&&msg.glove<3?msg.glove:0;
+  p.maxHp=getClass(p.classId).hp;p.ready=false;
+  return true;
+}
+export function resetPlayerLoadout(p){
+  Object.assign(p,classLoadout(p.classId,p.team));
+  p.ammo=WEAPONS[p.weapon].size;p.reloadingUntil=0;
 }
 
 // Публічний опис кімнати для списку. Код приватної кімнати НЕ розкриваємо.
@@ -131,7 +147,7 @@ export function matchTick(room, dt) {
     if (!p.alive) {
       p.respawnIn -= dt;
       if (p.respawnIn <= 0) {
-        p.alive = true; p.hp = 100; p.respawnIn = 0;
+        p.alive = true; resetPlayerLoadout(p); p.respawnIn = 0;
         events.push({ t: 'respawn', id: p.id });
       }
     }

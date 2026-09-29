@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { MAPS } from '../public/core.js';
+import { MAPS, CLASSES, WEAPONS, classWeapon } from '../public/core.js';
 
 // Executes the real game and UI handlers without a browser. Only DOM/canvas APIs
 // are substituted; combat, movement, economy, timers and bot AI are unmodified.
@@ -149,7 +149,7 @@ test('снайперські гвинтівки купуються, звужую
 test('рух, постріли, стіни та перезаряджання працюють у реальному ігровому циклі',()=>{
   const f=fixture({map:1});f.game.start();f.game.beginFight();f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});const p=f.game.get().player;
   f.key('KeyW');f.game.step(.04);f.key('KeyW','keyup');assert.ok(p.y>8.5);
-  const enemies=f.game.get().actors.filter(a=>a.team===1);enemies[0].x=20.5;enemies[0].y=11.5;enemies[0].armor=0;enemies[0].cooldown=999;f.game.shoot();assert.equal(p.inventory.pistol.ammo,11);assert.equal(enemies[0].hp,65);
+  const enemies=f.game.get().actors.filter(a=>a.team===1);enemies[0].x=20.5;enemies[0].y=11.5;enemies[0].hp=100;enemies[0].armor=0;enemies[0].cooldown=999;f.game.shoot();assert.equal(p.inventory.pistol.ammo,11);assert.equal(enemies[0].hp,65);
   f.game.step(.31);f.game.setPlayer({x:8.5,y:9.5,angle:0});enemies[0].x=10.5;enemies[0].y=9.5;f.game.shoot();assert.equal(enemies[0].hp,65,'wall blocks shot');
   f.game.reload();f.game.step(2.3);assert.equal(p.inventory.pistol.ammo,12);assert.equal(p.inventory.pistol.reserve,34);f.key('Escape');assert.equal(f.game.get().paused,true);const y=p.y;f.key('KeyW');f.game.step(.2);assert.equal(p.y,y);f.document.querySelector('#resume').onclick();assert.equal(f.game.get().paused,false);
 });
@@ -625,7 +625,7 @@ test('живий союзник блокує рух і постріл гравц
   actors.forEach(a=>{a.cooldown=999;a.pathTimer=999;a.path=[];});
   Object.assign(ally,{x:20.5,y:9.5,z:0,angle:-Math.PI/2});
   Object.assign(enemy,{x:20.5,y:11.5,z:0,hp:100,armor:0});
-  f.game.shoot();assert.equal(enemy.hp,100,'ally absorbs the shot without friendly damage');assert.equal(ally.hp,100);
+  f.game.shoot();assert.equal(enemy.hp,100,'ally absorbs the shot without friendly damage');assert.equal(ally.hp,ally.maxHp);
   f.key('KeyW');for(let i=0;i<20;i++)f.tick(.016);
   assert.ok(player.y<9.03,'body blocks forward movement');
   ally.hp=0;for(let i=0;i<20;i++)f.tick(.016);
@@ -815,4 +815,54 @@ test('fire bypasses armor and a self elimination gives no money or frag',()=>{
   const {player,grenadeEffects}=f.game.get(),money=player.money;
   grenadeEffects.push({kind:'fire',x:player.x,y:player.y,z:player.z+.06,radius:2.4,left:7,duration:7,owner:player});
   f.tick(.1);assert.equal(player.hp,0);assert.equal(player.armor,100);assert.equal(player.money,money);assert.equal(f.game.get().kills,0);assert.equal(f.game.get().deaths,1);
+});
+
+
+test('all ten classes can be selected, saved and spawned on either side with their free kit',()=>{
+  for(const c of CLASSES)for(const team of [0,1]){
+    const f=fixture();
+    assert.equal(f.document.querySelectorAll('[data-class]').length,10);
+    f.document.querySelectorAll('[data-class]').find(b=>b.dataset.class===c.id).onclick();
+    f.document.querySelectorAll('[data-skin]')[2].onclick();
+    f.document.querySelector('#team-select').value=String(team);
+    assert.equal(JSON.parse(f.storage.get('sector-settings')).classId,c.id);
+    f.game.start();const p=f.game.get().player;
+    assert.equal(p.classId,c.id);assert.equal(p.hp,c.hp);assert.equal(p.maxHp,c.hp);assert.equal(p.skin,2);
+    assert.equal(p.weapon,classWeapon(c.id,team));assert.equal(p.inventory[p.weapon].ammo,WEAPONS[p.weapon].size);assert.equal(p.money,800);
+    assert.equal(f.document.querySelector('#health-bar').style.width,'100%');
+    assert.equal(Number(f.document.querySelector('#health-max').textContent),c.hp);
+    f.game.beginFight();f.key('Digit2');assert.equal(p.weapon,p.sidearm);
+    f.key('Digit1');assert.equal(p.weapon,p.primary||p.sidearm);
+  }
+});
+
+test('tank health and kit survive round transitions, deaths and the side swap',()=>{
+  const f=fixture({classId:'tank',skin:1});f.game.start();const p=f.game.get().player;
+  assert.equal(p.weapon,'deagle');assert.equal(f.game.purchase('deagle').ok,false);
+  f.game.setPlayer({hp:80});f.game.step(.001);assert.equal(f.document.querySelector('#health-bar').style.width,'50%');
+  for(let i=0;i<12;i++){
+    f.game.beginFight();p.hp=0;f.game.endRound(0);f.tick(3.6);
+    assert.equal(p.hp,160);assert.equal(p.weapon,'deagle');assert.equal(p.inventory.deagle.ammo,7);assert.equal(p.skin,1);
+  }
+  assert.equal(p.team,1);assert.equal(p.classId,'tank');assert.equal(p.maxHp,160);
+});
+
+test('class speed affects walking, sprinting and quiet movement without changing their ratios',()=>{
+  for(const mode of ['walk','sprint','quiet']){
+    const distances={};
+    for(const classId of ['assault','tank','scout']){
+      const f=fixture({classId,map:1,motion:false});f.game.start();f.game.beginFight();
+      const {player:p,actors}=f.game.get();actors.filter(a=>a!==p).forEach(a=>{a.hp=0;});
+      f.game.setPlayer({x:20.5,y:8.5,angle:Math.PI/2});
+      if(mode==='sprint')f.key('ControlLeft');if(mode==='quiet')f.key('ShiftLeft');
+      f.key('KeyW');f.tick(.04);distances[classId]=p.y-8.5;
+    }
+    assert.ok(Math.abs(distances.tank/distances.assault-.75)<.001,mode);
+    assert.ok(Math.abs(distances.scout/distances.assault-1.25)<.001,mode);
+  }
+});
+
+test('invalid saved class falls back to assault and changing class updates the lobby summary',()=>{
+  const f=fixture({classId:'unknown'});f.game.start();assert.equal(f.game.get().player.classId,'assault');
+  const g=fixture({classId:'tank'});assert.match(g.document.querySelector('#selected-class').textContent,/Танк.*160.*Desert Eagle/);
 });

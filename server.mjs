@@ -7,7 +7,7 @@ import { createSignaling } from './signaling.mjs';
 import { normalizeRoomCode } from './public/room-code.js';
 import {
   MP, C2S, S2C, makeCode, sanitizeNick, sanitizeRoomName,
-  createRoom, publicRoomInfo, addPlayer, removePlayer, setReady,
+  createRoom, publicRoomInfo, addPlayer, removePlayer, setReady, setPlayerLoadout, resetPlayerLoadout,
   canStart, teamScores, matchTick, snapshotRoom, assignTeam,
 } from './public/net.js';
 import { MAPS, WEAPONS, clamp, lineOfSight, applyDamage, canStand, actorHeight, resetActorHeight, jumpActor, stepActor, actorPathClear } from './public/core.js';
@@ -99,8 +99,8 @@ export function startServer(port) {
       p.x = s.x; p.y = s.y;
       resetActorHeight(map, p);
       p.angle = team === 0 ? 0.72 : 3.8;
-      p.hp = 100; p.alive = true; p.kills = 0; p.deaths = 0;
-      p.weapon = 'pistol'; p.ammo = WEAPONS.pistol.size; p.reloadingUntil = 0;
+      p.alive = true; p.kills = 0; p.deaths = 0;
+      resetPlayerLoadout(p);
       p.ready = false; p.respawnIn = 0; p.lastShotAt = 0; p.flashAt = 0;
     }));
     room.phase = 'playing';
@@ -126,7 +126,7 @@ export function startServer(port) {
             p.x = s.x; p.y = s.y;
             resetActorHeight(map, p);
             p.angle = p.team === 0 ? 0.72 : 3.8;
-            p.weapon = 'pistol'; p.ammo = WEAPONS.pistol.size; p.reloadingUntil = 0;
+            resetPlayerLoadout(p);
           }
         }
       }
@@ -228,6 +228,10 @@ export function startServer(port) {
         case C2S.LEAVE: {
           leaveRoom(ws, client);
           send(ws, { t: S2C.ROOMS, rooms: publicList() });
+          break;
+        }
+        case C2S.LOADOUT: {
+          if(room&&setPlayerLoadout(room,client.id,msg))broadcastRoom(room);
           break;
         }
         case C2S.READY: {

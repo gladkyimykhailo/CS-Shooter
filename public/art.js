@@ -1,4 +1,4 @@
-import { SKINS, GLOVES, floorHeight } from './core.js';
+import { WEAPONS, SKINS, GLOVES, floorHeight } from './core.js';
 export function hex(s){return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];}
 export function tint(s,k){return `rgb(${hex(s).map(v=>Math.min(255,Math.max(0,Math.round(v*k)))).join(',')})`;}
 function poly(c,points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
@@ -140,7 +140,7 @@ export function makeOperator(color,accent='#dbaa69',glove='#333b37'){
   r(49,101,56,12,'#212b2c');r(68,90,31,12,'#36443f');r(94,104,32,6,'#192528');r(70,112,11,20,'#172323');r(59,105,4,4,accent);r(48,102,13,7,'#4f5b51');
   return cv;
 }
-export function drawOperator(canvas,skin,glove){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(SKINS[skin].color,'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-111,25,222,h-45);}
+export function drawOperator(canvas,skin,glove,look=null){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;c.clearRect(0,0,w,h);c.strokeStyle='#c8e19a13';for(let i=0;i<w;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}for(let i=0;i<h;i+=40){c.beginPath();c.moveTo(0,i);c.lineTo(w,i);c.stroke();}c.fillStyle='#070e0c55';c.beginPath();c.ellipse(w*.5,h*.94,100,14,0,0,7);c.fill();const sprite=makeOperator(look?.color||SKINS[skin].color,look?.accent||'#c3f66b',GLOVES[glove].color);c.imageSmoothingEnabled=false;c.drawImage(sprite,w*.5-w*.23,h*.048,w*.46,h*.91);}
 export const WEAPON_FILES = { pistol:'assets/weapons/pistol.png', smg:'assets/weapons/smg.png', rifle:'assets/weapons/rifle.png', shotgun:'assets/weapons/shotgun.png', kalash:'assets/weapons/kalash.png' };
 // Текстури зброї з itch.io (AystarGames, CC0). У середовищі без DOM (тести) повертає {}.
 export function loadWeaponSprites(){
@@ -167,7 +167,7 @@ export function drawScopeOverlay(c,w,h,id,alpha=1){
 // Rear view down the barrel. The front sight's tip is exactly (0, 0),
 // matching the screen-centre ray used for hit detection.
 export function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
-  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun';
+  const pistol=WEAPONS[id]?.type==='ПІСТОЛЕТ',ak=id==='kalash',shotgun=id==='shotgun';
   const shape=(points,color)=>{poly(c,points,color);c.strokeStyle='#11191f';c.lineWidth=2;c.lineJoin='round';c.stroke();};
   const line=(points,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();};
   const body=pistol?40:id==='smg'?48:shotgun?54:ak?56:60,front=pistol?12:18,kick=flash>0?flash*6:0;
@@ -218,7 +218,7 @@ export function drawWeaponSights(c,id,{skin,glove,flash=0}={}){
 // Large, continuous silhouettes with visible upper faces and separate grips.
 // Coordinates run from the muzzle on the left to the stock on the right.
 export function drawHeldWeapon(c,id,{skin,glove,ads=0,reload=0,flash=0}={}){
-  const pistol=id==='pistol',ak=id==='kalash',shotgun=id==='shotgun',scoped=id==='marksman'||id==='sniper';
+  const pistol=WEAPONS[id]?.type==='ПІСТОЛЕТ',ak=id==='kalash',shotgun=id==='shotgun',scoped=id==='marksman'||id==='sniper';
   const metal='#39444c',edge='#82919a',dark='#1b232b',wood='#95572d';
   const shape=(points,color)=>{
     poly(c,points,color);c.strokeStyle='#101820';c.lineWidth=2;c.lineJoin='round';c.stroke();

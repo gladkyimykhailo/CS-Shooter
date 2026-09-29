@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createPeerHost, createPeerClient, encodePeerSignal, decodePeerSignal } from '../public/peer.js';
 import { C2S, S2C, MP } from '../public/net.js';
 import { defaultMpUrl } from '../public/mp.js';
-import { MAPS } from '../public/core.js';
+import { MAPS, CLASSES, WEAPONS, classWeapon } from '../public/core.js';
 import { rtcFixture } from './helpers/rtc.mjs';
 
 const TEST_MAP_ID=MAPS.findIndex(map=>map.id==='dust2');
@@ -66,7 +66,7 @@ test('browser combat: misses consume ammo, reload, hit validation, death and res
   Object.assign(a,{x:20.5,y:8.5,angle:Math.PI/2});Object.assign(b,{x:20.5,y:11.5});
   for(let i=0;i<4;i++){f.host.receive('host',{t:C2S.SHOOT,weapon:'pistol',target:b.id});f.advance(.3);}
   assert.equal(b.alive,false);assert.equal(a.kills,1);assert.equal(b.deaths,1);
-  f.advance(MP.RESPAWN_DELAY);assert.equal(b.alive,true);assert.equal(b.hp,100);assert.equal(b.ammo,12);
+  f.advance(MP.RESPAWN_DELAY);assert.equal(b.alive,true);assert.equal(b.hp,100);assert.equal(b.ammo,WEAPONS[b.weapon].size);
   Object.assign(a,{x:8.5,y:9.5,angle:0});Object.assign(b,{x:10.5,y:9.5});
   f.host.receive('host',{t:C2S.SHOOT,weapon:'pistol',target:b.id});assert.equal(b.hp,100,'wall blocks damage');
 });
@@ -238,4 +238,21 @@ test('host rejects movement through a living player but accepts moving away and 
   f.host.receive('host',{t:C2S.STATE,x:20.5,y:8,angle:Math.PI/2});assert.equal(p.y,8);
   q.hp=0;q.alive=false;
   f.host.receive('host',{t:C2S.STATE,x:20.5,y:10.5,angle:Math.PI/2});assert.equal(p.y,10.5);
+});
+
+
+test('peer host validates classes, broadcasts skins and restores class gear after death',()=>{
+  for(const c of CLASSES){
+    const f=hostFixture();f.host.receive('host',{t:C2S.LOADOUT,classId:c.id,skin:2,glove:1,hp:999,speed:999});
+    startDuel(f);const p=f.host.room.players.host;
+    assert.equal(p.classId,c.id);assert.equal(p.hp,c.hp);assert.equal(p.weapon,c.weapon);
+    assert.equal(p.skin,2);assert.equal(p.glove,1);
+    const start=f.messages.find(m=>m.t===S2C.MATCH_START).room.players.find(a=>a.id==='host');
+    assert.equal(start.classId,c.id);assert.equal(start.skin,2);
+    f.host.receive('host',{t:C2S.LOADOUT,classId:'tank',skin:0});assert.equal(p.classId,c.id);assert.equal(p.skin,2);
+    p.alive=false;p.hp=0;p.respawnIn=.1;p.weapon='sniper';f.advance(.2);
+    assert.equal(p.hp,c.hp);assert.equal(p.weapon,classWeapon(c.id,p.team));assert.equal(p.ammo,WEAPONS[p.weapon].size);
+  }
+  const f=hostFixture();f.host.receive('host',{t:C2S.LOADOUT,classId:'__proto__',skin:999,glove:-1});
+  assert.equal(f.host.room.players.host.classId,'assault');assert.equal(f.host.room.players.host.skin,0);
 });
