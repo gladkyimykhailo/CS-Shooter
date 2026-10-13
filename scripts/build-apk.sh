@@ -27,6 +27,6 @@ javac --release 11 -classpath "$JAR" -d "$WORK/classes" $(find "$ROOT/android/sr
 "$BT/d8" --lib "$JAR" --min-api 24 --output "$WORK/dex" $(find "$WORK/classes" -name '*.class')
 (cd "$WORK/dex" && zip -q "$WORK/base.apk" classes.dex)
 "$BT/zipalign" -f -p 4 "$WORK/base.apk" "$WORK/aligned.apk"
-"$BT/apksigner" sign --ks "$KEYSTORE" --ks-pass pass:android --key-pass pass:android \
+"$BT/apksigner" sign --v4-signing-enabled false --ks "$KEYSTORE" --ks-pass pass:android --key-pass pass:android \
   --out "$OUT" "$WORK/aligned.apk"
 echo "APK: $OUT ($(stat -c %s "$OUT") bytes)"
